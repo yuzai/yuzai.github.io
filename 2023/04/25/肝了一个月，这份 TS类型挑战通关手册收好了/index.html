@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    
+<script src="/js/index.js"></script>
+
+    <meta name="baidu-site-verification" content="81rzqdpRFv" />
+    <meta charset="utf-8">
+    <meta name="referrer" content="same-origin">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    <script src="/js/highlight.min.js"></script>
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body>
+    <div class="main">
+        <img id='head'>
+</div>
+<header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div style = 'margin-top:180px'>
+    <article>
+      <div class = 'container-fluid'>
+      <div class = 'row'>
+        <div class = 'col-xs-12 col-xs-offset-0 col-md-7 col-md-offset-1 col-sm-7 col-sm-offset-1 col-lg-7 col-lg-offset-1 category_col'>
+          <div class ='well'>
+        <h2 class='post-title'>
+            <span>肝了一个月，这份 TS类型挑战通关手册收好了</span>
+        </h2>
+        <section class='post-content'>
+            <p>肝了一个月，刷了5遍 <a target="_blank" rel="noopener" href="https://github.com/type-challenges/type-challenges">TS类型体操</a>，输出了这份 <a target="_blank" rel="noopener" href="https://blog.maxiaobo.com.cn/type-challenge/dist/">TS 类型体操通关手册</a>，应该是全网最详细的 TS 类型体操解题指南了。</p>
+<span id="more"></span>
+
+<h3 id="关于类型体操"><a href="#关于类型体操" class="headerlink" title="关于类型体操"></a>关于类型体操</h3><p>简单说说我为什么会做类型体操吧。</p>
+<p>相信有很多开发同学和我一样，对 ts 又爱又恨，看文档，会了，上手写，就 any。</p>
+<p>用 npm 包时，希望它的 ts 定义写的越详细越好。</p>
+<p>自己写业务组件时，能省则省。</p>
+<p>但是有些 npm 包吧， ts 类型定义的太详细了，我，真真看不懂。</p>
+<p>比如我之前研究的 <a target="_blank" rel="noopener" href="https://github.com/pmndrs/zustand">zustand</a>，代码去除类型声明估计 50 - 60 行吧。带上 类型声明，好家伙，直接奔着三四百行去了。而且其中的一些用法，肚子里没两碗水，真的端不平。</p>
+<p>其实我一直是不太喜欢写 ts 的，能不写，就不写。即便写，也是边查边写，太麻烦了就 any，那个时候，看到什么类型体操，内心都会嗤之以鼻，炫技有什么好的，代码是用来干活的，把业务写好了，工资奖金才有着落，整花活没用。</p>
+<p>但是工作中，对别人封装的组件的类型声明又非常严格，比如同事封装的组件，看到 any 了就得说一句，把这个类型完善一下。对 npm 包的要求就更不用说了，你连这点类型提示都没有，这包多半就不好使啊。</p>
+<p>但是的但是，万事都有轮回，总归有一天，要自己发包，要自己提供业务组件，那么这个时候，稍微麻烦点的地方都用 any 可是会被狠狠吐槽的，而且不仅仅是 any, 但凡有些地方类型声明不全，都是会被吐槽。</p>
+<p>我为了给自己的 <a target="_blank" rel="noopener" href="https://github.com/yuzai/sustand">状态管理库</a> 写一份完善的类型声明，深入研究了 ts，并把 TS类型体操做了四、五遍，熬出来了这份 <a target="_blank" rel="noopener" href="https://blog.maxiaobo.com.cn/type-challenge/dist/">TS 类型挑战通关手册</a>，包含了所有题目的题解。</p>
+<p>说实话，TS 炫技不重要，重要的是这些基操，不做题就永远停留在表面。</p>
+<p>做类型体操就像上学的时候，做的题多了，理解深不深不知道，至少会写了，也能看得懂了。</p>
+<h3 id="关于这份手册"><a href="#关于这份手册" class="headerlink" title="关于这份手册"></a>关于这份手册</h3><p>接下来再简单说说这份 <a target="_blank" rel="noopener" href="https://blog.maxiaobo.com.cn/type-challenge/dist/">TS 类型挑战通关手册</a> 吧。</p>
+<p>主要的初衷是，我刷了两遍 TS体操，但是刷的过程中，很多知识点都是朦朦胧胧似懂非懂，有些点也是能做出来就行，不去深入研究，有些题好像在之前做过类似的，但是找起来好困难啊。</p>
+<p>所以在刷第三遍，第四遍的时候，我萌生了写一份题解的想法。</p>
+<p>一方面，记录下题解，看起来方便，顺便把懵懂的点钻研清楚。</p>
+<p>另一方面，梳理清楚不同题目之间的通用解法，把一些通用的技巧整理出来，也算是给自己一个总结。</p>
+<p>最终，产出了 <a target="_blank" rel="noopener" href="https://blog.maxiaobo.com.cn/type-challenge/dist/">TS 类型挑战通关手册</a> 。</p>
+<p>刷题姿势的话，建议按照题目顺序阅读题解，从简单到复杂逐步深入。不建议直接去看通用技巧章节，只需要在刷题过程遇到的时候查看即可。</p>
+<p>在阅读题解时，强烈建议先尝试自己解答题目，然后再对照题解进行学习和思考。</p>
+<p>建议通过 vscode 插件 <a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=YRM.type-challenges">Type Challenges</a> 进行解答。</p>
+<p>最终再翻看或者在没有思路的时候翻看本文档整理的题解，看看思路上有无出入，当然，思路往往不止一种，本文档也仅仅只代表我的理解，不一定最优，有更好的想法，或者文中有说的不对的地方，可以随时联系我。</p>
+<p>再调侃下 TS &amp; TS 类型体操:</p>
+<blockquote>
+<p>做类型体操前，这什么玩意。做之后，妈妈再也不用担心我看不懂类型声明了。</p>
+</blockquote>
+<blockquote>
+<p>我看过官方文档，翻过很多问答，但是依然想不出来如何给我的变量声明一个完善的类型。</p>
+</blockquote>
+<blockquote>
+<p>官网文档看了一遍遍，还是一写就废？试试 <a target="_blank" rel="noopener" href="https://github.com/type-challenges/type-challenges">TS类型体操</a>吧，<a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=YRM.type-challenges">机</a> 都开好了。</p>
+</blockquote>
+<p>最后，希望本手册能够在通关之路中帮到大家。</p>
+
+        </section>
+        <hr>
+        
+          <p>上一篇：<a  href = "/2023/03/22/%E8%AE%BE%E8%AE%A1%E4%B8%80%E6%AC%BE%E8%B5%8F%E5%BF%83%E6%82%A6%E7%9B%AE%E7%9A%84%20React%20%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%BA%93/">设计一款赏心悦目的 React 状态管理库</a></p>
+        
+        
+          <p>下一篇：<a onclick = 'return false'>没有了</a></p>
+        
+        
+            <section id="comments">
+            
+                    <!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="2023/04/25/肝了一个月，这份 TS类型挑战通关手册收好了/" data-title="肝了一个月，这份 TS类型挑战通关手册收好了" data-url="https://yuzai.github.io/2023/04/25/%E8%82%9D%E4%BA%86%E4%B8%80%E4%B8%AA%E6%9C%88%EF%BC%8C%E8%BF%99%E4%BB%BD%20TS%E7%B1%BB%E5%9E%8B%E6%8C%91%E6%88%98%E9%80%9A%E5%85%B3%E6%89%8B%E5%86%8C%E6%94%B6%E5%A5%BD%E4%BA%86/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:'yuzaizai'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+<!-- 多说公共JS代码 end -->
+
+                
+            </section>
+        
+          </div>
+       </div>
+       <div class = 'col-xs-12 col-xs-offset-0 col-md-3 col-md-offset-0 col-sm-3 col-sm-offset-0 col-lg-3 col-lg-offset-0'>
+         <div style='overflow:scroll' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>肝了一个月，这份 TS类型挑战通关手册收好了</h4>
+<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E7%B1%BB%E5%9E%8B%E4%BD%93%E6%93%8D"><span class="toc-text">关于类型体操</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E8%BF%99%E4%BB%BD%E6%89%8B%E5%86%8C"><span class="toc-text">关于这份手册</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2023/04/25/%E8%82%9D%E4%BA%86%E4%B8%80%E4%B8%AA%E6%9C%88%EF%BC%8C%E8%BF%99%E4%BB%BD%20TS%E7%B1%BB%E5%9E%8B%E6%8C%91%E6%88%98%E9%80%9A%E5%85%B3%E6%89%8B%E5%86%8C%E6%94%B6%E5%A5%BD%E4%BA%86/">肝了一个月，这份 TS类型挑战通关手册收好了</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/03/22/%E8%AE%BE%E8%AE%A1%E4%B8%80%E6%AC%BE%E8%B5%8F%E5%BF%83%E6%82%A6%E7%9B%AE%E7%9A%84%20React%20%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%BA%93/">设计一款赏心悦目的 React 状态管理库</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/01/06/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E5%A6%82%E4%BD%95%E7%BB%B4%E6%8C%81%20Xpath%20%E7%A8%B3%E5%AE%9A%E6%80%A7/">可视化埋点（四）：如何维持 Xpath 稳定性</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/01/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%85%83%E7%B4%A0%E5%9C%88%E9%80%89%E5%99%A8%E5%AE%9E%E7%8E%B0/">可视化埋点（三）：元素圈选器实现</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/01/02/2022%20%E5%B9%B4%E7%BB%88%E9%9A%8F%E7%AC%94%20--%20%E4%BB%8A%E5%B9%B4%E5%8D%87%E8%81%8C%E5%95%A6/">2022 年终随笔 -- 今年升职啦</a></li><li class="post-list-item"><a class="post-list-link" href="/2022/09/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BB%8E0%E5%88%B01%E6%90%AD%E5%BB%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0/">可视化埋点（一）：从0到1搭建可视化埋点平台</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">5</span></li></ul>
+
+
+  <img id = 'my_picture'>
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">24</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style = 'color:green'><i class="icon-angle-up"></i><tton>
+</div>
+<footer class='myfoot'>
+  <div class=" container-fluid" >
+       <div style="text-align: center"><a href = 'https://github.com/yuzai'>Writer:芋仔 <i class='icon-github'></i></a></div>
+  </div>
+</footer>
+
+
+    </div>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

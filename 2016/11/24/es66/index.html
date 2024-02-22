@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    
+<script src="/js/index.js"></script>
+
+    <meta name="baidu-site-verification" content="81rzqdpRFv" />
+    <meta charset="utf-8">
+    <meta name="referrer" content="same-origin">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    <script src="/js/highlight.min.js"></script>
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body>
+    <div class="main">
+        <img id='head'>
+</div>
+<header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div style = 'margin-top:180px'>
+    <article>
+      <div class = 'container-fluid'>
+      <div class = 'row'>
+        <div class = 'col-xs-12 col-xs-offset-0 col-md-7 col-md-offset-1 col-sm-7 col-sm-offset-1 col-lg-7 col-lg-offset-1 category_col'>
+          <div class ='well'>
+        <h2 class='post-title'>
+            <span>es66-内部的扩展</span>
+        </h2>
+        <section class='post-content'>
+            <p>es6的学习笔记(六)：一些内在的提升</p>
+<span id="more"></span>
+
+<h3 id="数字（Number）的扩展"><a href="#数字（Number）的扩展" class="headerlink" title="数字（Number）的扩展"></a>数字（Number）的扩展</h3><h4 id="数字的二进制，八进制，十六进制简洁表示"><a href="#数字的二进制，八进制，十六进制简洁表示" class="headerlink" title="数字的二进制，八进制，十六进制简洁表示"></a>数字的二进制，八进制，十六进制简洁表示</h4><pre><code class="js">var binary=0b101;
+var oc = 0o101;
+var hex = 0x101;
+console.log([binary,oc,hex]);//5,65,257
+</code></pre>
+<p>可以用0b表示二进制，0o表示八进制，0x表示16进制</p>
+<h4 id="Number-isNaN"><a href="#Number-isNaN" class="headerlink" title="Number.isNaN"></a>Number.isNaN</h4><p>这个函数和全局函数isNaN的不同点在于，全局的isNaN在执行判断是否是NaN前，进行了Number(value)的操作。这两个函数的返回值分别表示：value，Number(value)是否是NaN.</p>
+<pre><code class="js">Number.isNaN(123)
+// &lt;‐ false, integers are not NaN
+Number.isNaN(Infinity)
+// &lt;‐ false, Infinity is not NaN
+Number.isNaN(`a hundred`)
+// &lt;‐ false, `a hundred` is not NaN
+Number.isNaN(NaN)
+// &lt;‐ true, NaN is NaN
+Number.isNaN(`a hundred` / `two`)
+// &lt;‐ true, `a hundred` / `two` is NaN, NaN is NaN
+
+isNaN(`a hundred`)
+// &lt;‐ true, because Number(`a hundred`) is NaN
+</code></pre>
+<p>而对于isNaN,会先执行Number(value),所以字符，也会被变成NaN,所以字符的输出结果是true。</p>
+<h4 id="Number-isFinite"><a href="#Number-isFinite" class="headerlink" title="Number.isFinite"></a>Number.isFinite</h4><p>类似于isNaN和Number.isNaN,区别在于判断之前是否进行了Number(value)的操作,对比如下：</p>
+<pre><code class="js">isFinite(NaN)
+// &lt;‐ false
+isFinite(Infinity)
+// &lt;‐ false
+isFinite(‐Infinity)
+// &lt;‐ false
+isFinite(null)
+// &lt;‐ true, because Number(null) is 0
+isFinite(‐13)
+// &lt;‐ true, because Number(‐13) is ‐13
+isFinite(`10`)
+// &lt;‐ true, because Number(`10`) is 10
+
+
+Number.isFinite(NaN)
+// &lt;‐ false
+Number.isFinite(Infinity)
+// &lt;‐ false
+Number.isFinite(‐Infinity)
+// &lt;‐ false
+Number.isFinite(null)
+// &lt;‐ false, because null is not a number
+Number.isFinite(‐13)
+// &lt;‐ true
+Number.isFinite(`10`)
+// &lt;‐ false, because `10` is not a number
+</code></pre>
+<p>事实上，Number.isFinite &#x3D; value &#x3D;&gt; typeof value &#x3D;&#x3D;&#x3D; <code>number</code> &amp;&amp; isFinite(value)</p>
+<h4 id="Number-parseInt"><a href="#Number-parseInt" class="headerlink" title="Number.parseInt"></a>Number.parseInt</h4><p>这个函数和parseInt完全相同。不过parseInt在es6中也得到了扩展。不需要提供基数，使用0x这样的符号也是支持的。但是不支持0b,0o如果提供了基数，会在第一个不认识的字符放弃，之前的转换还是正确的</p>
+<pre><code class="js">console.log(Number.parseInt === parseInt)
+// &lt;‐ true
+
+parseInt(`0xf00`)
+// &lt;‐ 3840
+parseInt(`0xf00`, 16)
+// &lt;‐ 3840
+
+parseInt(`0xf00`, 10)
+// &lt;‐ 0
+parseInt(`5xf00`, 10)
+// &lt;‐ 5, illustrating there&#39;s no special treatment here
+
+
+parseInt(`0b011`)
+// &lt;‐ 0
+parseInt(`0b011`, 2)
+// &lt;‐ 0
+parseInt(`0o100`)
+// &lt;‐ 0
+parseInt(`0o100`, 8)
+// &lt;‐ 0
+parseInt(`0b011`.slice(2), 2)
+// &lt;‐ 3
+parseInt(`0o110`.slice(2), 8)
+// &lt;‐ 72
+
+Number(`0b011`)
+// &lt;‐ 3
+Number(`0o110`)  //事实上，直接使用0b101，就是十进制的5，不需要模板字面量``
+// &lt;‐ 72
+</code></pre>
+<h4 id="Number-parseFloat"><a href="#Number-parseFloat" class="headerlink" title="Number.parseFloat"></a>Number.parseFloat</h4><p>事实上，和parseInt一样，这个函数也是等于全局的parseFloat.这样的好处其实是为了把全局的逐渐转移到局部的相关数据类型上，来避免全局变量的污染</p>
+<pre><code class="js">console.log(Number.parseFloat === parseFloat)
+// &lt;‐ true
+</code></pre>
+<h4 id="Number-isInteger"><a href="#Number-isInteger" class="headerlink" title="Number.isInteger"></a>Number.isInteger</h4><p>这个方法是全局没有的，就是判断一个数字是否是整数。内部没有经过Number(value)操作。</p>
+<pre><code class="js">console.log(Number.isInteger(Infinity)); // &lt;‐ false
+console.log(Number.isInteger(‐Infinity)); // &lt;‐ false
+console.log(Number.isInteger(NaN)); // &lt;‐ false
+console.log(Number.isInteger(null)); // &lt;‐ false
+console.log(Number.isInteger(0)); // &lt;‐ true
+console.log(Number.isInteger(‐10)); // &lt;‐ true
+console.log(Number.isInteger(10.3)); // &lt;‐ false
+</code></pre>
+<p>可以认为他内部的操作原理如下：</p>
+<pre><code class="js">Number.isInteger = value =&gt; Number.isFinite(value) &amp;&amp; value%1 === 0
+</code></pre>
+<h4 id="Number-EPSILON"><a href="#Number-EPSILON" class="headerlink" title="Number.EPSILON"></a>Number.EPSILON</h4><p>中文读过来就是一不西龙，是一个常数，数值特别小，可以用它来判断浮点数之间的差距是否足够小，小到可以忽略的地步。</p>
+<pre><code class="js">Number.EPSILON
+// &lt;‐ 2.220446049250313e‐16
+Number.EPSILON.toFixed(20)
+// &lt;‐ `0.00000000000000022204`
+
+0.1 + 0.2
+// &lt;‐ 0.30000000000000004
+0.1 + 0.2 === 0.3
+// &lt;‐ false
+
+console.log(0.1 + 0.2 - 0.3)
+// &lt;‐ 5.551115123125783e‐17
+console.log(5.551115123125783e-17.toFixed(20))
+// &lt;‐ `0.00000000000000005551`
+
+console.log(5.551115123125783e-17 &lt; Number.EPSILON)
+// &lt;‐ true
+</code></pre>
+<p>根据上述代码，可以写出一个来判断两个浮点数之间的差值是否可以接受。</p>
+<pre><code class="js">function withinMarginOfError (left, right) &#123;
+    return Math.abs(left - right) &lt; Number.EPSILON
+&#125;
+withinMarginOfError((0.1+0.2),0.3);//true
+</code></pre>
+<p><strong>多说一句，并不是每一个浮点数都不能被精确表示，0.1+0.2不能表示为0.3，但是0.3+0.2&#x3D;0.5是可以精确表示，具体规则我也不是很清楚</strong></p>
+<h4 id="Number-MAX-SAFE-INTEGER，Number-MIN-SAFE-INTEGER-，Number-isSafeInteger"><a href="#Number-MAX-SAFE-INTEGER，Number-MIN-SAFE-INTEGER-，Number-isSafeInteger" class="headerlink" title="Number.MAX_SAFE_INTEGER，Number.MIN_SAFE_INTEGER ，Number.isSafeInteger"></a>Number.MAX_SAFE_INTEGER，Number.MIN_SAFE_INTEGER ，Number.isSafeInteger</h4><p>并不是每一个整数都可以被精确表示。<br>Number.MAX_SAFE_INTEGER是js中可以被安全的精确表示的数字。最小的就是它的相反数，也可以用Number.MIN_SAFE_INTEGER来表示。2^53-1是计算机有64位，有11位被用来表示指数，1位用来表示符号位。剩余的52位来表示整数，如果这52位都为1，就是最大不失真整数，2^53-1。如果数据超过了这个范围，就会以精度为代价，用11位的指数来进行表示，其中11位指数的第一位用来表示指数的正负<br><img src="/blog.xiaoboma.com/%E6%B5%AE%E7%82%B9%E6%95%B0.jpg" alt="浮点数"></p>
+<pre><code class="js">Number.MAX_SAFE_INTEGER === Math.pow(2, 53) ‐ 1
+// &lt;‐ true
+Number.MAX_SAFE_INTEGER === 9007199254740991
+// &lt;‐ true
+
+Number.MIN_SAFE_INTEGER === ‐Number.MAX_SAFE_INTEGER
+// &lt;‐ true
+Number.MIN_SAFE_INTEGER === ‐9007199254740991
+// &lt;‐ true
+
+//下面的代码来验证超过这个范围就会不精确
+1 === 2
+// &lt;‐ false
+Number.MAX_SAFE_INTEGER + 1 === Number.MAX_SAFE_INTEGER + 2
+// &lt;‐ true
+Number.MIN_SAFE_INTEGER - 1 === Number.MIN_SAFE_INTEGER - 2//同时相加，依旧相等，当然，这个加数是有范围的
+// &lt;‐ true
+</code></pre>
+<p>Number.isSafeInteger就是用来判断一个数是否是安全的，也就是是否在[Number.MIN_SAFE_INTEGER，Number.MAX_SAFE_INTEGER]之间，这个函数也没有进行Number(value)转换，所以传入字符串等必然报错，小数也必然会报错。</p>
+<pre><code class="js">Number.isSafeInteger(`one`); // &lt;‐ false
+Number.isSafeInteger(`0`); // &lt;‐ false
+Number.isSafeInteger(null); // &lt;‐ false
+Number.isSafeInteger(NaN); // &lt;‐ false
+Number.isSafeInteger(Infinity); // &lt;‐ false
+Number.isSafeInteger(‐Infinity); // &lt;‐ false
+Number.isSafeInteger(Number.MIN_SAFE_INTEGER ‐ 1); // &lt;‐ false
+Number.isSafeInteger(Number.MIN_SAFE_INTEGER); // &lt;‐ true
+Number.isSafeInteger(1); // &lt;‐ true
+Number.isSafeInteger(1.2); // &lt;‐ false
+Number.isSafeInteger(Number.MAX_SAFE_INTEGER); // &lt;‐ true
+Number.isSafeInteger(Number.MAX_SAFE_INTEGER + 1); // &lt;‐ false
+</code></pre>
+<p>事实上，如果两个数都是安全数，他们的计算结果不一定是安全的，因为简单的加法，两个安全的整数想加，超过了安全范围，计算结果就会有偏差。<br>一个是安全的，一个是不安全的，他们的结果也有可能出现偏差。<br>两个都是不安全的，虽然他们的结果是安全的，但是结果也有可能出现偏差。</p>
+<pre><code class="js">Number.isSafeInteger(9007199254740000)
+// &lt;‐ true
+Number.isSafeInteger(993)
+// &lt;‐ true
+Number.isSafeInteger(9007199254740000 + 993)
+// &lt;‐ false
+9007199254740000 + 993
+// &lt;‐ 9007199254740992, should be 9007199254740993
+
+//但是并不是说所有的都是错误的，有可能是正确的，似乎是以2位单位的。但是结果不是很靠谱了
+9007199254740000 + 994
+// &lt;‐ 9007199254740994
+
+Number.isSafeInteger(9007199254740993)
+// &lt;‐ false
+Number.isSafeInteger(990)
+// &lt;‐ true
+Number.isSafeInteger(9007199254740993 ‐ 990)
+// &lt;‐ true
+9007199254740993 ‐ 990
+// &lt;‐ 9007199254740002, should be 9007199254740003
+
+Number.isSafeInteger(9007199254740995)
+// &lt;‐ false
+Number.isSafeInteger(9007199254740993)
+// &lt;‐ false
+Number.isSafeInteger(9007199254740995 ‐ 9007199254740993)
+// &lt;‐ true
+9007199254740995 ‐ 9007199254740993
+// &lt;‐ 4, should be 2
+</code></pre>
+<p>综上，可以认为，一次操作，不论是操作数，还是结果不安全，那么这个结果很有可能是不准确的。可以通过下面这个函数来判断计算记过是否准确</p>
+<pre><code class="js">function safeOp (result, ...operands) &#123;
+  const values = [result, ...operands]
+  if (!values.every(Number.isSafeInteger)) &#123;
+  throw new RangeError(&#39;Operation cannot be trusted!&#39;)
+  &#125;
+  return result
+&#125;
+safeOp(9007199254740000 + 993, 9007199254740000, 993)
+// &lt;‐ RangeError: Operation cannot be trusted!
+safeOp(9007199254740993 + 990, 9007199254740993, 990)
+// &lt;‐ RangeError: Operation cannot be trusted!
+safeOp(9007199254740993 ‐ 990, 9007199254740993, 990)
+// &lt;‐ RangeError: Operation cannot be trusted!
+safeOp(9007199254740993 ‐ 9007199254740995, 9007199254740993, 9007199254740995)
+// &lt;‐ RangeError: Operation cannot be trusted!
+safeOp(1 + 2, 1, 2)
+// &lt;‐ 3
+</code></pre>
+<h3 id="Math函数的扩展"><a href="#Math函数的扩展" class="headerlink" title="Math函数的扩展"></a>Math函数的扩展</h3><h4 id="Math-sign"><a href="#Math-sign" class="headerlink" title="Math.sign()"></a>Math.sign()</h4><p>这个函数比较简单，就是返回-1，0,1，值得注意的是这个函数的数值会先经过Number(value)操作。</p>
+<pre><code class="js">Math.sign(1); // &lt;‐ 1
+Math.sign(0); // &lt;‐ 0
+Math.sign(‐0); // &lt;‐ ‐0
+Math.sign(‐30); // &lt;‐ ‐1
+Math.sign(NaN); // &lt;‐ NaN
+Math.sign(`one`); // &lt;‐ NaN, because Number(`one`) is NaN
+Math.sign(`0`); // &lt;‐ 0, because Number(`0`) is 0
+Math.sign(`7`); // &lt;‐ 1, because Number(`7`) is 7
+</code></pre>
+<h4 id="Math-trunc"><a href="#Math-trunc" class="headerlink" title="Math.trunc()"></a>Math.trunc()</h4><p>这个函数类似Math.floor()向下取整，Math.ceil()向上取整，这个函数是不论正负，直接去掉小数，同时，函数的数值会经过Number(value)处理。</p>
+<pre><code class="js">Math.trunc(12.34567); // &lt;‐ 12
+Math.trunc(‐13.58); // &lt;‐ ‐13
+Math.trunc(‐0.1234); // &lt;‐ ‐0
+Math.trunc(NaN); // &lt;‐ NaN
+Math.trunc(`one`); // &lt;‐ NaN, because Number(`one`) is NaN
+Math.trunc(`123.456`); // &lt;‐ 123, because Number(`123.456`) is 123.456
+</code></pre>
+<h4 id="Math-cbrt"><a href="#Math-cbrt" class="headerlink" title="Math.cbrt()"></a>Math.cbrt()</h4><p>Match.sqrt()是二次开根的缩写，cbrt是三次开根的缩写。同样，输入经过Number（value）处理。</p>
+<pre><code class="js">Math.cbrt(‐1); // &lt;‐ ‐1
+Math.cbrt(3); // &lt;‐ 1.4422495703074083
+Math.cbrt(8); // &lt;‐ 2
+Math.cbrt(27); // &lt;‐ 3
+Math.cbrt(`8`); // &lt;‐ 2, because Number(`8`) is 8
+Math.cbrt(`one`); // &lt;‐ NaN, because Number(`one`) is NaN
+</code></pre>
+<h4 id="Math-expm1-Math-log1p-，Math-log2-Math-log10"><a href="#Math-expm1-Math-log1p-，Math-log2-Math-log10" class="headerlink" title="Math.expm1(),Math.log1p()，Math.log2(),Math.log10()"></a>Math.expm1(),Math.log1p()，Math.log2(),Math.log10()</h4><p>Math.exmp1()做了和Math.exp(value) ‐ 1一样的操作，但是精度比后者高。<br>Math.log1p()做了Math.log(value + 1)一样的操作，但是精度比后者高<br>Math.log10()做了和Math.log(x) &#x2F; Math.LN10一样的操作，但是精度更高<br>Math.log2()就是Math.log(x) &#x2F; Math.LN2，但是精度比后者高</p>
+<h4 id="三角函数"><a href="#三角函数" class="headerlink" title="三角函数"></a>三角函数</h4><ol>
+<li>Math.sinh(value) returns the hyperbolic sine of value</li>
+<li>Math.cosh(value) returns the hyperbolic cosine of value</li>
+<li>Math.tanh(value) returns the hyperbolic tangent of value</li>
+<li>Math.asinh(value) returns the hyperbolic arc­sine of value</li>
+<li>Math.acosh(value) returns the hyperbolic arc­cosine of value</li>
+<li>Math.atanh(value) returns the hyperbolic arc­tangent of value</li>
+</ol>
+<h4 id="Math-hypot"><a href="#Math-hypot" class="headerlink" title="Math.hypot()"></a>Math.hypot()</h4><p>Math.hypot(1,2,3,4)的值应该是sqrt（1<em>1+2</em>2+3<em>3+4</em>4），当时精度比直接使用sqrt高。输入参数不能是数组，其实在数组前加上…就可以用了。</p>
+<h3 id="字符串和unicode码"><a href="#字符串和unicode码" class="headerlink" title="字符串和unicode码"></a>字符串和unicode码</h3><p>事实上，对字符串的一个提升就表现在模板字面量上，可以在&#x2F;<code>/</code>中嵌入变量，表达式。其他的提升主要表现在对字符串的控制和unicode码上。</p>
+<h4 id="String-startsWith-endsWith-includes"><a href="#String-startsWith-endsWith-includes" class="headerlink" title="String#startsWith(),#endsWith(),#includes()"></a>String#startsWith(),#endsWith(),#includes()</h4><p>相对来讲都比较简单，都可以使用indexOf来替换，但是简化了它的写法，示例用法如下：</p>
+<pre><code class="js">`hello ell`.startsWith(`ell`, 6) //第二个参数可省，默认为0
+// &lt;‐ true
+
+`hello gary`.endsWith(`gary`, 10)//第二个参数可省，默认是字符串的Length，实际检测的数组坐标应该是参数-1
+// &lt;‐ true
+`hello gary`.endsWith(`gary`, 9)
+// &lt;‐ false, it ends with `gar` in this case
+
+`hello gary`.includes(`ga`, 4)
+// &lt;‐ true
+`hello gary`.includes(`ga`, 7)
+// &lt;‐ false
+</code></pre>
+<h4 id="String-repeat"><a href="#String-repeat" class="headerlink" title="String#repeat()"></a>String#repeat()</h4><p>repeat是可以让目前的字符串重复很多次，生成一个新的字符串</p>
+<pre><code class="js">`ha`.repeat(1)
+// &lt;‐ `ha`
+`ha`.repeat(2)
+// &lt;‐ `haha`
+`ha`.repeat(5)
+// &lt;‐ `hahahahaha`
+`ha`.repeat(0)
+// &lt;‐ ``
+</code></pre>
+<h4 id="Unicode"><a href="#Unicode" class="headerlink" title="Unicode"></a>Unicode</h4><p>Unicode目前一共有17个辅助平面，每个平面包含65536个字符。<br>js采用UTF-16,用两个字节表示基本平面，用4个字节表示辅助平面。程序如何判断unicode是基本平面还是应该把之后两个组合成一个辅助平面？<br>具体来说，辅助平面的字符位共有2^20(2^4<em>2^16)个，也就是说，对应这些字符至少需要20个二进制位。UTF-16将这20位拆成两半，前10位映射在U+D800到U+DBFF（空间大小2^10），称为高位（H），后10位映射在U+DC00到U+DFFF（空间大小2^10），称为低位（L）。这意味着，一个辅助平面的字符，被拆成两个基本平面的字符表示。<br>比如：u+D800U+DC00就表示辅助平面1的第一个字符。总共可以表示2^10</em>2^10个字符。刚好满足空间需求。这一切的条件都来自于基本平面的d800-dbff是空的，而这刚好就是空的。<br>所以转码规则如下：<br>对于基本平面的字符，直接显示基本平面对应的字符，对于非基本平面的字符，用第一个字符减去D800就得到高10位，用后一个字符-DC00就是低十位，组合起来就是对应的unicode32位码。<br>当然，此处因为是只需要有16个副主平面，所以高4位应该是0b0000-0b1111.<br>在es6中，可以采用’\ud83d\udc0e’表示，也可以采用’\u{1f40e}’来表示。</p>
+<pre><code class="js">console.log(`\ud83d\udc0e`)
+//🐎
+console.log(`\u&#123;1f40e&#125;`)
+//🐎
+console.log(&#39;\ud83d\udc0e\ud83d\udc71\u2764&#39;)
+//🐎👱❤
+</code></pre>
+<p>因为es6给unicode添加了iterator，所以直接采用for of 就可以遍历所有经过转码计算的unicode</p>
+<pre><code class="js">let s=&#39;\ud83d\udc0e\ud83d\udc71\u2764&#39;
+for(let i of s)
+  console.log(i)
+//🐎
+//👱
+//❤
+console.log(s.length)//5
+console.log([...s].length)//3 内置迭代器的功能
+</code></pre>
+<h4 id="codePointAt"><a href="#codePointAt" class="headerlink" title="codePointAt"></a>codePointAt</h4><p>es6提供了一个可以把unicode转换为10进制的函数，<strong>codePointAt</strong>;</p>
+<pre><code class="js">const text = `\ud83d\udc0e\ud83d\udc71\u2764`
+text.codePointAt(0)
+// &lt;‐ 128014
+text.codePointAt(2)
+// &lt;‐ 128113
+text.codePointAt(4)
+// &lt;‐ 10084
+//内置迭代器大大方便了unicode的便利
+const text = `\ud83d\udc0e\ud83d\udc71\u2764`
+for (let codePoint of text) &#123;
+console.log(codePoint.codePointAt(0))
+// &lt;‐ 128014
+// &lt;‐ 128113
+// &lt;‐ 10084
+&#125;
+[...text].map(cp =&gt; cp.codePointAt(0))
+// &lt;‐ [128014, 128113, 10084]
+
+//用toString可以方便的看到经过转换后的Unicode16进制码
+[...text].map(cp =&gt; cp.codePointAt(0).toString(16))
+// &lt;‐ [`1f40e`, `1f471`, `2764`]
+</code></pre>
+<h4 id="fromCodePoint"><a href="#fromCodePoint" class="headerlink" title="fromCodePoint()"></a>fromCodePoint()</h4><p>同时还提供了 <strong>String.fromCodePoint()</strong> 函数来将数字转换成对应的unicode码</p>
+<pre><code class="js">String.fromCodePoint(128014, 128113, 10084)//🐎👱❤
+String.fromCodePoint(0x1f40e)//🐎
+</code></pre>
+<h4 id="reverse"><a href="#reverse" class="headerlink" title="reverse"></a>reverse</h4><p>当需要把unicode字符reverse的时候，需要先使用…操作符再翻转</p>
+<pre><code class="js">const text = `\ud83d\udc0e\ud83d\udc71\u2764`
+[...text].reverse().join(``)
+</code></pre>
+<h4 id="String-normalize"><a href="#String-normalize" class="headerlink" title="String#normalize"></a>String#normalize</h4><p>这个函数作用不大，主要意义在于比较一些人眼看起来相等，但是实际上却是不同字符组合而成，看起来很像而已。对字符串用上这个函数，就会把组合的转换成未组合的样子，这样，人眼看到的字符和实际的字符就是一致的。</p>
+<h3 id="Array的扩展"><a href="#Array的扩展" class="headerlink" title="Array的扩展"></a>Array的扩展</h3><p>ES5已经给Array带来了很多的新特性，比如：Array#filter , Array#map , Array#reduce , Array#reduceRight , Array#forEach ,<br>Array#some , and Array#every，而es6也带来了一些新特性。</p>
+<h4 id="Array-from"><a href="#Array-from" class="headerlink" title="Array.from"></a>Array.from</h4><p>可以从类数组或者iterator中构建一个数组，有三个参数，虽然只有第一个参数必须给。第二个参数是map函数，可以对每一个新数组进行操作然后返回。</p>
+<pre><code class="js">//code1 从类数组对象中定义数组并map
+const things = &#123;
+0: &#123;
+type: `fruit`,
+name: `Apple`,
+amount: 3
+&#125;,
+1: &#123;
+type: `vegetable`,
+name: `Onion`,
+amount: 1
+&#125;,
+length: 2
+&#125;
+
+console.log(Array.from(things))
+//[object Object],[object Object]
+console.log(Array.from(things, thing =&gt; thing.type))
+// &lt;‐ [`fruit`, `vegetable`, ...]
+
+//从可迭代的生成器中生成数组并map
+function* gen()
+&#123;
+  yield 1;
+  yield 2;
+  yield* &#39;1222334&#39;;
+&#125;
+console.log(Array.from(gen()));//1,2,1,2,2,2,3,3,4
+console.log(Array.from(gen(),value=&gt;value*2));//2,4,2,4,4,4,6,6,8
+</code></pre>
+<h4 id="Array-of"><a href="#Array-of" class="headerlink" title="Array.of"></a>Array.of</h4><p>事实上，Array.of &#x3D; (…params) &#x3D;&gt; params，可以这么理解。</p>
+<pre><code class="js">console.log(Array.of()); // &lt;‐ []
+console.log(Array.of(undefined)); // &lt;‐ [undefined]
+console.log(Array.of(1)); // &lt;‐ [1]
+console.log(Array.of(3)); // &lt;‐ [3]
+console.log(Array.of(`3`)); // &lt;‐ [`3`]
+console.log(Array.of(1, 2)); // &lt;‐ [1, 2]
+console.log(Array.of(-1, -2)); // &lt;‐ [‐1, ‐2]
+console.log(Array.of(-1)); // &lt;‐ [‐1]
+</code></pre>
+<h4 id="Array-copyWithin"><a href="#Array-copyWithin" class="headerlink" title="Array#copyWithin"></a>Array#copyWithin</h4><p>Array.prototype.copyWithin(target, start &#x3D; 0, end &#x3D; this.length),内部复制函数，将一个数组的[start,end)的元素复制到数组中的target位置。如下：</p>
+<pre><code class="js">const items = [1, 2, 3, ,,,,,,,]
+// &lt;‐ [1, 2, 3, undefined x 7]
+const items = [1, 2, 3, ,,,,,,,]
+items.copyWithin(6, 1, 3)
+// &lt;‐ [1, 2, 3, undefined × 3, 2, 3, undefined × 2]
+</code></pre>
+<p>当然，这个方法也可以使用以前的方法来实现</p>
+<pre><code class="js">const items = [1, 2, 3, ,,,,,,,]
+const copy = items.slice(1, 3)
+// &lt;‐ [2, 3]
+items.splice(6, 3 ‐ 1, ...copy)
+console.log(items)
+// &lt;‐ [1, 2, 3, undefined × 3, 2, 3, undefined × 2]
+</code></pre>
+<p>只是没有新的方法那么便利。</p>
+<h4 id="Array-fill"><a href="#Array-fill" class="headerlink" title="Array#fill"></a>Array#fill</h4><p>接收三个参数，只有第一个参数是必须的，第二个表示起始位置，第三个表示结束位置，[start,end)</p>
+<pre><code class="js">[`a`, `b`, `c`].fill(`x`); // &lt;‐ [`x`, `x`, `x`]
+[`a`, `b`, `c`,,,].fill(`x`, 2)
+// &lt;‐ [`a`, `b`, `x`, `x`, `x`]
+new Array(5).fill(`x`, `x`, 3)
+// &lt;‐ [`x`, `x`, `x`, undefined x 2]
+</code></pre>
+<h4 id="Array-find-Array-findIndex"><a href="#Array-find-Array-findIndex" class="headerlink" title="Array#find Array#findIndex"></a>Array#find Array#findIndex</h4><p>寻找数组中满足要求的元素，一个返回该元素，一个返回Index</p>
+<pre><code class="js">[`a`, `b`, `c`, `d`, `e`].find(item =&gt; item === `c`)
+// &lt;‐ `c`
+[`a`, `b`, `c`, `d`, `e`].find((item, i) =&gt; i === 0)
+// &lt;‐ `a`
+[`a`, `b`, `c`, `d`, `e`].find(item =&gt; item === `z`)
+// &lt;‐ undefined
+
+
+[`a`, `b`, `c`, `d`, `e`].findIndex(item =&gt; item === `c`)
+// &lt;‐ 2
+[`a`, `b`, `c`, `d`, `e`].findIndex((item, i) =&gt; i === 0)
+// &lt;‐ 0
+[`a`, `b`, `c`, `d`, `e`].findIndex(item =&gt; item === `z`)
+// &lt;‐ ‐1
+</code></pre>
+<h4 id="Array-keys"><a href="#Array-keys" class="headerlink" title="Array#keys"></a>Array#keys</h4><p>Array#keys返回值是一个遍历器，值是index</p>
+<pre><code class="js">for (let key of [`a`, `b`, `c`, `d`].keys()) &#123;
+console.log(key)
+&#125;
+//0 1 2 3 4
+</code></pre>
+<h4 id="Array-values"><a href="#Array-values" class="headerlink" title="Array#values"></a>Array#values</h4><p>values的返回值也是一个遍历器，值就是数组的值</p>
+<pre><code class="js">for (let key of [`a`, `b`, `c`, `d`].values()) &#123;
+console.log(key)
+&#125;
+//a b c d
+</code></pre>
+<h4 id="Array-entries"><a href="#Array-entries" class="headerlink" title="Array#entries()"></a>Array#entries()</h4><p>返回值也是一个遍历器，值是[index,数组值]</p>
+<pre><code class="js">[...[`a`, `b`, `c`, `d`].entries()]
+// &lt;‐ [[0, `a`], [1, `b`], [2, `c`], [3, `d`]]
+</code></pre>
+<h4 id="Array-prototype-Symbol-iterator"><a href="#Array-prototype-Symbol-iterator" class="headerlink" title="Array.prototype[Symbol.iterator]"></a>Array.prototype[Symbol.iterator]</h4><p>其实是和Array.values函数是一样的，返回值都是一个迭代器或者遍历器，输出的数值均是数组的值</p>
+<pre><code class="js">const list = [`a`, `b`, `c`, `d`]
+list[Symbol.iterator] === list.values
+// &lt;‐ true
+[...list[Symbol.iterator]()]
+// &lt;‐ [`a`, `b`, `c`, `d`]
+</code></pre>
+<blockquote>
+<p>最长的一篇了，新知识有点乏味，但是新特性比较好用</p>
+</blockquote>
+
+        </section>
+        <hr>
+        
+          <p>上一篇：<a  href = "/2016/11/23/es65/">es5-generator</a></p>
+        
+        
+          <p>下一篇：<a  href = /2016/11/28/%E6%9C%80%E8%BF%91%E7%9A%84%E5%BF%83%E6%83%85/>最近的心情</a></p>
+        
+        
+            <section id="comments">
+            
+                    <!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="2016/11/24/es66/" data-title="es66-内部的扩展" data-url="https://yuzai.github.io/2016/11/24/es66/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:'yuzaizai'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+<!-- 多说公共JS代码 end -->
+
+                
+            </section>
+        
+          </div>
+       </div>
+       <div class = 'col-xs-12 col-xs-offset-0 col-md-3 col-md-offset-0 col-sm-3 col-sm-offset-0 col-lg-3 col-lg-offset-0'>
+         <div style='overflow:scroll' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>es66-内部的扩展</h4>
+<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%EF%BC%88Number%EF%BC%89%E7%9A%84%E6%89%A9%E5%B1%95"><span class="toc-text">数字（Number）的扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%E7%9A%84%E4%BA%8C%E8%BF%9B%E5%88%B6%EF%BC%8C%E5%85%AB%E8%BF%9B%E5%88%B6%EF%BC%8C%E5%8D%81%E5%85%AD%E8%BF%9B%E5%88%B6%E7%AE%80%E6%B4%81%E8%A1%A8%E7%A4%BA"><span class="toc-text">数字的二进制，八进制，十六进制简洁表示</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Number-isNaN"><span class="toc-text">Number.isNaN</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Number-isFinite"><span class="toc-text">Number.isFinite</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Number-parseInt"><span class="toc-text">Number.parseInt</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Number-parseFloat"><span class="toc-text">Number.parseFloat</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Number-isInteger"><span class="toc-text">Number.isInteger</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Number-EPSILON"><span class="toc-text">Number.EPSILON</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Number-MAX-SAFE-INTEGER%EF%BC%8CNumber-MIN-SAFE-INTEGER-%EF%BC%8CNumber-isSafeInteger"><span class="toc-text">Number.MAX_SAFE_INTEGER，Number.MIN_SAFE_INTEGER ，Number.isSafeInteger</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Math%E5%87%BD%E6%95%B0%E7%9A%84%E6%89%A9%E5%B1%95"><span class="toc-text">Math函数的扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Math-sign"><span class="toc-text">Math.sign()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Math-trunc"><span class="toc-text">Math.trunc()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Math-cbrt"><span class="toc-text">Math.cbrt()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Math-expm1-Math-log1p-%EF%BC%8CMath-log2-Math-log10"><span class="toc-text">Math.expm1(),Math.log1p()，Math.log2(),Math.log10()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0"><span class="toc-text">三角函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Math-hypot"><span class="toc-text">Math.hypot()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%92%8Cunicode%E7%A0%81"><span class="toc-text">字符串和unicode码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#String-startsWith-endsWith-includes"><span class="toc-text">String#startsWith(),#endsWith(),#includes()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#String-repeat"><span class="toc-text">String#repeat()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Unicode"><span class="toc-text">Unicode</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#codePointAt"><span class="toc-text">codePointAt</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#fromCodePoint"><span class="toc-text">fromCodePoint()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#reverse"><span class="toc-text">reverse</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#String-normalize"><span class="toc-text">String#normalize</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Array%E7%9A%84%E6%89%A9%E5%B1%95"><span class="toc-text">Array的扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Array-from"><span class="toc-text">Array.from</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Array-of"><span class="toc-text">Array.of</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Array-copyWithin"><span class="toc-text">Array#copyWithin</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Array-fill"><span class="toc-text">Array#fill</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Array-find-Array-findIndex"><span class="toc-text">Array#find Array#findIndex</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Array-keys"><span class="toc-text">Array#keys</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Array-values"><span class="toc-text">Array#values</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Array-entries"><span class="toc-text">Array#entries()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Array-prototype-Symbol-iterator"><span class="toc-text">Array.prototype[Symbol.iterator]</span></a></li></ol></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2023/04/25/%E8%82%9D%E4%BA%86%E4%B8%80%E4%B8%AA%E6%9C%88%EF%BC%8C%E8%BF%99%E4%BB%BD%20TS%E7%B1%BB%E5%9E%8B%E6%8C%91%E6%88%98%E9%80%9A%E5%85%B3%E6%89%8B%E5%86%8C%E6%94%B6%E5%A5%BD%E4%BA%86/">肝了一个月，这份 TS类型挑战通关手册收好了</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/03/22/%E8%AE%BE%E8%AE%A1%E4%B8%80%E6%AC%BE%E8%B5%8F%E5%BF%83%E6%82%A6%E7%9B%AE%E7%9A%84%20React%20%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%BA%93/">设计一款赏心悦目的 React 状态管理库</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/01/06/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E5%A6%82%E4%BD%95%E7%BB%B4%E6%8C%81%20Xpath%20%E7%A8%B3%E5%AE%9A%E6%80%A7/">可视化埋点（四）：如何维持 Xpath 稳定性</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/01/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%85%83%E7%B4%A0%E5%9C%88%E9%80%89%E5%99%A8%E5%AE%9E%E7%8E%B0/">可视化埋点（三）：元素圈选器实现</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/01/02/2022%20%E5%B9%B4%E7%BB%88%E9%9A%8F%E7%AC%94%20--%20%E4%BB%8A%E5%B9%B4%E5%8D%87%E8%81%8C%E5%95%A6/">2022 年终随笔 -- 今年升职啦</a></li><li class="post-list-item"><a class="post-list-link" href="/2022/09/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BB%8E0%E5%88%B01%E6%90%AD%E5%BB%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0/">可视化埋点（一）：从0到1搭建可视化埋点平台</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">5</span></li></ul>
+
+
+  <img id = 'my_picture'>
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">24</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style = 'color:green'><i class="icon-angle-up"></i><tton>
+</div>
+<footer class='myfoot'>
+  <div class=" container-fluid" >
+       <div style="text-align: center"><a href = 'https://github.com/yuzai'>Writer:芋仔 <i class='icon-github'></i></a></div>
+  </div>
+</footer>
+
+
+    </div>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    
+<script src="/js/index.js"></script>
+
+    <meta name="baidu-site-verification" content="81rzqdpRFv" />
+    <meta charset="utf-8">
+    <meta name="referrer" content="same-origin">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    <script src="/js/highlight.min.js"></script>
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body>
+    <div class="main">
+        <img id='head'>
+</div>
+<header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div style = 'margin-top:180px'>
+    <article>
+      <div class = 'container-fluid'>
+      <div class = 'row'>
+        <div class = 'col-xs-12 col-xs-offset-0 col-md-7 col-md-offset-1 col-sm-7 col-sm-offset-1 col-lg-7 col-lg-offset-1 category_col'>
+          <div class ='well'>
+        <h2 class='post-title'>
+            <span>跨域的解决方案（一）：jsonp及其实现</span>
+        </h2>
+        <section class='post-content'>
+            <p>最近遇到了跨域问题，有很多种解决方案，本文主要对其中的jsonp进行演示，本文使用node编写服务器端代码进行测试。</p>
+<span id="more"></span>
+
+<h3 id="jsonp的来历"><a href="#jsonp的来历" class="headerlink" title="jsonp的来历"></a>jsonp的来历</h3><p>ajax中的资源访问受到浏览器安全的<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html">‘同源’限制</a>,存在跨域问题。<br>但是script标签的引入并不具有’同源’限制,不存在跨域问题，利用这个特性进行数据的获取，就是jsonp。<br>JSONP(JSON with Padding)是一个非官方的协议，它允许在服务器端集成Script tags返回至客户端，通过javascript callback的形式实现跨域访问（这仅仅是JSONP简单的实现形式）。<br>简单的一句话：jsonp是一个协议，由于同源策略的限制，XmlHttpRequest只允许请求当前源（域名、协议、端口）的资源，为了实现跨域请求，可以通过script标签实现跨域请求，然后在服务端输出JSON数据并执行回调函数，从而解决了跨域的数据请求。</p>
+<h3 id="jsonp的实现"><a href="#jsonp的实现" class="headerlink" title="jsonp的实现"></a>jsonp的实现</h3><p>从上文可知，jsonp的实现需要客户端代码和服务器端代码共同努力。整体的思路如下图：<br><img src="http://upload-images.jianshu.io/upload_images/3967512-4a0c232f37c44707.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></p>
+<p>script标签不受跨域资源请求的影响，可以通过增加callback参数将回调函数传递，与服务器端配合从而在资源加载之后执行该回调函数,客户端关键部分写法如下：</p>
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;body&gt;
+    &lt;h1&gt;测试jsonp&lt;/h1&gt;
+    &lt;p&gt;用node搭建能够解析jsonp请求的服务器，前端通过script发送jsonp请求，通过回调处理服务器返回的数据&lt;/p&gt;
+    &lt;script&gt;
+        function test(data)&#123;
+            alert(data.name);
+        &#125;;
+    &lt;/script&gt;
+    &lt;!-- 将test作为callback参数传递 --&gt;
+    &lt;script src=&quot;http://localhost:3000/jsonp?callback=test&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+</code></pre>
+<p>在服务器端，需要对script的src进行url解析，将data作为参数放入回调函数中，最后通过res.end(callback(data))中将要执行的函数放入客户端的script中，在客户端对该函数进行执行。<br>服务器端的关键代码如下：</p>
+<pre><code class="js">//解析url
+var urlPath = url.parse(req.url).pathname;
+console.log(urlPath);
+//获取从客户端传递的参数
+var qs = querystring.parse(req.url.split(&#39;?&#39;)[1]);
+//约定的url的名称为jsonp
+if(urlPath === &#39;/jsonp&#39; &amp;&amp; qs.callback)&#123;
+    res.writeHead(200,&#123;&#39;Content-Type&#39;:&#39;application/json;charset=utf-8&#39;&#125;);
+    var data = &#123;
+        &quot;name&quot;: &quot;Monkey&quot;
+    &#125;;
+    data = JSON.stringify(data);
+    var callback = qs.callback+&#39;(&#39;+data+&#39;);&#39;;
+    //在end中返回callback(data)，写入script中，进而客户端进行该函数的执行
+    res.end(callback);
+&#125;
+</code></pre>
+<p>仓库在<a target="_blank" rel="noopener" href="https://github.com/yuzai/-/tree/master/js_cors/jsonp">这里</a>(仓库中的代码相对复杂一点，不过更加便于演示，具体看仓库中的说明)这里要说明的一点就是，url中”?callback&#x3D;test”的形式其实是不必要的，只需要客户端和服务器端协商一致即可。（这里我在写的时候，其实有一点疑惑：就是为什么把callback(data)传递回去就会在客户端执行？其实是因为客户端是通过script请求的，获取的内容会放在<script></script>中，而res.end(data)中的data就会放到script中，浏览器会自动调用其内部代码执行，从而完成回调函数的执行）。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>jsonp需要服务器端和客户端配合使用，以script标签无’同源’限制的便利来实现跨域资源的共享。<br>优点：解决了跨域资源共享<br>缺点：代码麻烦，需要服务器端和客户端约定好，同时客户端传递数据只能通过url的形式，有长度，安全等限制。<br>jsonp原理其实很简单，学习难度主要在于与服务器端的配合，这篇文章是我学习了node之后的一些想法，如有问题，还请各位指点！</p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ol>
+<li><a target="_blank" rel="noopener" href="http://www.cnblogs.com/giggle/p/5496596.html">借助node实战JSONP跨域</a></li>
+<li><a target="_blank" rel="noopener" href="https://gold.xitu.io/post/5815f4abbf22ec006893b431">前端跨域整理
+</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html">浏览器同源政策及其规避方法</a></li>
+</ol>
+
+        </section>
+        <hr>
+        
+          <p>上一篇：<a  href = "/2017/01/30/es6%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7/">es6实用技巧</a></p>
+        
+        
+          <p>下一篇：<a  href = /2017/02/01/%E8%B7%A8%E5%9F%9F%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88(%E4%BA%8C)%EF%BC%9ACORS%E7%AD%96%E7%95%A5%E7%9A%84%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%AE%9E%E7%8E%B0/>跨域的解决方案(二)：CORS策略的介绍及实现</a></p>
+        
+        
+            <section id="comments">
+            
+                    <!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="2017/01/31/跨域的解决方案（一）：jsonp及其实现/" data-title="跨域的解决方案（一）：jsonp及其实现" data-url="https://yuzai.github.io/2017/01/31/%E8%B7%A8%E5%9F%9F%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9Ajsonp%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:'yuzaizai'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+<!-- 多说公共JS代码 end -->
+
+                
+            </section>
+        
+          </div>
+       </div>
+       <div class = 'col-xs-12 col-xs-offset-0 col-md-3 col-md-offset-0 col-sm-3 col-sm-offset-0 col-lg-3 col-lg-offset-0'>
+         <div style='overflow:scroll' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>跨域的解决方案（一）：jsonp及其实现</h4>
+<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#jsonp%E7%9A%84%E6%9D%A5%E5%8E%86"><span class="toc-text">jsonp的来历</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jsonp%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-text">jsonp的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2023/04/25/%E8%82%9D%E4%BA%86%E4%B8%80%E4%B8%AA%E6%9C%88%EF%BC%8C%E8%BF%99%E4%BB%BD%20TS%E7%B1%BB%E5%9E%8B%E6%8C%91%E6%88%98%E9%80%9A%E5%85%B3%E6%89%8B%E5%86%8C%E6%94%B6%E5%A5%BD%E4%BA%86/">肝了一个月，这份 TS类型挑战通关手册收好了</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/03/22/%E8%AE%BE%E8%AE%A1%E4%B8%80%E6%AC%BE%E8%B5%8F%E5%BF%83%E6%82%A6%E7%9B%AE%E7%9A%84%20React%20%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%BA%93/">设计一款赏心悦目的 React 状态管理库</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/01/06/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E5%A6%82%E4%BD%95%E7%BB%B4%E6%8C%81%20Xpath%20%E7%A8%B3%E5%AE%9A%E6%80%A7/">可视化埋点（四）：如何维持 Xpath 稳定性</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/01/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%85%83%E7%B4%A0%E5%9C%88%E9%80%89%E5%99%A8%E5%AE%9E%E7%8E%B0/">可视化埋点（三）：元素圈选器实现</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/01/02/2022%20%E5%B9%B4%E7%BB%88%E9%9A%8F%E7%AC%94%20--%20%E4%BB%8A%E5%B9%B4%E5%8D%87%E8%81%8C%E5%95%A6/">2022 年终随笔 -- 今年升职啦</a></li><li class="post-list-item"><a class="post-list-link" href="/2022/09/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BB%8E0%E5%88%B01%E6%90%AD%E5%BB%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0/">可视化埋点（一）：从0到1搭建可视化埋点平台</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">5</span></li></ul>
+
+
+  <img id = 'my_picture'>
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">24</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style = 'color:green'><i class="icon-angle-up"></i><tton>
+</div>
+<footer class='myfoot'>
+  <div class=" container-fluid" >
+       <div style="text-align: center"><a href = 'https://github.com/yuzai'>Writer:芋仔 <i class='icon-github'></i></a></div>
+  </div>
+</footer>
+
+
+    </div>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

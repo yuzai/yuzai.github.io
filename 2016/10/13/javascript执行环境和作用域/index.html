@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    
+<script src="/js/index.js"></script>
+
+    <meta name="baidu-site-verification" content="81rzqdpRFv" />
+    <meta charset="utf-8">
+    <meta name="referrer" content="same-origin">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    <script src="/js/highlight.min.js"></script>
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body>
+    <div class="main">
+        <img id='head'>
+</div>
+<header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div style = 'margin-top:180px'>
+    <article>
+      <div class = 'container-fluid'>
+      <div class = 'row'>
+        <div class = 'col-xs-12 col-xs-offset-0 col-md-7 col-md-offset-1 col-sm-7 col-sm-offset-1 col-lg-7 col-lg-offset-1 category_col'>
+          <div class ='well'>
+        <h2 class='post-title'>
+            <span>javascript执行环境和作用域</span>
+        </h2>
+        <section class='post-content'>
+            <p>之前没有系统的对javascript进行学习，主要用来操作DOM，每次看js的书，也就是看到变量类型和语句就停下来了。因为这一块跟c语言还是很像，就没什么兴趣继续读下去,最近写了一个比较长的js，发现变量，函数的作用域很重要，虽然看懂了问题，但是没有理解到位，今天看了《javascript高级程序设计》，提到的执行环境和作用域，才总算是弄明白了问题的来龙去脉。</p>
+<span id="more"></span>
+<h3 id="例子1"><a href="#例子1" class="headerlink" title="例子1"></a>例子1</h3><pre><code>function f2()&#123;
+    var s=10;
+    function f1()&#123;
+        console.log(s);
+    &#125;
+    f1();
+&#125;
+f2();//输出10
+</code></pre>
+<p>在上述代码中，函数f2中定义了函数f1,在f1中输出s。结果是10。不难理解</p>
+<h3 id="例子2"><a href="#例子2" class="headerlink" title="例子2"></a>例子2</h3><pre><code>var s = 100;
+function f1()&#123;
+    console.log(s);
+&#125;
+function f2()&#123;
+    var s=10;
+    f1(); //输出100
+    console.log(s);
+&#125;
+f2();//输出10
+</code></pre>
+<p>这个例子中，f1函数定义在全局中，在f2中调用f1函数，输出的s还是全局中的s。这个就是执行环境的问题。</p>
+<h3 id="原书中的例子"><a href="#原书中的例子" class="headerlink" title="原书中的例子"></a>原书中的例子</h3><p><img src="http://blog.xiaoboma.com/%E4%BD%9C%E7%94%A8%E5%9F%9F.jpg" alt="图一"></p>
+<p>有点尴尬，在hexo中还不知道怎么可以便捷的插入图片，暂时把图片文件传到主页吧。<br>看到图中的解释，其实就是，<strong>定义函数的位置，决定了函数的执行环境，也就是决定了在该函数中变量的访问权限：只能访问到高级以及同级的变量，不论该函数在哪里调用（例子2中就是在同级函数中进行调用，并没有修改s的值，s还是同级的s，而不是函数f2中的局部变量s），都不会改变它对变量的访问权限。</strong> 这一点跟c语言很不一样，这次就因为这个错调试了一会。记录一下这个坑，其实不算坑，书上写的明明白白，只是自己没有注意。</p>
+<h3 id="最后一次确认问题"><a href="#最后一次确认问题" class="headerlink" title="最后一次确认问题"></a>最后一次确认问题</h3><p>最后用一个同级函数的子函数的子函数对f1()函数进行调用，彻底验证执行环境以及作用域问题。</p>
+<pre><code>var s = 1;
+function f1()&#123;
+    console.log(s);
+&#125;
+function f2()&#123;
+    var s=2;
+    function f3()&#123;
+        var s=3
+        function f4()&#123;
+            var s=4;
+        f1();//输出1
+        console.log(s);//输出4
+      &#125;
+        f4();
+  &#125;
+    f3();
+&#125;
+f2();
+</code></pre>
+<p>f1(),不论在何时进行调用，内部的s由f1()定义的位置决定，必定是同级定义的或者更外层定义的s起作用。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><strong>定义函数的位置，决定了函数的执行环境，也就是决定了在该函数中变量的访问权限：只能访问到高级以及同级的变量，不论该函数在哪里调用，都不会改变它对变量的访问权限。</strong></p>
+
+        </section>
+        <hr>
+        
+          <p>上一篇：<a  href = "/2016/10/06/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C%EF%BC%884%EF%BC%89%EF%BC%9A%E5%AD%A6%E4%B9%A0%E4%BB%A5%E5%8F%8A%E5%B7%A9%E5%9B%BA%E7%9A%84%E7%9F%A5%E8%AF%86%E8%AE%B0%E5%BD%95/">hexo主题制作（4）：学习以及巩固的知识记录</a></p>
+        
+        
+          <p>下一篇：<a  href = /2016/10/15/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%EF%BC%9A%E5%BE%AA%E7%8E%AF%E7%BB%91%E5%AE%9Aclick%E4%BA%8B%E4%BB%B6/>前端面试：循环绑定click事件</a></p>
+        
+        
+            <section id="comments">
+            
+                    <!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="2016/10/13/javascript执行环境和作用域/" data-title="javascript执行环境和作用域" data-url="https://yuzai.github.io/2016/10/13/javascript%E6%89%A7%E8%A1%8C%E7%8E%AF%E5%A2%83%E5%92%8C%E4%BD%9C%E7%94%A8%E5%9F%9F/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:'yuzaizai'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+<!-- 多说公共JS代码 end -->
+
+                
+            </section>
+        
+          </div>
+       </div>
+       <div class = 'col-xs-12 col-xs-offset-0 col-md-3 col-md-offset-0 col-sm-3 col-sm-offset-0 col-lg-3 col-lg-offset-0'>
+         <div style='overflow:scroll' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>javascript执行环境和作用域</h4>
+<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%8B%E5%AD%901"><span class="toc-text">例子1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%8B%E5%AD%902"><span class="toc-text">例子2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E4%B9%A6%E4%B8%AD%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="toc-text">原书中的例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%E4%B8%80%E6%AC%A1%E7%A1%AE%E8%AE%A4%E9%97%AE%E9%A2%98"><span class="toc-text">最后一次确认问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2023/04/25/%E8%82%9D%E4%BA%86%E4%B8%80%E4%B8%AA%E6%9C%88%EF%BC%8C%E8%BF%99%E4%BB%BD%20TS%E7%B1%BB%E5%9E%8B%E6%8C%91%E6%88%98%E9%80%9A%E5%85%B3%E6%89%8B%E5%86%8C%E6%94%B6%E5%A5%BD%E4%BA%86/">肝了一个月，这份 TS类型挑战通关手册收好了</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/03/22/%E8%AE%BE%E8%AE%A1%E4%B8%80%E6%AC%BE%E8%B5%8F%E5%BF%83%E6%82%A6%E7%9B%AE%E7%9A%84%20React%20%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%BA%93/">设计一款赏心悦目的 React 状态管理库</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/01/06/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E5%A6%82%E4%BD%95%E7%BB%B4%E6%8C%81%20Xpath%20%E7%A8%B3%E5%AE%9A%E6%80%A7/">可视化埋点（四）：如何维持 Xpath 稳定性</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/01/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%85%83%E7%B4%A0%E5%9C%88%E9%80%89%E5%99%A8%E5%AE%9E%E7%8E%B0/">可视化埋点（三）：元素圈选器实现</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/01/02/2022%20%E5%B9%B4%E7%BB%88%E9%9A%8F%E7%AC%94%20--%20%E4%BB%8A%E5%B9%B4%E5%8D%87%E8%81%8C%E5%95%A6/">2022 年终随笔 -- 今年升职啦</a></li><li class="post-list-item"><a class="post-list-link" href="/2022/09/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BB%8E0%E5%88%B01%E6%90%AD%E5%BB%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0/">可视化埋点（一）：从0到1搭建可视化埋点平台</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">5</span></li></ul>
+
+
+  <img id = 'my_picture'>
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">24</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style = 'color:green'><i class="icon-angle-up"></i><tton>
+</div>
+<footer class='myfoot'>
+  <div class=" container-fluid" >
+       <div style="text-align: center"><a href = 'https://github.com/yuzai'>Writer:芋仔 <i class='icon-github'></i></a></div>
+  </div>
+</footer>
+
+
+    </div>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
