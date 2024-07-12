@@ -223,11 +223,23 @@ function getInfo()&#123;
 <div style="position:fixed;right:1%;bottom:1%">
 <button id="up" class="btn btn-success" style = 'color:green'><i class="icon-angle-up"></i><tton>
 </div>
-<footer class='myfoot'>
-  <div class=" container-fluid" >
-       <div style="text-align: center"><a href = 'https://github.com/yuzai'>Writer:芋仔 <i class='icon-github'></i></a></div>
-  </div>
+<footer id="footer" class="myfoot">
 </footer>
+<script>
+  if (window.location.host === 'blog.maxiaobo.com.cn' || window.location.host.indexOf('localhost') !== -1) {
+    document.querySelector('#footer').innerHTML = `
+      <div class=" container-fluid" >
+          <div style="text-align: center"><a href = 'https://github.com/yuzai'>Writer:芋仔 <i class='icon-github'></i></a></div>
+      </div>
+    `
+  } else {
+    document.querySelector('#footer').innerHTML = `
+      <div class="container-fluid" >
+          <div style="text-align: center"><a href = 'http://beian.miit.gov.cn' style='font-size: 12px; padding: 2px;'>浙ICP备2024109661号</a></div>
+      </div>
+    `
+  }
+</script>
 
 
     </div>

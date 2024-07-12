@@ -25,6 +25,7 @@ ol, ul {
   margin-left:40%;
   width:50%;
   opacity: 0.3;
+  margin-bottom: 200px;
 }
 .welcome:hover{
   opacity: 0.8;
@@ -112,6 +113,9 @@ ol, ul {
   border-color: #357ebd;
   opacity: 1;
 }
+.myfoot {
+  margin-bottom: 10px;
+}
 .myfoot p{
   text-align: center;
 }
@@ -119,7 +123,7 @@ ol, ul {
   text-decoration: none;
   background:#428bca;
   color:rgb(241,241,241);
-  font-size:20px;
+  font-size: 20px;
 }
 /*.category-list{
   list-style-type: none;
@@ -259,14 +263,14 @@ width: 100%
 .post-content p{
 	overflow: auto;
 }
-/*.post-content img{
+.post-content img{
 	max-width: 2000px;
 }
 @media screen and (max-width:768px){
 	.post-content img{
 	max-width:400px;
 	}
-}*/
+}
 .category_col{
 	padding:0;
 }
