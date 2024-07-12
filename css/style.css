@@ -25,7 +25,7 @@ ol, ul {
   margin-left:40%;
   width:50%;
   opacity: 0.3;
-  margin-bottom: 200px;
+  margin-bottom: 100px;
 }
 .welcome:hover{
   opacity: 0.8;
@@ -113,9 +113,7 @@ ol, ul {
   border-color: #357ebd;
   opacity: 1;
 }
-.myfoot {
-  margin-bottom: 10px;
-}
+
 .myfoot p{
   text-align: center;
 }
