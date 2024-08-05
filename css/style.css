@@ -31,6 +31,13 @@ ol, ul {
   opacity: 0.8;
 }
 
+@media screen and (max-width: 768px) {
+  .welcome {
+    margin: 240px auto 0;
+    width: 90%;
+  }
+}
+
 .out_phone{
   float:right;
   height:200px;
