@@ -74,7 +74,7 @@
             <span>无限滚动的优化方案(二)：懒加载实现</span>
         </h2>
         <section class='post-content'>
-            <p>之前对预加载的实现方案做了介绍，这一篇文章主要是我对图片的懒加载的实现的一个总结。主要包括：</p>
+            <div id="readmore-container"><p>之前对预加载的实现方案做了介绍，这一篇文章主要是我对图片的懒加载的实现的一个总结。主要包括：</p>
 <ol>
 <li>视区检测</li>
 <li>图片懒加载及延迟显示<span id="more"></span></li>
@@ -177,7 +177,37 @@ method.addevent(window,&#39;scroll&#39;,lazy_event);
 </code></pre>
 <p>和消抖函数结合之后，用户的滚动不会触发lazy_load，只有当用户停止滚动才会执行lazy_load，从而达到图片懒加载的效果。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这次无限滚动，我实现了两种方案：预加载与图片懒加载，配合消抖和节流以及缓存，能够很好的提升页面性能。希望面试的时候能用上吧。</p>
-
+</div>
+				<link rel="stylesheet" type="text/css" href="https://qiniu.techgrow.cn/readmore/dist/hexo.css">
+				<script src="https://qiniu.techgrow.cn/readmore/dist/readmore.js" type="text/javascript"></script>
+				<script>
+				var isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
+				var isEncrypt = document.getElementById('hexo-blog-encrypt');
+				var allowMobile = true;
+				if (!isEncrypt && (!isMobile || (isMobile && allowMobile))) {
+					try {
+						var plugin = new ReadmorePlugin();
+						plugin.init({
+							"type": "hexo",
+							"id": "readmore-container",
+							"name": "芋仔的前端视界",
+							"blogId": "58392-6298992397969-834",
+							"qrcode": "https://blog.maxiaobo.com.cn/rs/gzh.jpg",
+							"keyword": "博客",
+							"random": "1",
+							"height": "auto",
+							"expires": "10",
+							"lockToc": "yes",
+							"interval": "60",
+							"baseUrl": "",
+							"tocSelector": ""
+						});
+					} catch(e) {
+						console.warn("readmore plugin occurred error: " + e.name + " | " + e.message);
+					}
+				}
+				</script>
+			
         </section>
         <hr>
         

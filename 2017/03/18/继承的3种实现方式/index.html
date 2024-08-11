@@ -74,7 +74,7 @@
             <span>继承的三种实现方式</span>
         </h2>
         <section class='post-content'>
-            <p>关于继承，其实写js将近一年，平时其实是几乎不怎么使用继承的，但是最近面试的时候遇到了继承的问题，所以查找了一些资料之后做一个总结。主要总结的点有：</p>
+            <div id="readmore-container"><p>关于继承，其实写js将近一年，平时其实是几乎不怎么使用继承的，但是最近面试的时候遇到了继承的问题，所以查找了一些资料之后做一个总结。主要总结的点有：</p>
 <ol>
 <li>原型链继承</li>
 <li>组合继承</li>
@@ -179,7 +179,37 @@ console.dir(Ninja.prototype);
 <h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ol>
 <li>js高程程序设计</li>
 </ol>
-
+</div>
+				<link rel="stylesheet" type="text/css" href="https://qiniu.techgrow.cn/readmore/dist/hexo.css">
+				<script src="https://qiniu.techgrow.cn/readmore/dist/readmore.js" type="text/javascript"></script>
+				<script>
+				var isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
+				var isEncrypt = document.getElementById('hexo-blog-encrypt');
+				var allowMobile = true;
+				if (!isEncrypt && (!isMobile || (isMobile && allowMobile))) {
+					try {
+						var plugin = new ReadmorePlugin();
+						plugin.init({
+							"type": "hexo",
+							"id": "readmore-container",
+							"name": "芋仔的前端视界",
+							"blogId": "58392-6298992397969-834",
+							"qrcode": "https://blog.maxiaobo.com.cn/rs/gzh.jpg",
+							"keyword": "博客",
+							"random": "1",
+							"height": "auto",
+							"expires": "10",
+							"lockToc": "yes",
+							"interval": "60",
+							"baseUrl": "",
+							"tocSelector": ""
+						});
+					} catch(e) {
+						console.warn("readmore plugin occurred error: " + e.name + " | " + e.message);
+					}
+				}
+				</script>
+			
         </section>
         <hr>
         

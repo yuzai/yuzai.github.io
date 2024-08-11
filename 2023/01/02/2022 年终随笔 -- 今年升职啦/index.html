@@ -74,7 +74,7 @@
             <span>2022 年终随笔 -- 今年升职啦</span>
         </h2>
         <section class='post-content'>
-            <p>到年底了，网上陆陆续续年终总结也多了起来。每次当我在看年终总结的时候，其实或多或少都觉得无趣，因为别人的生活，其实我一点都不关心。看了几本书，写了几个需求，旅了几次游，说实话，和我一点关系也没有。当然，别人看我的年终总结也大抵如此。</p>
+            <div id="readmore-container"><p>到年底了，网上陆陆续续年终总结也多了起来。每次当我在看年终总结的时候，其实或多或少都觉得无趣，因为别人的生活，其实我一点都不关心。看了几本书，写了几个需求，旅了几次游，说实话，和我一点关系也没有。当然，别人看我的年终总结也大抵如此。</p>
 <span id="more"></span>
 
 <p>不过吐槽归吐槽，人生没几个一年，晃着晃着就差不多了。所以也还是写点总结，记录下自己这一年。</p>
@@ -90,7 +90,37 @@
 <p>回过头来看，一年下来，大部分的时间还是投入在了琐碎的需求开发中，不过毕竟业务团队嘛，不开发需求可真是说不过去。</p>
 <p>而穿插其中的各种新方案，新技术，也使得工作不那么枯燥。</p>
 <p>整体来讲，我对去年的状态还算满意，每天都有点时间锻炼，也有点时间陪伴家人，也有点时间做技术上的提升，就是离自己的梦想似乎没有接近的感觉，钱钱么，存的还是少了点，明年加油吧。</p>
-
+</div>
+				<link rel="stylesheet" type="text/css" href="https://qiniu.techgrow.cn/readmore/dist/hexo.css">
+				<script src="https://qiniu.techgrow.cn/readmore/dist/readmore.js" type="text/javascript"></script>
+				<script>
+				var isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
+				var isEncrypt = document.getElementById('hexo-blog-encrypt');
+				var allowMobile = true;
+				if (!isEncrypt && (!isMobile || (isMobile && allowMobile))) {
+					try {
+						var plugin = new ReadmorePlugin();
+						plugin.init({
+							"type": "hexo",
+							"id": "readmore-container",
+							"name": "芋仔的前端视界",
+							"blogId": "58392-6298992397969-834",
+							"qrcode": "https://blog.maxiaobo.com.cn/rs/gzh.jpg",
+							"keyword": "博客",
+							"random": "1",
+							"height": "auto",
+							"expires": "10",
+							"lockToc": "yes",
+							"interval": "60",
+							"baseUrl": "",
+							"tocSelector": ""
+						});
+					} catch(e) {
+						console.warn("readmore plugin occurred error: " + e.name + " | " + e.message);
+					}
+				}
+				</script>
+			
         </section>
         <hr>
         

@@ -74,7 +74,7 @@
             <span>函数柯里化小结</span>
         </h2>
         <section class='post-content'>
-            <p>最近学习了一下高阶函数，其中印象比较深刻的有函数消抖，函数节流以及函数柯里化（curry），在学习中也是从一头雾水到逐渐明了，所以写一篇文章对柯里化进行总结。</p>
+            <div id="readmore-container"><p>最近学习了一下高阶函数，其中印象比较深刻的有函数消抖，函数节流以及函数柯里化（curry），在学习中也是从一头雾水到逐渐明了，所以写一篇文章对柯里化进行总结。</p>
 <span id="more"></span>
 
 <h3 id="什么是函数柯里化"><a href="#什么是函数柯里化" class="headerlink" title="什么是函数柯里化"></a>什么是函数柯里化</h3><p>javascript忍者中说：在一个函数中首先填充几个参数(然后再返回一个新函数)的技术称为柯里化(Currying)。听起来跟bind的作用是一样的，其实bind也可以采用这种思想来实现（至于bind原本是怎么实现的，我不清楚，控制台输出<code>Function.prototype.bind</code>，输出是[native code]，看不到，不清楚内部原理）。<br>在很多文章中写到：柯里化通常也称部分求值，其含义是给函数分步传递参数，每次传递参数后部分应用参数，并返回一个更具体的函数接受剩下的参数，这中间可嵌套多层这样的接受部分参数函数，直至返回最后结果。<br>举个不是很恰当的例子，有一个厨师，要做饭，但是餐馆的小儿没有把菜买齐，这样，小儿买一份原料，放在厨师厨房，再买一份，放在厨师厨房，等买齐了，叫厨师过来，好了，原料齐了，可以做饭了。这个时候，厨师利用原料，把饭做好。厨师就像一个函数，他有自己的功能（做饭），但是参数（原料）不齐，每次执行这个函数，在参数不齐的情况下，只能返回一个新的函数，这个新的函数已经内置了之前的参数，当参数齐了之后完成他本身的功能。</p>
@@ -153,7 +153,37 @@ console.log(curry(add,1,2,3)(1)(2)(3,4,5,5)(5,6,6,7,8,8)(1)(1)(1)());//69
 <li><a target="_blank" rel="noopener" href="https://gold.xitu.io/post/58a5879e1b69e6006d1e8748">简单理解JavaScript中的柯里化和反柯里化</a></li>
 <li><a target="_blank" rel="noopener" href="http://www.cnblogs.com/zztt/p/4142891.html">浅析 JavaScript 中的 函数 currying 柯里化</a></li>
 </ol>
-
+</div>
+				<link rel="stylesheet" type="text/css" href="https://qiniu.techgrow.cn/readmore/dist/hexo.css">
+				<script src="https://qiniu.techgrow.cn/readmore/dist/readmore.js" type="text/javascript"></script>
+				<script>
+				var isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
+				var isEncrypt = document.getElementById('hexo-blog-encrypt');
+				var allowMobile = true;
+				if (!isEncrypt && (!isMobile || (isMobile && allowMobile))) {
+					try {
+						var plugin = new ReadmorePlugin();
+						plugin.init({
+							"type": "hexo",
+							"id": "readmore-container",
+							"name": "芋仔的前端视界",
+							"blogId": "58392-6298992397969-834",
+							"qrcode": "https://blog.maxiaobo.com.cn/rs/gzh.jpg",
+							"keyword": "博客",
+							"random": "1",
+							"height": "auto",
+							"expires": "10",
+							"lockToc": "yes",
+							"interval": "60",
+							"baseUrl": "",
+							"tocSelector": ""
+						});
+					} catch(e) {
+						console.warn("readmore plugin occurred error: " + e.name + " | " + e.message);
+					}
+				}
+				</script>
+			
         </section>
         <hr>
         
