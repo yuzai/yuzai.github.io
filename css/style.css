@@ -269,7 +269,7 @@ width: 100%
 	overflow: auto;
 }
 .post-content img{
-	max-width: 2000px;
+	max-width: 600px;
 }
 @media screen and (max-width:768px){
 	.post-content img{
