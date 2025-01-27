@@ -71,64 +71,43 @@
         <div class = 'col-xs-12 col-xs-offset-0 col-md-7 col-md-offset-1 col-sm-7 col-sm-offset-1 col-lg-7 col-lg-offset-1 category_col'>
           <div class ='well'>
         <h2 class='post-title'>
-            <span>javascript执行环境和作用域</span>
+            <span>那个月薪5w的安卓被00后干掉了</span>
         </h2>
         <section class='post-content'>
-            <div id="readmore-container"><p>之前没有系统的对javascript进行学习，主要用来操作DOM，每次看js的书，也就是看到变量类型和语句就停下来了。因为这一块跟c语言还是很像，就没什么兴趣继续读下去,最近写了一个比较长的js，发现变量，函数的作用域很重要，虽然看懂了问题，但是没有理解到位，今天看了《javascript高级程序设计》，提到的执行环境和作用域，才总算是弄明白了问题的来龙去脉。</p>
-<span id="more"></span>
-<h3 id="例子1"><a href="#例子1" class="headerlink" title="例子1"></a>例子1</h3><pre><code>function f2()&#123;
-    var s=10;
-    function f1()&#123;
-        console.log(s);
-    &#125;
-    f1();
-&#125;
-f2();//输出10
-</code></pre>
-<p>在上述代码中，函数f2中定义了函数f1,在f1中输出s。结果是10。不难理解</p>
-<h3 id="例子2"><a href="#例子2" class="headerlink" title="例子2"></a>例子2</h3><pre><code>var s = 100;
-function f1()&#123;
-    console.log(s);
-&#125;
-function f2()&#123;
-    var s=10;
-    f1(); //输出100
-    console.log(s);
-&#125;
-f2();//输出10
-</code></pre>
-<p>这个例子中，f1函数定义在全局中，在f2中调用f1函数，输出的s还是全局中的s。这个就是执行环境的问题。</p>
-<h3 id="原书中的例子"><a href="#原书中的例子" class="headerlink" title="原书中的例子"></a>原书中的例子</h3><p><img src="http://blog.xiaoboma.com/%E4%BD%9C%E7%94%A8%E5%9F%9F.jpg" alt="图一"></p>
-<p>有点尴尬，在hexo中还不知道怎么可以便捷的插入图片，暂时把图片文件传到主页吧。<br>看到图中的解释，其实就是，<strong>定义函数的位置，决定了函数的执行环境，也就是决定了在该函数中变量的访问权限：只能访问到高级以及同级的变量，不论该函数在哪里调用（例子2中就是在同级函数中进行调用，并没有修改s的值，s还是同级的s，而不是函数f2中的局部变量s），都不会改变它对变量的访问权限。</strong> 这一点跟c语言很不一样，这次就因为这个错调试了一会。记录一下这个坑，其实不算坑，书上写的明明白白，只是自己没有注意。</p>
-<h3 id="最后一次确认问题"><a href="#最后一次确认问题" class="headerlink" title="最后一次确认问题"></a>最后一次确认问题</h3><p>最后用一个同级函数的子函数的子函数对f1()函数进行调用，彻底验证执行环境以及作用域问题。</p>
-<pre><code>var s = 1;
-function f1()&#123;
-    console.log(s);
-&#125;
-function f2()&#123;
-    var s=2;
-    function f3()&#123;
-        var s=3
-        function f4()&#123;
-            var s=4;
-        f1();//输出1
-        console.log(s);//输出4
-      &#125;
-        f4();
-  &#125;
-    f3();
-&#125;
-f2();
-</code></pre>
-<p>f1(),不论在何时进行调用，内部的s由f1()定义的位置决定，必定是同级定义的或者更外层定义的s起作用。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><strong>定义函数的位置，决定了函数的执行环境，也就是决定了在该函数中变量的访问权限：只能访问到高级以及同级的变量，不论该函数在哪里调用，都不会改变它对变量的访问权限。</strong></p>
+            <div id="readmore-container"><p>所谓的00后整顿职场，有时候就是个笑话。</p>
+<h2 id="你知道老A工资多少吗？"><a href="#你知道老A工资多少吗？" class="headerlink" title="你知道老A工资多少吗？"></a>你知道老A工资多少吗？</h2><p>这是隔壁组后辈小B一次饭后问我的问题，我当然不知道啊，他说：5w。</p>
+<p>我回想了下，大厂背景，工作快10年，而且合作过的几次，虽然老A说话啰嗦了点，但是事做的没毛病，也比较尽职尽责，凭借老道的经验这个数字也不算夸张。</p>
+<p>紧接着小B就开始倒苦水：自己怎么怎么辛勤工作，也是大厂背景，不就毕业时间短了点，怎么工资差这么多。而且怎么人家在杭州有车有房，自己一毕业房价就高的一逼，就这工资，根本买不起。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202501271029337.jpeg" alt="心里不平衡"></p>
+<p>懂了，心里不平衡嘛，年轻人，也能理解，安慰两句，这事也就罢了。</p>
+<h2 id="这方案太屎了"><a href="#这方案太屎了" class="headerlink" title="这方案太屎了"></a>这方案太屎了</h2><p>自此之后，不论老A做任何事情，提任何方案，都必然会得到小B的质疑：</p>
+<p>技术选型太落后，写的这个架构存在漏洞，要的排期太久。</p>
+<p>久而久之，老A在大家的心里，都是一个：典型的老白兔形象。</p>
+<p>只有为数不多和老A合作过的，才知道他也不过就是一个尽职尽责的技术人，架构存在漏洞没错，但是把架构搭起来，线上稳定运行，一些漏洞，边做边修也蛮正常的，所谓先上线，再优化，这很互联网。</p>
+<p>奈何老A本身在说话上，也实属一般，慢慢的，一个小错，也会被放大无数倍，更加印证了小B的说法。</p>
+<h2 id="老A消失了"><a href="#老A消失了" class="headerlink" title="老A消失了"></a>老A消失了</h2><p>在一个明媚的早晨，早会老A不在了，工位上的东西也突然就空了。</p>
+<p>我经过老A工位的时候，恰好一束阳光洒在老A工位上，空气中的一粒粒灰尘，此刻特别刺眼，就好像在下雪。</p>
+<p>雪崩的时候，没有一片雪花是无辜的，这次，好像我就是这片雪花？</p>
+<p>后来只听说，早上好像有人瞄到一眼老A，神色清冷，但是眼睛又略显锋锐。</p>
+<p>也对，大奉不值得，此处不留爷，自有留爷处。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202501271027497.png" alt="大奉不值得"></p>
+<p>毕竟，有房有车有存款，没办法，这个时代，人就是赶上了。</p>
+<h2 id="小B怎么样了"><a href="#小B怎么样了" class="headerlink" title="小B怎么样了"></a>小B怎么样了</h2><p>棋子永远不知道自己是棋子，棋子以为的为梦想而奋斗，为公司除白兔，不过是对局者想让棋子这么想罢了。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202501271030617.jpeg" alt="棋子"></p>
+<p>嫉妒，不公，都有情可原。</p>
+<p>但是把这嫉妒转为对他人的伤害，可能这就是人性吧。</p>
+<p>狼多肉少，互害在未来，可能也只是常态。</p>
+<p>只能说，职场上：</p>
+<p>防人之心不可无，防人之心不可无，防人之心不可无。</p>
+<p>对了，听说老A又找到新工作了，涨幅好像还不小。</p>
+<p>注：本文纯属虚构，如有雷同，纯属巧合。</p>
 </div>
 				<link rel="stylesheet" type="text/css" href="https://qiniu.techgrow.cn/readmore/dist/hexo.css">
 				<script src="https://qiniu.techgrow.cn/readmore/dist/readmore.js" type="text/javascript"></script>
 				<script>
 				var isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
 				var isEncrypt = document.getElementById('hexo-blog-encrypt');
-				var allowMobile = true;
+				var allowMobile = false;
 				if (!isEncrypt && (!isMobile || (isMobile && allowMobile))) {
 					try {
 						var plugin = new ReadmorePlugin();
@@ -156,16 +135,16 @@ f2();
         </section>
         <hr>
         
-          <p>上一篇：<a  href = "/2016/10/06/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C%EF%BC%884%EF%BC%89%EF%BC%9A%E5%AD%A6%E4%B9%A0%E4%BB%A5%E5%8F%8A%E5%B7%A9%E5%9B%BA%E7%9A%84%E7%9F%A5%E8%AF%86%E8%AE%B0%E5%BD%95/">hexo主题制作（4）：学习以及巩固的知识记录</a></p>
+          <p>上一篇：<a  href = "/2025/01/10/%E5%8D%87%E7%BA%A7react19%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9%EF%BC%8C%E5%B0%B1%E6%A0%BD%E4%BA%86%E8%B7%9F%E5%A4%B4/">升级react19的第一天，就栽了跟头</a></p>
         
         
-          <p>下一篇：<a  href = /2016/10/15/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%EF%BC%9A%E5%BE%AA%E7%8E%AF%E7%BB%91%E5%AE%9Aclick%E4%BA%8B%E4%BB%B6/>前端面试：循环绑定click事件</a></p>
+          <p>下一篇：<a onclick = 'return false'>没有了</a></p>
         
         
             <section id="comments">
             
                     <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="2016/10/13/javascript执行环境和作用域/" data-title="javascript执行环境和作用域" data-url="https://yuzai.github.io/2016/10/13/javascript%E6%89%A7%E8%A1%8C%E7%8E%AF%E5%A2%83%E5%92%8C%E4%BD%9C%E7%94%A8%E5%9F%9F/"></div>
+<div class="ds-thread" data-thread-key="2025/01/27/那个月薪5w的安卓被00后干掉了/" data-title="那个月薪5w的安卓被00后干掉了" data-url="https://yuzai.github.io/2025/01/27/%E9%82%A3%E4%B8%AA%E6%9C%88%E8%96%AA5w%E7%9A%84%E5%AE%89%E5%8D%93%E8%A2%AB00%E5%90%8E%E5%B9%B2%E6%8E%89%E4%BA%86/"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -191,8 +170,8 @@ f2();
 <div class = 'well' id = 'ab_ca'>
 
 
-<h4>javascript执行环境和作用域</h4>
-<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%8B%E5%AD%901"><span class="toc-text">例子1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%8B%E5%AD%902"><span class="toc-text">例子2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E4%B9%A6%E4%B8%AD%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="toc-text">原书中的例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%E4%B8%80%E6%AC%A1%E7%A1%AE%E8%AE%A4%E9%97%AE%E9%A2%98"><span class="toc-text">最后一次确认问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+<h4>那个月薪5w的安卓被00后干掉了</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%A0%E7%9F%A5%E9%81%93%E8%80%81A%E5%B7%A5%E8%B5%84%E5%A4%9A%E5%B0%91%E5%90%97%EF%BC%9F"><span class="toc-text">你知道老A工资多少吗？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%99%E6%96%B9%E6%A1%88%E5%A4%AA%E5%B1%8E%E4%BA%86"><span class="toc-text">这方案太屎了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%80%81A%E6%B6%88%E5%A4%B1%E4%BA%86"><span class="toc-text">老A消失了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8FB%E6%80%8E%E4%B9%88%E6%A0%B7%E4%BA%86"><span class="toc-text">小B怎么样了</span></a></li></ol>
 <h4>归档</h4>
 <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
 <h4>最新文章</h4>
