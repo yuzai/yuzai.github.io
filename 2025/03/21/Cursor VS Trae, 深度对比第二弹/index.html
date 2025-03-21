@@ -71,38 +71,71 @@
         <div class = 'col-xs-12 col-xs-offset-0 col-md-7 col-md-offset-1 col-sm-7 col-sm-offset-1 col-lg-7 col-lg-offset-1 category_col'>
           <div class ='well'>
         <h2 class='post-title'>
-            <span>arrow的疑问</span>
+            <span>Cursor VS Trae, 深度对比第二弹</span>
         </h2>
         <section class='post-content'>
-            <div id="readmore-container"><p>学会使用es6的箭头函数之后，在几乎所有需要用到匿名函数的地方都改为了箭头函数，this绑定外部函数的this无往不利，但是最近遇到了一个问题。</p>
+            <div id="readmore-container"><p>之前写了一篇关于<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Pxs7H06I7mUA3XKBtdNATA">即便付费，我也还是选择 Cursor 的文章</a>。</p>
+<p>有人喜欢，有人觉得太浅，觉得我选择的理由太过粗暴。</p>
+<p>刚好也用了一段时间的 Cursor，就再来对两款工具进行一个更深度的对比。</p>
 <span id="more"></span>
 
-<p>对象的方法定义时，箭头函数的this值应该是什么？</p>
-<pre><code class="js">//code1
-var s=&#123;
-&#125;
-s.fun=()=&gt;&#123;console.log(this)&#125; //严格模式下undefined，浏览器控制台输出window
-//s.fun=function()&#123;console.log(this)&#125;//[object:s]
-s.fun();
-//code2
-var s=&#123;
-  fun:()=&gt;console.log(this)//严格模式下undefined，浏览器控制台输出window
-  //fun:function()&#123;console.log(this)&#125;//[object:s]
-&#125;
-s.fun();
-</code></pre>
-<p>上述代码表示，在定义对象的方法时，使用箭头函数，this没有绑定(严格模式下undefined，非严格模式时是window).<br>翻看了箭头函数的说明，对this的说明是，this会继承外部的this，也就是 <strong>如果在函数内部定义了箭头函数，箭头函数的this值是等于该函数的this值，而在定义对象的时候，外部的函数并不存在，它的外部就是全局，所以this会指向window或者undefined。</strong></p>
-<blockquote>
-<p>知识欠缺太多了，还需继续努力</p>
-</blockquote>
-<p>欢迎批评指正</p>
+<h2 id="变量控制"><a href="#变量控制" class="headerlink" title="变量控制"></a>变量控制</h2><ol>
+<li>版本全部用本文发布时的最新版。Cursor 0.47.8, Trae 1.2.1。</li>
+<li>针对同一个项目，我用的是之前写的一个 AI 对话的机器人</li>
+<li>对比的能力维度 1: chat 模式对代码的理解</li>
+<li>对比的能力维度 2: 代码补全的能力, 这一步拆分为路由猜测，utils 意图猜测，变量修改</li>
+<li>agent 能力对比：篇幅限制，放在下一弹</li>
+</ol>
+<p>ps: 这个项目大概的功能如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211111660.png" alt="demo"></p>
+<p>对项目有兴趣的可以看看之前的文章, <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/q0BxgiTDjilKPUJFQkvSLg">当抠门程序员，遇到了免费 AI 大模型，我好像用 AI 赚到钱了？</a></p>
+<h2 id="项目讲解能力对比"><a href="#项目讲解能力对比" class="headerlink" title="项目讲解能力对比"></a>项目讲解能力对比</h2><p>首先是 Trae, 通过在 引用中增加当前工作区来获取上下文。得到的篇幅比较长，截取部分如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211116560.png" alt="Trae 分析"></p>
+<p>Cursor 中，通过 commond + enter 来完成上下文的注入，得到的回答截取部分如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211118399.png" alt="Cursor 分析"></p>
+<p>粗糙来看，两者的分析都很 AI，确实都非常好的完成了分析理解的任务。</p>
+<p>这一点上，可以说是平分秋色吧 (毕竟，他们都夸我了，结构清晰、功能完整哈哈，没说错)。</p>
+<p>但是两者都存在一个体验上的优化，就是当我没有按照他们的要求提供上下文时，对于如何补充上下文提示的不够明显：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211124180.png" alt="提示"></p>
+<p>都给 90 分吧。</p>
+<h2 id="代码补全"><a href="#代码补全" class="headerlink" title="代码补全"></a>代码补全</h2><p>程序员最关心的就是代码补全了，这次提供了三个案例，来进行能力的对比：分别是路由猜测，错误处理，和变量替换</p>
+<h3 id="路由猜测"><a href="#路由猜测" class="headerlink" title="路由猜测"></a>路由猜测</h3><p>这个项目是一个单页路由，让他们猜测下一个路由写什么：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211128998.png"></p>
+<p>在这一点上，两者很一致，项目本身有首页，登录页，确实下一个可能的路由就是注册页。</p>
+<p>在这一次 PK 上，两者也是平手(虽然我的意图不是注册页，登录即注册)。</p>
+<h3 id="fetch-错误处理猜测"><a href="#fetch-错误处理猜测" class="headerlink" title="fetch 错误处理猜测"></a>fetch 错误处理猜测</h3><p>如下是我原本的代码，非常常见的 Fetch 的代码，当我把鼠标放在图示位置时，我心里想的是帮我多处理几个 code，而不仅仅是 401</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211130709.png"></p>
+<p>如下是两者的输出对比：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211129627.png"></p>
+<p>右侧是 Trae，可以看到，Trae 帮我处理了 403 之后，剩余情况直接 throw，懂 js 的都知道这里面的门道有多深：我下面的代码不会执行喽。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211149387.png"></p>
+<p>而反观 Cursor，403， 404， 500，502，503 都帮我列出来了，不过再往后，Cursor 也会陷入死循环，code 不断加 1，而提示信息始终都是重复。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211137975.png"></p>
+<p>ok，从这一把的 PK 来看，Trae 完败，Cursor 虽然有缺陷，但至少我的代码功能逻辑上不会错误。</p>
+<h3 id="修改变量名"><a href="#修改变量名" class="headerlink" title="修改变量名"></a>修改变量名</h3><p>代码中，我们修改变量名之后的意图，往往就是修改本文件中的所有相关变量名。对于 react，如果我们修改了一个 state，我们往往还会希望能够修改对应的 setState 名称。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211141526.png"></p>
+<p>可以看到，Cursor 完全达到了预期，不仅修改了变量名，还修改了 setState 对应的变量名，并提示我下一步该修改哪里，这一点，给 100 分我都嫌少。</p>
+<p>反观 Trae，纹丝不动。在这一把上，我甚至觉得 copilot 可能都比它强。</p>
+<p>起初我以为是 Trae 对 react 理解不强，换成普通变量，也依旧如此。</p>
+<p>这一波，Cursor 完胜。</p>
+<p>而 Trae，说这个功能点完全是没有的也不过分。</p>
+<h2 id="PK-结论"><a href="#PK-结论" class="headerlink" title="PK 结论"></a>PK 结论</h2><p>chat 模式对代码的理解，大差不差，平分秋色。</p>
+<p>代码补全上，变量名替换，Cursor 100 分都少了，Trae 这个功能几乎等于没有。</p>
+<p>意图猜测上，简单的 Cursor 和 Trae 差不多，复杂点的 Cursor 完胜。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>tab 补全这个能力，是我付费 Cursor 的核心原因，它在工作中，实实在在的提高了工作效率。</p>
+<p>Trae 在这一点上，并没有下功夫。猜测可能和 Trae 的定位有关，可能第一用户不是程序员，而是更多使用 builder(agent) 能力的人。</p>
+<p>从产品维度上来说，Trae 的愿景可能更宏大: 程序员，你别写代码了，产品，设计师，你们快来用我的 builder 吧，大家别看代码，就做你的产品！</p>
+<p>而 Cursor 更为专业，来吧，程序员，我真的很懂你的代码！</p>
+<p>萝卜白菜，各有所爱吧。</p>
+<p>最后，别忘了关注我的公众号：程序员芋仔。持续干货输出。</p>
+<p>AI 程序员时代，我也组建了一个前端抱团取暖群，欢迎加我微信来撩：mxb151，加群备注简单的自我介绍和加群哦。</p>
 </div>
 				<link rel="stylesheet" type="text/css" href="https://qiniu.techgrow.cn/readmore/dist/hexo.css">
 				<script src="https://qiniu.techgrow.cn/readmore/dist/readmore.js" type="text/javascript"></script>
 				<script>
 				var isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
 				var isEncrypt = document.getElementById('hexo-blog-encrypt');
-				var allowMobile = true;
+				var allowMobile = false;
 				if (!isEncrypt && (!isMobile || (isMobile && allowMobile))) {
 					try {
 						var plugin = new ReadmorePlugin();
@@ -130,16 +163,16 @@ s.fun();
         </section>
         <hr>
         
-          <p>上一篇：<a  href = "/2016/11/23/es64/">es64</a></p>
+          <p>上一篇：<a  href = "/2025/03/10/%E7%94%A8%E4%B8%8AOpenManus%E4%BA%86%EF%BC%8C%E8%BF%99%E7%8E%A9%E6%84%8F%E6%9C%89%E7%82%B9%E5%83%8F.../">用上OpenManus了，这玩意有点像...</a></p>
         
         
-          <p>下一篇：<a  href = /2016/11/23/es65/>es5-generator</a></p>
+          <p>下一篇：<a onclick = 'return false'>没有了</a></p>
         
         
             <section id="comments">
             
                     <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="2016/11/23/arror/" data-title="arrow的疑问" data-url="https://yuzai.github.io/2016/11/23/arror/"></div>
+<div class="ds-thread" data-thread-key="2025/03/21/Cursor VS Trae, 深度对比第二弹/" data-title="Cursor VS Trae, 深度对比第二弹" data-url="https://yuzai.github.io/2025/03/21/Cursor%20VS%20Trae,%20%E6%B7%B1%E5%BA%A6%E5%AF%B9%E6%AF%94%E7%AC%AC%E4%BA%8C%E5%BC%B9/"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -165,8 +198,8 @@ s.fun();
 <div class = 'well' id = 'ab_ca'>
 
 
-<h4>arrow的疑问</h4>
-
+<h4>Cursor VS Trae, 深度对比第二弹</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="toc-text">变量控制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E8%AE%B2%E8%A7%A3%E8%83%BD%E5%8A%9B%E5%AF%B9%E6%AF%94"><span class="toc-text">项目讲解能力对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E8%A1%A5%E5%85%A8"><span class="toc-text">代码补全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%E7%8C%9C%E6%B5%8B"><span class="toc-text">路由猜测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fetch-%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E7%8C%9C%E6%B5%8B"><span class="toc-text">fetch 错误处理猜测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E5%8F%98%E9%87%8F%E5%90%8D"><span class="toc-text">修改变量名</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PK-%E7%BB%93%E8%AE%BA"><span class="toc-text">PK 结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
 <h4>归档</h4>
 <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
 <h4>最新文章</h4>
