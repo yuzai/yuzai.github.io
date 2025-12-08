@@ -74,7 +74,7 @@
             <span>前端面试：循环绑定click事件</span>
         </h2>
         <section class='post-content'>
-            <div id="readmore-container"><p>总结了一道昨天面试明略数据前端的一道js面试题。</p>
+            <p>总结了一道昨天面试明略数据前端的一道js面试题。</p>
 <span id="more"></span>
 <h3 id="题目重述"><a href="#题目重述" class="headerlink" title="题目重述"></a>题目重述</h3><p>下面是一段有问题的javascript代码，请输出结果，并找出其中的问题，对源代码进行修改使之达到想要的目的</p>
 <pre><code class="html">&lt;html&gt;
@@ -170,37 +170,7 @@ typeof(pElement[1])
 </code></pre>
 <p>将一个匿名函数赋值给了pElement[i].onclick，因为这个函数还没有执行，所以内存会开辟一块来存储该匿名函数的上下文，在本例中，就是匿名函数外层的那个函数，保留了他的参数，当onclick触发时，输出的就是当时保留的上下文中的i,也就是对应的段落编号。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>水平还太低了，原生Js都还是没怎么搞清楚，欢迎留言，欢迎指正！<br><strong>12.21补充，之前的方案不好，闭包解决才是最好的方法。</strong></p>
-</div>
-				<link rel="stylesheet" type="text/css" href="https://qiniu.techgrow.cn/readmore/dist/hexo.css">
-				<script src="https://qiniu.techgrow.cn/readmore/dist/readmore.js" type="text/javascript"></script>
-				<script>
-				var isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
-				var isEncrypt = document.getElementById('hexo-blog-encrypt');
-				var allowMobile = true;
-				if (!isEncrypt && (!isMobile || (isMobile && allowMobile))) {
-					try {
-						var plugin = new ReadmorePlugin();
-						plugin.init({
-							"type": "hexo",
-							"id": "readmore-container",
-							"name": "芋仔的前端视界",
-							"blogId": "58392-6298992397969-834",
-							"qrcode": "https://blog.maxiaobo.com.cn/rs/gzh.jpg",
-							"keyword": "博客",
-							"random": "1",
-							"height": "auto",
-							"expires": "10",
-							"lockToc": "yes",
-							"interval": "60",
-							"baseUrl": "",
-							"tocSelector": ""
-						});
-					} catch(e) {
-						console.warn("readmore plugin occurred error: " + e.name + " | " + e.message);
-					}
-				}
-				</script>
-			
+
         </section>
         <hr>
         

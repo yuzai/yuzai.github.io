@@ -74,42 +74,12 @@
             <span>hexo主题制作（1）：关于hexo的一点疑问</span>
         </h2>
         <section class='post-content'>
-            <div id="readmore-container"><p>hexo变量的作用域<br>问题：page变量在archive.ejs和post.ejs中的含义不同，不好在post页面访问整个博客的所有文章列表</p>
+            <p>hexo变量的作用域<br>问题：page变量在archive.ejs和post.ejs中的含义不同，不好在post页面访问整个博客的所有文章列表</p>
 <span id="more"></span>
 <p>根据手册，archive.ejs中的page表示的是所有的文章，也就是page.posts的元素就是每一篇文章。而在post.ejs中，也就是访问:year&#x2F;:month…某篇文章时，page变量就是archive.ejs中的page.posts中对应于该文章的变量。<br>我希望实现的功能是在post.ejs中，也就是展示每篇文章的页面时，左侧显示文章，右侧显示toc,同时toc下面显示我发表过的文章。但是在post.ejs中并不能访问archive中page.posts变量，在post.ejs中，page就表示当前页面，page(in post.ejs)&#x3D;page.post[index] (in archive.ejs)。所以不能访问到整个的博客文章变量，不好将其显示出来。</p>
 <h3 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h3><p>变量是内部定义好的，框架这样安排是有它的道理的，这样，在post中可以很方便的处理当前文章的内容，而在archive中，可以直接对所有的文章进行相应的处理。在性能上应该有不少提升，很想知道内部的实现原理。不过要看源码了。暂时还是把自己的博客主题做好，不容易啊。</p>
 <h3 id="暂时的解决方案"><a href="#暂时的解决方案" class="headerlink" title="暂时的解决方案"></a>暂时的解决方案</h3><p>hexo提供的辅助函数（helpers）可以解决这个问题<br><code>&lt;%- list_archives([options]) %&gt;</code><br>  可以显示当前的列表，具体的参数设置可以查看手册<br>  <code>&lt;%- list_posts([options]) %&gt;</code>可以显示所有的文章，具体有个格式，索然可以通过更改options获得自己想要的格式，不过获取这个格式之后，可以自己添加js,css来实现想要的渲染效果。</p>
-</div>
-				<link rel="stylesheet" type="text/css" href="https://qiniu.techgrow.cn/readmore/dist/hexo.css">
-				<script src="https://qiniu.techgrow.cn/readmore/dist/readmore.js" type="text/javascript"></script>
-				<script>
-				var isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
-				var isEncrypt = document.getElementById('hexo-blog-encrypt');
-				var allowMobile = true;
-				if (!isEncrypt && (!isMobile || (isMobile && allowMobile))) {
-					try {
-						var plugin = new ReadmorePlugin();
-						plugin.init({
-							"type": "hexo",
-							"id": "readmore-container",
-							"name": "芋仔的前端视界",
-							"blogId": "58392-6298992397969-834",
-							"qrcode": "https://blog.maxiaobo.com.cn/rs/gzh.jpg",
-							"keyword": "博客",
-							"random": "1",
-							"height": "auto",
-							"expires": "10",
-							"lockToc": "yes",
-							"interval": "60",
-							"baseUrl": "",
-							"tocSelector": ""
-						});
-					} catch(e) {
-						console.warn("readmore plugin occurred error: " + e.name + " | " + e.message);
-					}
-				}
-				</script>
-			
+
         </section>
         <hr>
         

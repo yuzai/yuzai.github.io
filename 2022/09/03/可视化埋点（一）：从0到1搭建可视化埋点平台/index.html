@@ -74,7 +74,7 @@
             <span>可视化埋点（一）：从0到1搭建可视化埋点平台</span>
         </h2>
         <section class='post-content'>
-            <div id="readmore-container"><p>近期一直在团队内开发可视化埋点平台，目前已经落地并成功在多个复杂业务中落地使用，在其中也踩了不少坑。故写此篇文章，给想要在团队内落地可视化埋点平台做一份参考，也是对笔者自己实现过程的一个记录。</p>
+            <p>近期一直在团队内开发可视化埋点平台，目前已经落地并成功在多个复杂业务中落地使用，在其中也踩了不少坑。故写此篇文章，给想要在团队内落地可视化埋点平台做一份参考，也是对笔者自己实现过程的一个记录。</p>
 <span id="more"></span>
 
 <h2 id="前端埋点的常见合作模式"><a href="#前端埋点的常见合作模式" class="headerlink" title="前端埋点的常见合作模式"></a>前端埋点的常见合作模式</h2><p>笔者见过的团队，埋点大致有几种合作模式。</p>
@@ -411,37 +411,7 @@ const msgCenter = new MsgCenter(&#123;
 <p>而对于 xpath 的不稳定性，此处边界场景太多，后续会单独出一篇文章来介绍 xpath 在实际场景中遇到的重叠、不稳定问题，而解决后的 xpath 足以支撑非常复杂的移动端 h5 页面。</p>
 <h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>整体来讲，可视化埋点平台的搭建，还是比较有趣的一个项目，确实同我们平时的业务开发不同，在此过程中，笔者也熟悉了像 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver">mutationObserver</a>、<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver">intersectionObserver</a>，这样的存在已久平时却也不接触的原生 api，也熟悉了出现很久的 xpath，而 dom 树的可视化、列表元素的判定，也是比较有趣的一些开发过程。</p>
 <p>同时该平台也确实可以减轻产品&#x2F;运营、开发埋点的不便，整体的方案及细节相信本文也讲的比较详细了，觉得还不错的话可以点赞鼓励下哦。</p>
-</div>
-				<link rel="stylesheet" type="text/css" href="https://qiniu.techgrow.cn/readmore/dist/hexo.css">
-				<script src="https://qiniu.techgrow.cn/readmore/dist/readmore.js" type="text/javascript"></script>
-				<script>
-				var isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
-				var isEncrypt = document.getElementById('hexo-blog-encrypt');
-				var allowMobile = true;
-				if (!isEncrypt && (!isMobile || (isMobile && allowMobile))) {
-					try {
-						var plugin = new ReadmorePlugin();
-						plugin.init({
-							"type": "hexo",
-							"id": "readmore-container",
-							"name": "芋仔的前端视界",
-							"blogId": "58392-6298992397969-834",
-							"qrcode": "https://blog.maxiaobo.com.cn/rs/gzh.jpg",
-							"keyword": "博客",
-							"random": "1",
-							"height": "auto",
-							"expires": "10",
-							"lockToc": "yes",
-							"interval": "60",
-							"baseUrl": "",
-							"tocSelector": ""
-						});
-					} catch(e) {
-						console.warn("readmore plugin occurred error: " + e.name + " | " + e.message);
-					}
-				}
-				</script>
-			
+
         </section>
         <hr>
         
