@@ -1,12 +1,7 @@
 <!doctype html>
 <html lang="zh-cn">
 <head>
-    
-<script src="/js/index.js"></script>
-
-    <meta name="baidu-site-verification" content="81rzqdpRFv" />
     <meta charset="utf-8">
-    <meta name="referrer" content="same-origin">
     <meta name="referrer" content="no-referrer" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,7 +9,6 @@
     <title>芋仔的个人博客</title>
     <link rel="stylesheet"
       href="/css/atom-one-dark.min.css">
-    <script src="/js/highlight.min.js"></script>
     
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 
@@ -40,11 +34,16 @@
   <div class="jumbotron">
     <h2>Welcome!</h2>
     <h4 style = 'text-align:right'>Senior Software Engineer -- 芋仔</h4>
+    <div style="margin: 20px 0; line-height: 1.8; color: #333;">
+      <p>你好，我是芋仔，一名热爱技术的软件工程师。在这个数字化的时代里，我专注于用代码解决实际问题，享受从零到一构建产品的过程。</p>
+      <p>我的技术栈主要围绕前端开发，对 JavaScript、React、Vue 等现代前端框架有深入的理解和实践经验。同时，我也在不断学习后端技术，希望成为一名全栈工程师。在开发过程中，我注重代码质量、用户体验和性能优化，相信好的代码不仅要能跑，更要跑得优雅。</p>
+      <p>除了写代码，我也喜欢通过博客记录学习心得和技术思考。这里会分享一些前端开发中的踩坑经验、技术原理的深入理解，以及偶尔的生活感悟。技术更新迭代很快，但底层原理和解决问题的思路是相通的，希望我的分享能对同样在技术路上探索的朋友有所帮助。</p>
+      <p>如果你对我的文章感兴趣，或者有任何技术问题想要交流，欢迎通过 GitHub 或微信联系我。让我们一起在技术的世界里探索前行！</p>
+    </div>
     <div>
       <a class="btn btn-primary btn-lg" href='archives/' role="button"><i class= 'icon-home'></i> 文章</a>
       <a class="btn btn btn-lg" target="_blank" rel="noopener" href="https://github.com/yuzai" role="button"><i class= 'icon-github'></i></a>
-      <a class="btn btn btn-lg" href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a>
-      <a class="btn btn btn-lg" href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a>
+
     </div>
   </div>
 </div>
@@ -52,25 +51,18 @@
 <button id="up" class="btn btn-success" style = 'color:green'><i class="icon-angle-up"></i><tton>
 </div>
 <footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div style="text-align: center; margin-bottom: 20px">
+      <a target="_blank" rel="noopener" href='http://beian.miit.gov.cn' style='font-size: 12px; padding: 2px; color: #999;'>浙ICP备2024109661号</a>
+    </div>
+  </div>
 </footer>
-<script>
-  if (window.location.host === 'blog.maxiaobo.com.cn' || window.location.host.indexOf('localhost') !== -1) {
-    document.querySelector('#footer').innerHTML = `
-      <div class=" container-fluid" >
-          <div style="text-align: center"><a href = 'https://github.com/yuzai'>Writer:芋仔 <i class='icon-github'></i></a></div>
-      </div>
-    `
-  } else {
-    document.querySelector('#footer').innerHTML = `
-      <div class="container-fluid" >
-          <div style="text-align: center"><a href = 'http://beian.miit.gov.cn' style='font-size: 12px; padding: 2px;'>浙ICP备2024109661号</a></div>
-      </div>
-    `
-  }
-</script>
 
 
     </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
 
     
 <script src="/js/jquery-1.12.3.min.js"></script>
