@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>原生javascript封装ajax</span>
+        </h2>
+        <section class="post-content">
+            <p>最近重新看《javascript高级程序设计》，突然看到了ajax，想起来之前学习的各种坑，又想着结合最近学习的模块化编程、面向对象式编程，所以用原生的js采用面向对象的设计思路对ajax进行了一个封装，同时，想起之前学习ajax的最大困难：没有服务器端代码，不好测试，所以这次用原生node写了一个简单的服务器，用于处理ajax的测试。</p>
+<span id="more"></span>
+
+<p>综上，本文主要提供了以下几个点：</p>
+<ol>
+<li>采用面向对象的方法用原生js封装了一个ajax类，更便捷的实现ajax通信</li>
+<li>提供了一个Node写的服务器端的代码，可以用来测试ajax</li>
+<li>提供了一个demo，服务器端以及浏览器端的代码来测试ajax类</li>
+</ol>
+<p>仓库在<a target="_blank" rel="noopener" href="https://github.com/yuzai/ajax-">这里</a>,服务器，客户端的代码都在里面，也有一些测试的说明。</p>
+<h3 id="ajax实现原理"><a href="#ajax实现原理" class="headerlink" title="ajax实现原理"></a>ajax实现原理</h3><p>ajax是一项伟大的技术，其很好的解决了传统浏览器一言不合就重新发送整个页面，速度慢，用户体验差的问题。它是一个获取资源的手段，可以在不进行整体刷新的情况下进行局部dom修改，速度快，用户体验好。实现的原理主要是基于一个类，XMLHttpRequest(IE7以下不支持，提供了另外的类进行实现，不在本文讨论范围中，都2017年了。。)。<br>大概的原理分成下面几步：</p>
+<ol>
+<li>新建XMLHttpRequest对象，var xhr &#x3D; new XMLHttpRequest().</li>
+<li>通信需要有一个回调函数，就是接收到对方的回信之后需要有一个处理的函数，这个函数可以通过xhr.onreadystatechange &#x3D; callback；来进行回调。对方的回信存储在xhr.responseText。当通信状态xhr.readyState &#x3D;&#x3D;&#x3D; 4的时候，xhr.responseText就是完整的接收到的数据。</li>
+<li>收到回信，进行相应的dom操作，实现页面的局部刷新。</li>
+</ol>
+<p>可以看到，其实一个ajax的请求，是很简单简洁的，只要开发者提供，method（get还是post）,data(要传递的数据，ajax本身是用来通信的嘛)，url(通信的对象)，callback(收到回信后的处理)就可以完成一次通信，别的地方是重复性的劳动，不必每次都繁琐的写一遍。所以我建了一个类，提供send方法，实现信息的发送（ajax重复性的工作），上述四个数据存储在每个实例中，只要实例调用send方法，就会进行一次ajax通信。大概的代码思路是这样：</p>
+<pre><code class="js">function Ajax(obj)&#123;
+  //根据obj对method,data,url等进行初始化
+&#125;;
+Ajax.prototype.send = function()&#123;
+  var xhr = new XMLHttpRequest();//新建ajax请求，不兼容IE7以下
+  xhr.onreadystatechange = function()&#123;//注册回调函数
+    if(xhr.readyState === 4)
+      callback(xhr.responseText);
+  &#125;
+  if(method === &#39;get&#39;)&#123;//如果是get方法，需要把data中的数据转化作为url传递给服务器
+    xhr.open(method,url,true);
+    xhr.send(null);
+  &#125;else if(method === &#39;post&#39;)&#123;//如果是post，需要在头中添加content-type说明
+      xhr.open(method,url,true);
+      xhr.setRequestHeader(&#39;Content-Type&#39;,&#39;application/x-www-form-urlencoded&#39;);
+      xhr.send(JSON.stringify(data));//发送的数据需要转化成JSON格式
+  &#125;else &#123;
+    console.log(&#39;不识别的方法:&#39;+method);
+    return fasle;
+  &#125;
+&#125;
+</code></pre>
+<p>源码点击<a target="_blank" rel="noopener" href="https://github.com/yuzai/ajax-/blob/master/ajax2.js">这里</a><br>有了这个类，要实现一条ajax请求，只需执行下面代码即可:</p>
+<pre><code class="js">var ajax = new Ajax(&#123;
+  method:&#39;get&#39;,//设置ajax方法
+  url:&#39;http://localhost:3000&#39;,//设置通讯地址
+  callback:function(res)&#123;//设置回调函数
+     alert(res)
+  &#125;,
+  data: data//需要传递的数据
+&#125;)
+ajax.send();
+</code></pre>
+<p>详细的关于这个类的使用方法，可以参考<a target="_blank" rel="noopener" href="https://github.com/yuzai/ajax-">这里</a><br>有了ajax，要测试，怎么办？当然可以找网上一些提供接口的网站进行ajax通信，比如聚合数据，有一些Key需要自己申请，相比之下，自己写一个服务器端的代码来处理请求，反而显得更简单一点。</p>
+<h3 id="服务器端处理ajax请求"><a href="#服务器端处理ajax请求" class="headerlink" title="服务器端处理ajax请求"></a>服务器端处理ajax请求</h3><p>node.js出来之后，javascript又能打前端，又能干后端，也把我拉进了坑里。在这里，主要是为了进行测试，所以越简单越好（我服务器端的代码水平还不够）。这里我主要参考了菜鸟教程中关于处理客户端请求的代码：原理及介绍点<a target="_blank" rel="noopener" href="http://www.runoob.com/nodejs/node-js-get-post.html">这里</a></p>
+<pre><code class="js">var http = require(&#39;http&#39;);
+var url = require(&#39;url&#39;);
+var util = require(&#39;util&#39;);
+
+http.createServer(function(req,res)&#123;
+  console.log(req.method);
+  if(req.method===&#39;GET&#39;)&#123;//处理get请求
+      res.writeHead(200,&#123;&#39;content-Type&#39;:&#39;text/plain&#39;,&quot;Access-Control-Allow-Origin&quot;:&quot;*&quot;&#125;);
+      res.end(util.inspect(url.parse(req.url, true)));//处理get请求，并将结果传递给客户端
+  &#125;
+  else&#123;//处理post请求
+      // 定义了一个post变量，用于暂存请求体的信息
+        var post = &#39;&#39;;
+
+        // 通过req的data事件监听函数，每当接受到请求体的数据，就累加到post变量中
+        req.on(&#39;data&#39;, function(chunk)&#123;
+            post += chunk;
+        &#125;);
+
+        // 在end事件触发后然后向客户端返回。
+        req.on(&#39;end&#39;, function()&#123;
+            post = JSON.parse(post);
+            console.log(post);
+            res.writeHead(200, &#123;&#39;Content-Type&#39;: &#39;text/html&#39;,&quot;Access-Control-Allow-Origin&quot;:&quot;*&quot;&#125;);
+            res.end(util.inspect(post));
+        &#125;);
+    &#125;
+&#125;).listen(3000);
+console.log(&#39;server is listening on &quot;3000&quot;&#39;);
+</code></pre>
+<p>get请求的处理比较简单，因为get方法将信息都加在url中，服务器端对url进行解析就可以得到该请求的内容，我这里的处理是将其原封不动的返回给客户端。<br>post的请求相对麻烦，需要注册两个时间，on,end。一个是处理数据块，因为Post请求一般数据比较多，分多次传输，我们要的其实只是end之后的数据，在这里我也是直接将其信息几乎原封不动的返回。</p>
+<h3 id="联合测试"><a href="#联合测试" class="headerlink" title="联合测试"></a>联合测试</h3><p>可以直接clone<a target="_blank" rel="noopener" href="https://github.com/yuzai/ajax-">这里</a><br>里面的example下面有两个文件，一个是客户端的代码，一个是服务端的代码，服务端代码需要node server.js即可实现监听，浏览器端直接打开index.html即可。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>第一次发这种文章，也是发现写一篇文章不容易，在写的过程中也是有不少收获，我也深知，我还小，知识还有很多的漏洞，如果有误，严厉指出即可，谢谢！</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2017/01/24/%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1/">前端路由的实现方式</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2017/01/26/javascript%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%92%8C%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/">javascript垃圾收集和内存泄漏</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>原生javascript封装ajax</h4>
+<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#ajax%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-text">ajax实现原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%A4%84%E7%90%86ajax%E8%AF%B7%E6%B1%82"><span class="toc-text">服务器端处理ajax请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%94%E5%90%88%E6%B5%8B%E8%AF%95"><span class="toc-text">联合测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

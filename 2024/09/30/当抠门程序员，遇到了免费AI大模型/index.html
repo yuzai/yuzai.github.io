@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>当抠门程序员，遇到了免费AI大模型</span>
+        </h2>
+        <section class="post-content">
+            <p>大家好，我是芋仔。</p>
+<p>这篇想和大家分享一下，一个抠门的程序员和一个免费的AI大模型的故事。</p>
+<p>“抠门程序员&lt;–&gt;免费大模型”，让我看看，能擦出什么火花。</p>
+<span id="more"></span>
+
+<h2 id="故事的开始"><a href="#故事的开始" class="headerlink" title="故事的开始"></a>故事的开始</h2><p>不知道有没有程序员和我一样，付费的东西，都会省着点开。什么 chatgpt, copilot, cursor，只要到了付费的环节，基本都会迟疑一下。</p>
+<p>但是有句话咋说来着，早买早享受。但是我们等等党，永远不会输。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202410071437770.jpeg" alt="等等党" referrerpolicy="no-referrer"></p>
+<p>这不，慢慢的，ai 大模型的价格越来越低，很多比如 chatgpt，豆包，免费的客户端都够用了。但是 api 依旧是收费的，虽然价格一直在降。</p>
+<p>那咋办，继续等啊，终归是有一些完全免费的 api 模型出现了。这里我用的是百度的： <a target="_blank" rel="noopener" href="https://cloud.baidu.com/doc/WENXINWORKSHOP/s/6ltgkzya5">https://cloud.baidu.com/doc/WENXINWORKSHOP/s/6ltgkzya5</a></p>
+<p>不得不说，BAT，B这次相当大气：大家都不要卷啦，我免费，你们随意。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202410071437680.jpeg" alt="我干了你随意" referrerpolicy="no-referrer"></p>
+<h2 id="AI初体验：聊天机器人"><a href="#AI初体验：聊天机器人" class="headerlink" title="AI初体验：聊天机器人"></a>AI初体验：聊天机器人</h2><p>有了免费的 api，第一个尝试的，就是聊天机器人了。</p>
+<p>迅速用 vite 和 koa 搭了一套出来。</p>
+<p>为什么要用到后端？一方面是提供用户的历史信息保存，另一方面，浏览器直接调百度的接口，必然是存在跨域问题的。</p>
+<p>索性就搞了个后端出来，也算是一个完整的产品了。</p>
+<p>效果大概是这样：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409301616374.gif" alt="聊天机器人" referrerpolicy="no-referrer"></p>
+<p>这里面的核心，就还是 sse 相关的一些技术了，也不是什么新鲜事。</p>
+<p>从功能上讲，和市面上的 AI 工具太雷同啦，而且能力上更弱。是没有什么实际价值的，更多的就是一个玩具项目，就算是 AI 初体验吧。</p>
+<h2 id="AI搞代码：爱码市"><a href="#AI搞代码：爱码市" class="headerlink" title="AI搞代码：爱码市"></a>AI搞代码：爱码市</h2><p>初步尝试之后，也该搞点有技术含量的了。</p>
+<p>所以我就做了个类似于收集代码片段的网页：热爱写代码的代码集市，就叫它：爱马(码)仕(市)吧。说实话，有时候我自己都佩服我自己起名字的功底。</p>
+<p>既然名字碰瓷了奢侈品，那配色，必须得跟上爱马仕，有一说一，我让我的聊天机器人，给我输出了 antd 的一套爱马仕橙的配色。</p>
+<p>你别说，你还真别说，antd + 爱马仕橙，有奢侈品那个味道了：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409301710004.gif" alt="爱马仕" referrerpolicy="no-referrer"></p>
+<p>而所谓的 AI加注释，AI起标题，AI讲解代码，不过就是提示词罢了。也算是统一对这些工具”祛魅”了。</p>
+<p>这个作品，其实一开始是看到鱼皮的代码小抄的，核心区别就在于前端 react 组件的预览了，借助 es6 module，其实实现一个 react 组件的浏览器编译和预览，并不是什么难事。</p>
+<p>从市场定位来看，这个产品并没有太多的实际价值，更多的还是属于程序员的自嗨，不过也算是初体验了AI对代码的处理：哪有什么魔法，不过就是提(主)示(人)词(的)罢(玩)了(具)。</p>
+<h2 id="AI-产品：我的小程序接入AI预测"><a href="#AI-产品：我的小程序接入AI预测" class="headerlink" title="AI+产品：我的小程序接入AI预测"></a>AI+产品：我的小程序接入AI预测</h2><p>既然凭空想出来的有点自嗨，那么如果和现有的产品结合呢？比如我的小程序：今天你拉了么</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409302001411.jpg" alt="小程序" referrerpolicy="no-referrer"></p>
+<p>理论上这个小程序记录了你拉粑粑的时间，那么这个时间序列，是不是可以被用来做预测？</p>
+<p>当然，我也可以选择自己写算法什么的，什么聚类，拟合啥的，但是我也可以把时间序列全部告诉 AI，让他给我算啊。</p>
+<p>总算有点当老板的感觉了：“过程我不关心，你给我算一个时间就对了”。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202410071438019.jpeg" alt="当老板" referrerpolicy="no-referrer"></p>
+<p>但是 AI 罢工了，因为涉及到医疗相关的事情，他拒绝回答，只让你去看医生。(喂，我炒了你啊)。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409302002284.jpeg" alt="看医生" referrerpolicy="no-referrer"></p>
+<p>那么我隐去粑粑相关的事情，直接告诉一个时间序列，让他找规律，输出下一个时间序列，就好了呀。</p>
+<p>果不其然，顺利输出。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409302003269.jpeg" alt="顺利预测" referrerpolicy="no-referrer"></p>
+<p>随着数据的增加，我自己的预测也越来越准，真的让我”更了解自己了呢”。</p>
+<p>广告语我也想好了：“掌控你的大号时间，让你的大事更从容。拉粑粑，认准今天你拉了么，神预测，超准！”。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409302038182.gif" alt="我王多鱼投了" referrerpolicy="no-referrer"></p>
+<p>甚至我让 AI 帮我出一个分镜脚本：</p>
+<p>两个候选人，候选人A到面试了想上大号，错失宝贵机会。</p>
+<p>候选人B，从容打开我的小程序，AI预测，好，跟面试官协商一下时间。</p>
+<p>下一个镜头就是候选人B成为CEO，迎娶白富美。</p>
+<p>而村头也多了一个老人，逢人就说：年轻人啊，快上小程序搜今天你拉了么，真的能扭转命运啊。</p>
+<p>也算是用 AI 赚到了第一桶”金(粑粑)”。</p>
+<h2 id="AI-浏览器：我的私人助手"><a href="#AI-浏览器：我的私人助手" class="headerlink" title="AI+浏览器：我的私人助手"></a>AI+浏览器：我的私人助手</h2><p>但是这样的产品，还是有成本呀。小程序不需要部署静态资源，但是数据，AI预测，都还是需要服务器的呀，对应的域名啥的，都是成本。</p>
+<p>那人家模型api这么复杂的东西都免费了，我能做一款产品，把除了研发之外的成本降到0吗？</p>
+<p>回到最初的问题，为什么我需要服务器，除了存储历史记录，关键在于跨域，那么，如果不需要存储历史记录。</p>
+<p>如果仅仅只是绕过跨域的话，用 chrome 扩展呀，妥妥解决跨域的问题。</p>
+<p>那这么多人，用我一个人的 apiKey 也撑不住啊，免费羊毛也不是这么薅的，但是这简单啊，整个 form 表单，让用户自己填不就完事了？</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409302012256.jpg" alt="apiKey" referrerpolicy="no-referrer"></p>
+<p>那我做什么功能呢？</p>
+<p>熟悉我的应该都知道我最近一直在分析各种程序员大佬，这里就有一些需求(很多人说我做了爬虫，但是我哪敢啊，我书香门第，我爷爷对我就一个要求：坚决不做违法的事情)。我需要分析文章的内容，大佬的标题文风，我可以复制文章，粘贴到其他平台，但是他有图片啊。</p>
+<p>那我既然做了 chrome 扩展，它的优势，不就是我天然能够拿到网页内容吗？</p>
+<p>哎不对，我现在想总结文风，我下回还想总结标题风格，我下回还想翻译一下呢！</p>
+<p>不过就是一个提示词呗，整个 form 表单，存起来。网页内容用 ‘${}’ 替换。</p>
+<p>至此，一个可以自定义提示词，天然具备网页内容，0成本的 chrome 扩展就诞生了。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409302013352.jpg" alt="自定义提示词" referrerpolicy="no-referrer"></p>
+<p>我马不停蹄，给我和神光讲了个笑话：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409302016575.jpg" alt="神光笑话" referrerpolicy="no-referrer"></p>
+<p>有点冷，但是 whatever，我做的扩展，我想干什么，就干什么。ps：你也可以，不就是提示词那些事嘛。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409302021462.jpg" alt="笑话的提示词" referrerpolicy="no-referrer"></p>
+<p>等等，我可以在扩展里用AI对话了。</p>
+<p>那是不是意味着，我可以不切屏，就可以完成和AI对话的辅助功能了？</p>
+<p>等等，我记得我牛客笔试的时候，会提示我切屏次数太多？</p>
+<p>那，我有一个不成熟的想法~~~~~carl哥，有时候，颠覆一个行业的，可能是另一个行业哦～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>以上，就是一个抠门程序员和免费AI大模型的故事了。</p>
+<p>从聊天机器人，到夭折的爱码市，到AI预测拉粑粑，再到我绝对0成本的私人助手。</p>
+<p>喜欢就点个赞吧！</p>
+<p>也要记得关注我公众号：程序员芋仔。每周更新一篇程序员大佬分析。</p>
+<p>后互联网时代，我也组建了一个前端抱团取暖群，欢迎加我微信来撩：mxb151，加群备注简单的自我介绍和加群哦。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2024/09/23/%E9%AB%98%E5%BA%A6%E8%87%AA%E5%BE%8B%E9%AB%98%E5%BA%A6%E4%B8%93%E6%B3%A8%E7%9A%84%22%E9%B8%A1%E6%B1%A4%E6%95%99%E4%B8%BB%22---%E8%81%8A%E8%81%8A%E5%86%B4%E7%BE%BD%E8%80%81%E5%B8%88/">高度自律高度专注的"鸡汤教主"---聊聊冴羽老师</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2024/10/14/%E6%AD%BB%E6%9C%88%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E5%8E%BB%E5%81%9A%E4%B8%80%E4%B8%AA%E8%83%BD%E6%89%93%E8%B4%A5Webpack%E7%9A%84%E4%B8%9C%E8%A5%BF%E5%87%BA%E6%9D%A5/">死月，为什么不去做一个能打败Webpack的东西出来</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>当抠门程序员，遇到了免费AI大模型</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%85%E4%BA%8B%E7%9A%84%E5%BC%80%E5%A7%8B"><span class="toc-text">故事的开始</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E8%81%8A%E5%A4%A9%E6%9C%BA%E5%99%A8%E4%BA%BA"><span class="toc-text">AI初体验：聊天机器人</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI%E6%90%9E%E4%BB%A3%E7%A0%81%EF%BC%9A%E7%88%B1%E7%A0%81%E5%B8%82"><span class="toc-text">AI搞代码：爱码市</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-%E4%BA%A7%E5%93%81%EF%BC%9A%E6%88%91%E7%9A%84%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%8E%A5%E5%85%A5AI%E9%A2%84%E6%B5%8B"><span class="toc-text">AI+产品：我的小程序接入AI预测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-%E6%B5%8F%E8%A7%88%E5%99%A8%EF%BC%9A%E6%88%91%E7%9A%84%E7%A7%81%E4%BA%BA%E5%8A%A9%E6%89%8B"><span class="toc-text">AI+浏览器：我的私人助手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

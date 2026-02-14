@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>js忍者秘籍笔记：3-5</span>
+        </h2>
+        <section class="post-content">
+            <p>最近在看一些博客的时候，内容经常是来自javascript忍者秘籍，最近虽然一直在面试实习，但是不能把注意力一直放在应付面试上，提升自己的能力也很重要，所以一直抽空看看忍者秘籍。总体来说，这本书，初学者就不用看了，有一定基础之后来看，感悟会比较多。我在这一遍阅读3-5章的过程中，其实并没有很难，有些概念，之前就懂了，这次的阅读，其实更多程度上是对js一个系统的梳理过程。</p>
+<span id="more"></span>
+
+<h3 id="第三章-函数"><a href="#第三章-函数" class="headerlink" title="第三章 函数"></a>第三章 函数</h3><p>函数为什么这么重要？</p>
+<ol>
+<li>函数可以被调用，通常是异步的。<br>  传统的gui编程界面，通常要做以下几件事：<ol>
+<li>创建用户界面</li>
+<li>进入轮询，等待事件触发</li>
+<li>调用事件的处理程序（也成为监听器，listener）<br>  <em>而浏览器不同，代码不需要负责事件的轮询和事件派发，而是浏览器帮忙处理，而我们的职责是为浏览器发生的各种事件建立处理的程序handler，这些事件的调用被放置在一个事件队列，然后浏览器调用这些handler</em></li>
+</ol>
+</li>
+<li>函数声明和函数表达式的异同之一：勘误，已经改变。函数表达式也是有name的,但是匿名函数的name是空<pre><code class="js">function test()&#123;&#125;;
+var test2 = function()&#123;&#125;;
+console.log(test2.name);//test2
+console.log(test.name);//test
+(function()&#123;console.log(arguments.callee.name)&#125;)();//&quot;&quot;
+</code></pre>
+</li>
+<li>函数作用域：<ol>
+<li>变量声明的作用域开始于声明的地方，结束于所在函数的结尾，与代码的嵌套无关</li>
+<li>函数声明的作用域是指声明该函数的整个函数范围，与代码嵌套无关，</li>
+<li>对于作用域声明，全局上下文就像一个包含页面所有代码的超大型函数</li>
+</ol>
+</li>
+<li>this依赖于函数的调用方式<ol>
+<li>作为函数调用</li>
+<li>作为方法调用</li>
+<li>作为构造器调用<br> 构造器的特点：<ol>
+<li>创建一个空对象</li>
+<li>构造函数的原型赋值给空对象的原型</li>
+<li>如果没有显示返回值，新创建的对象将作为构造器的返回值进行返回</li>
+</ol>
+</li>
+<li>call,apply,bind<br> 可以在回调函数中强制指定上下文，也就是this</li>
+</ol>
+</li>
+</ol>
+<h3 id="第四章-挥舞函数"><a href="#第四章-挥舞函数" class="headerlink" title="第四章 挥舞函数"></a>第四章 挥舞函数</h3><ol>
+<li>递归的时候，匿名函数起到很大的作用<ol>
+<li>做为对象的属性定义的函数，在递归的时候可以通过this.属性名来避免别的对象的引用递归失败的问题，但是又限制了新对象的属性名必须与之前相同的问题</li>
+<li>通过内联函数可以很好的解决这个问题。  </li>
+<li>当然,arguments.callee也能很好的解决这个问题，但是callee在严格模式下不能使用，这一点不是很清楚为什么。</li>
+</ol>
+</li>
+<li>函数也是对象<br> <em>很好用的一个特点就是函数也可以像对象那样拥有属性和属性值</em><ol>
+<li><p>函数的存储<br> 将函数存储起来是一个常见的场景，通过数组来存储也行，但是并不优雅，而且相同函数的判断也是很尴尬，采取对象存储的方法更为直观高效。</p>
+<ol>
+<li>新建一个对象store,中间的属性有id,cache以及add方法。</li>
+<li>add(someFunc)的时候通过检测someFunc.id是否存在，不存在就增加id属性，同时将其存入cache中。</li>
+<li>通过对id的判断就可以知道函数有没有添加到cache中</li>
+</ol>
+</li>
+<li><p>自记忆函数，这种函数能够记住之前的结果，来避免已经执行过的不必要的计算，原理就是暗中为函数增加属性<br> <em>缓存之前的计算结果</em></p>
+<ol>
+<li>计算之前检测是否之前计算过，计算过，直接输出结果。没有则进行计算，并将结果进行缓存<br> 优点：</li>
+<li>性能好</li>
+<li>发生在幕后，开发人员不需要进行相关的特殊操作。<br> 缺点：</li>
+<li>必然牺牲掉内存</li>
+<li>有些纯粹主义者可能认为一个函数做一件事就可以了，这样容易造成混乱</li>
+<li>很难测试一个算法的性能<br> <em>缓存记忆dom元素</em><br> 通过元素的标签查询dom元素是很常见的操作，但是性能并不是特别好，可以利用缓存来保存已经匹配到的元素，<strong>性能提升很大</strong>。</li>
+</ol>
+<pre><code class="js">function getElements(name)&#123;
+  if(!getElements.cache) getElements.cache = &#123;&#125;;
+  return getElements.cache[name] =
+     getElements.cache[name] ||
+     document.getElementsByTagName(name);
+&#125;
+</code></pre>
+<p> 这两个实例可以看出，作为函数的属性来对一些信息进行存储，可以提高性能，同时又不会对别的代码或者全局环境造成干扰，是一个很好的特性。</p>
+</li>
+<li><p>伪造数组方法，并没有看懂有什么好处。以后再读<br> 首先，数组也是对象，是可以添加属性的。</p>
+</li>
+</ol>
+</li>
+<li>可变长度的参数列表<br> js一个灵活的特性就是接收任意长度的参数<ol>
+<li>Math.max,Math.min方法不支持数组形式的参数，怎么办？通过Math.max.apply(null,arr)就可以。apply的一个灵活运用。太简单。</li>
+<li>函数重载<br>  js没有函数重载，但是通过参数的长度其实是可以实现一些类似重载的功能的。<br>  函数的功能，可以根据输入参数的数目以及类型来进行判断，进而实现意义上的函数重载<ol>
+<li>函数的length属性，表明了函数定义的时候的形参个数，而不是arguments.length<br> <em>通过length属性，可以知道函数定义的形参个数，arguments.length可以知道函数调用的时候的实际参数个数</em></li>
+<li>addmethod方法的写法，<strong>经典，牛逼，闭包的经典应用</strong></li>
+</ol>
+</li>
+</ol>
+</li>
+<li>判断一个对象是不是函数？<br> 正常情况下:typeof 可以解决问题。但是存在某些浏览器不兼容的问题<br> 可以采用 Object.prototype.toString.call(func) &#x3D;&#x3D;&#x3D; “[object Function]”来判断，也可以用来验证别的如reg,math等</li>
+</ol>
+<h3 id="第五章-闭包"><a href="#第五章-闭包" class="headerlink" title="第五章 闭包"></a>第五章 闭包</h3><ol>
+<li><p>闭包其实不难，重点在于，当函数声明的时候，不仅声明了函数，还确定了它的作用域链，这个作用域链和函数在什么时候执行无关，只和函数定义或者声明的地方有关。这个是理解闭包的关键。当函数执行的时候，根据函数内部定义的变量确定了它内部最优先访问到的变量，如果不存在，会依次向上查找。同时，闭包保存的是变量的引用，而不是变量的值。</p>
+</li>
+<li><p>闭包的作用</p>
+<ol>
+<li>私有变量：封装一些信息作为私有变量，只能通过实例的方法对其进行访问。</li>
+<li>回调和计时器：回调函数通常希望访问一些外部变量，所以可以在回调的外部定义变量，回调的函数因为声明的时候确定外部作用域，自然就将那些变量包含进去，从而在回调中访问到这些变量，计时器的道理与之相同</li>
+<li>绑定函数上下文：这本书写的时候应该是没有bind函数，所以作者直接写了一个bind，其实也并不难,返回值是一个函数，外部定义了私有变量保留了上下文而已。</li>
+<li>偏函数应用:就是函数的柯里化，预先填充几个原函数的参数值，返回一个已经包含了这几个参数的新函数。</li>
+<li>函数记忆：之前的文章其实提到了，就是函数本身也是一个对象，可以有属性，利用这个特性可以缓存之前计算的结果。这里给出了在函数的原型上定义一个memorize的方法，使用函数的时候，调用memorize就可以实现缓存。<br>这里提出的改进是利用闭包来实现函数的记忆功能:采用立即执行函数将原函数进行打包，从而使用者不必每次调用memorize来进行缓存。</li>
+</ol>
+</li>
+<li><p>立即执行函数</p>
+<ol>
+<li>创建临时作用域，将变量名做为参数传递，换成一个短的参数，可以让代码更加简洁</li>
+<li>循环绑定：利用立即执行函数创建一个闭包从而达到循环绑定想要的效果</li>
+<li>类库包装：</li>
+</ol>
+<pre><code class="js">(function()&#123;
+  var jQuery = window.jQuery = function()&#123;
+    //
+  &#125;
+  //
+&#125;)
+
+//方式2
+var jQuery = function()&#123;
+  function jQuery()&#123;
+    //init
+  &#125;
+  //yewu code
+  return jQuery;
+&#125;
+</code></pre>
+</li>
+</ol>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2017/03/11/%E6%97%A0%E9%99%90%E6%BB%9A%E5%8A%A8%E7%9A%84%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88(%E4%BA%8C)%EF%BC%9A%E6%87%92%E5%8A%A0%E8%BD%BD%E5%AE%9E%E7%8E%B0/">无限滚动的优化方案(二)：懒加载实现</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2017/03/18/%E7%BB%A7%E6%89%BF%E7%9A%843%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/">继承的三种实现方式</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>js忍者秘籍笔记：3-5</h4>
+<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0-%E5%87%BD%E6%95%B0"><span class="toc-text">第三章 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0-%E6%8C%A5%E8%88%9E%E5%87%BD%E6%95%B0"><span class="toc-text">第四章 挥舞函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0-%E9%97%AD%E5%8C%85"><span class="toc-text">第五章 闭包</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

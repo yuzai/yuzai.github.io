@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>最简Rxjs入门教程--别再被Rxjs的概念淹没了</span>
+        </h2>
+        <section class="post-content">
+            <p>最近一直在学习Rxjs，在学习过程中，踩了不少坑，也发现网上的文章都或多或少存在些问题，要么是内容过时了（现在已经Rxjs6），要么就是上来就讲原理（让我一脸懵逼），要么就是讲的不清楚，感觉踩了非常多的坑，学习曲线相对比较陡峭。理解基本概念之后再回头来看，其实并不难理解，但是确实走了很多弯路，所以整理下，同为打工人，能少踩点坑就少踩点坑把。</p>
+<span id="more"></span>
+
+<h2 id="学习姿势"><a href="#学习姿势" class="headerlink" title="学习姿势"></a>学习姿势</h2><p>在我学习的时候，主要就是看官方文档，对一些含糊的地方，没来得及及时验证，导致半懂不懂，遇到实际文档需要反复查看。</p>
+<p>最好的方法，就是边看边写，强烈推荐通过 <a target="_blank" rel="noopener" href="https://stackblitz.com/">https://stackblitz.com/</a> 中的Rxjs模版创建一个基础的版本，非常方便。下文的实例均是在此环境中运行。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gu2lwnx6sij30yg07xt95.jpg" alt="Rxjs模版构建.png" referrerpolicy="no-referrer"></p>
+<h2 id="坑点预警"><a href="#坑点预警" class="headerlink" title="坑点预警"></a>坑点预警</h2><ol>
+<li><p>很多文章，会一上来就扯发布订阅、观察者模式，迭代器模式，增加学习成本也罢，关键是在实际学习中，总是想着这两个模式，反而会带来更高的理解成本。一个新玩意，你可能都还不会用，就开始尝试理解原理了，这怎么都讲不通。</p>
+</li>
+<li><p>一个更常见的误解是认为 Rxjs 就是 addEventListener 那样的订阅者模式，subscribe 这个方法名也很有误导性。碰到subscribe，抛开脑子里的发布订阅，看实例，理解其本质即可，不要纠结于叫法。这一点让我久久不能入门，其实这时候，抛开已有知识，直接去学习新知识，才是最佳的方法。</p>
+</li>
+<li><p>官网文档中提到了非常多的难以理解的概念，会着重将设计思路，什么pull， push，相信我，这些等你真正用了之后，再回过头来看，一目了然，但是一开始要是陷进去了，那就难过了</p>
+</li>
+<li><p>纠结在操作符上，Rxjs可以看作是流的lodash库，总不能一开始就看懂lodash里面的所有方法吧，所以不要纠结在操作符上，遇到了，查一下，看一看理解了就好</p>
+</li>
+</ol>
+<p>以上就是比较坑的点，在后续的学习中把避免这些坑，能少走很多弯路。</p>
+<h2 id="Rxjs介绍"><a href="#Rxjs介绍" class="headerlink" title="Rxjs介绍"></a>Rxjs介绍</h2><p>Rxjs官方是这样说的: Think of RxJS as Lodash for events. 把Rxjs想像成针对events的lodash，也就是说，Rxjs本质是个工具库，处理的是事件。这里的events，可以称之为流。</p>
+<p>那么流是指什么呢？举个例子，代码中每1s输出一个数字，用户每一次对元素的点击，就像是在时间这个维度上，产生了一个数据集。这个数据集不像数组那样，它不是一开始都存在的，而是随着时间的流逝，一个一个数据被输出出来。这种异步行为产生的数据，就可以被称之为一个流，在Rxjs中，称之为ovservalbe（抛开英文，本质其实就是一个数据的集合，只是这些数据不一定是一开始就设定好的，而是随着时间而不断产生的）。而Rxjs，就是为了处理这种流而产生的工具，比如流与流的合并，流的截断，延迟，消抖等等操作。</p>
+<h3 id="理解基本定义-observable-observer-subscription"><a href="#理解基本定义-observable-observer-subscription" class="headerlink" title="理解基本定义: observable, observer, subscription"></a>理解基本定义: observable, observer, subscription</h3><p>可以通过如下的方式构建一个最基础的流，500ms时输出一个数组[1,2,3]，1s时输出一个对象{a: 1000}， 3s时，输出’end’， 然后在第4s终止该流。</p>
+<pre><code class="js">import &#123; Observable &#125; from &quot;rxjs&quot;;
+
+// stream$尾部的$是表示当前这个变量是个ovservable
+const stream$ = new Observable(subscriber =&gt; &#123;
+  setTimeout(() =&gt; &#123;
+    subscriber.next([1, 2, 3]);
+  &#125;, 500);
+  setTimeout(() =&gt; &#123;
+    subscriber.next(&#123; a: 1000 &#125;);
+  &#125;, 1000);
+  setTimeout(() =&gt; &#123;
+    subscriber.next(&quot;end&quot;);
+  &#125;, 3000);
+  setTimeout(() =&gt; &#123;
+    subscriber.complete();
+  &#125;, 4000);
+&#125;);
+
+// 启动流
+const subscription = stream$.subscribe(&#123;
+  complete: () =&gt; console.log(&quot;done&quot;),
+  next: v =&gt; console.log(v),
+  error: () =&gt; console.log(&quot;error&quot;)
+&#125;);
+// output
+// [1,2,3]  // 500ms时
+// &#123;a:1000&#125; // 1000ms时
+// end // 3000ms时
+// done // 4000ms时
+</code></pre>
+<p>在上述的代码中，通过<code>new Observalbe(fn)</code>定义了一个流，又通过<code>stream$.subscribe(obj)</code>启动了这个流，当500ms后，执行了&#96;&#96;&#96;&#96;subsciber.next([1,2,3])<code>，此时，通过传入的</code>obj.next&#96;&#96;&#96;方法输出了该值。</p>
+<p>这里有几个点：</p>
+<ol>
+<li>subscribe不是订阅，而是启动这个流，可以看到，subscribe后，才会执行next方法</li>
+<li>构建observable的时候，会有一个subscriber.next，这里就是控制这个流中数据的输出。</li>
+</ol>
+<p>这里还有几个问题：</p>
+<ol>
+<li>能不能多次启动流，如果可以，那么多次启动时，相互之间的输出会不会干扰？</li>
+<li>既然有了启动流，那么能不能关闭流？</li>
+</ol>
+<p>对于第一个问题，先上答案，可以多次启动，多次启动的流之间是相互独立的。可以通过下面这个例子验证：</p>
+<pre><code class="js">import &#123; Observable &#125; from &quot;rxjs&quot;;
+// 记录时间
+const now = new Date().getTime();
+
+// 创建流
+const stream$ = new Observable(subscriber =&gt; &#123;
+  setTimeout(() =&gt; &#123;
+    subscriber.next([1, 2, 3]);
+  &#125;, 500);
+  setTimeout(() =&gt; &#123;
+    subscriber.next(&#123; a: 1000 &#125;);
+  &#125;, 1000);
+  setTimeout(() =&gt; &#123;
+    subscriber.next(&quot;end&quot;);
+  &#125;, 3000);
+  setTimeout(() =&gt; &#123;
+    subscriber.complete();
+  &#125;, 4000);
+&#125;);
+
+// 启动流
+const subscription1 = stream$.subscribe(&#123;
+  complete: () =&gt; console.log(&quot;done&quot;),
+  next: v =&gt; console.log(new Date().getTime() - now, &quot;ms stream1&quot;, v),
+  error: () =&gt; console.log(&quot;error&quot;)
+&#125;);
+
+//  延时1s后，启动流
+setTimeout(() =&gt; &#123;
+  const subscription2 = stream$.subscribe(&#123;
+    next: v =&gt; console.log(new Date().getTime() - now, &quot;ms stream2&quot;, v)
+  &#125;);
+&#125;, 1000);
+
+// output
+// 506ms stream1 [1, 2, 3]
+// 1002ms stream1 &#123;a: 1000&#125;
+// 1505ms stream2 [1, 2, 3]
+// 2009ms stream2 &#123;a: 1000&#125;
+// 3002ms stream1 end
+// done
+// 4006ms stream 2 end
+</code></pre>
+<p>上面这个例子在最初启动了流1，延时1s后启动了流2，可以从输出看到，两个流的输出其实是相互独立的，而实际上也是这样设计的，流与流相互独立，互不干扰。</p>
+<p>对于问题2，看到上述的写法应该能猜到，stream$.subscribe()的返回值subscription上存在一个方法unsubscribe，可以将流停止。演示代码如下：</p>
+<pre><code class="js">import &#123; Observable &#125; from &quot;rxjs&quot;;
+
+const now = new Date().getTime();
+
+const stream$ = new Observable(subscriber =&gt; &#123;
+  setTimeout(() =&gt; &#123;
+    subscriber.next([1, 2, 3]);
+  &#125;, 500);
+  setTimeout(() =&gt; &#123;
+    subscriber.next(&#123; a: 1000 &#125;);
+  &#125;, 1000);
+  setTimeout(() =&gt; &#123;
+    subscriber.next(&quot;end&quot;);
+  &#125;, 3000);
+  setTimeout(() =&gt; &#123;
+    subscriber.complete();
+  &#125;, 4000);
+&#125;);
+
+// 启动流
+const subscription = stream$.subscribe(&#123;
+  complete: () =&gt; console.log(&quot;done&quot;),
+  next: v =&gt; console.log(v),
+  error: () =&gt; console.log(&quot;error&quot;)
+&#125;);
+
+// 1s后，关闭流
+setTimeout(() =&gt; &#123;
+  subscription.unsubscribe();
+&#125;, 1000);
+// output 
+// [1,2,3]  // 500ms时
+// &#123;a: 1000&#125; // 1000ms时
+</code></pre>
+<p>上述代码在1000ms时，执行了<code>subscription.unsubscribe()</code>，从而终止了该启动中的流，后续的输出都不会触发next函数，但是这并不意味着后续3000ms定时器，和4000ms定时器的解除，该定时器的回调依旧会执行，只是因为流已经关闭，不会执行next的回调。</p>
+<p>以上，就是一个流的创建，启动和停止。在这里面，有好几个变量，重新整理下代码，如下：</p>
+<pre><code class="js">import &#123; Observable &#125; from &quot;rxjs&quot;;
+
+// 流的创建
+const stream$ = new Observable(subscriber =&gt; &#123;
+  setTimeout(() =&gt; &#123;
+    subscriber.next([1, 2, 3]);
+  &#125;, 500);
+&#125;);
+
+// 如何消费流产生的数据，observer
+const observer = &#123;
+  complete: () =&gt; console.log(&quot;done&quot;),
+  next: v =&gt; console.log(v),
+  error: () =&gt; console.log(&quot;error&quot;)
+&#125;;
+
+// 启动流
+const subscription = stream$.subscribe(observer);
+
+setTimeout(() =&gt; &#123;
+  // 停止流
+  subscription.unsubscribe();
+&#125;, 1000);
+</code></pre>
+<p>上述过程中，涉及到了3个变量</p>
+<ol>
+<li><code>stream$</code>, 对应到Rxjs中，就是一个observable，单纯从英文翻译到中文的含义来看，基本很难理解。但是它的本质其实就是一个随时间不断产生数据的一个集合，称之为流更容易理解。而其对象存在一个subscribe方法，调用该方法后，才会启动这个流（也就是数据才会开始产生），这里需要注意的是多次启动的每一个流都是独立的，互不干扰。</li>
+<li><code>observer</code>，代码中是<code>stream$.subscribe(observer)</code>，对应到Rxjs中，也是称之为observer，从英文翻译到中文的含义来看，也很难理解。从行为上来看，无非就是定义了如何处理上述流产生的数据，称之为流的处理方法，更容易理解</li>
+<li><code>subscription</code>，也就是<code>const subscription = stream$.subscribe(observer);</code>，这里对应到Rxjs，英文也是称之为subscription，翻译过来是订阅，也是比较难以理解，其实它的本质就是暂存了一个启动后的流，之前提到，每一个启动后的流都是相互独立的，而这个启动后的流，就存储在subscription中，提供了unsubscribe，来停止这个流。</li>
+</ol>
+<p>简单理解了这三个名词<code>observable, observer, subscription</code>后，从数据的角度来思考：observable定义了要生成一个什么样的数据，其subscribe方法，接收一个observer（定义了接收到数据如何处理），并开始产生数据，该方法的返回值，subscription, 存储了这个已经开启的流（暂时没想到啥好的中文名），同事具有unscbscribe方法，可以将这个流停止。整理成下面这个公式：</p>
+<blockquote>
+<p>Subscription &#x3D; Observable.subscribe(observer)<br>observable: 随着时间产生的数据集合，可以理解为流，其subscribe方法可以启动该流<br>observer: 决定如何处理数据<br>subscription: 存储已经启动过的流，其unsubscribe方法可以停止该流</p>
+</blockquote>
+<h3 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h3><p>操作符对于Rxjs可以说是非常重要，但是对于初学者，可以先不沉浸于理解一个一个的操作符，先理解上文的概念更为重要，故这里不做详细的介绍，在实战中遇到了去官网查即可。</p>
+<h3 id="Subject"><a href="#Subject" class="headerlink" title="Subject"></a>Subject</h3><p>Subject也是Rxjs中比较重要的概念，从英文上不太好理解，直接上代码：</p>
+<pre><code class="js">import &#123; Subject &#125; from &quot;rxjs&quot;;
+
+// 创建subject
+const subject = new Subject();
+
+// 订阅一个observer
+subject.subscribe(v =&gt; console.log(&quot;stream 1&quot;, v));
+// 再订阅一个observer
+subject.subscribe(v =&gt; console.log(&quot;stream 2&quot;, v));
+// 延时1s再订阅一个observer
+setTimeout(() =&gt; &#123;
+  subject.subscribe(v =&gt; console.log(&quot;stream 3&quot;, v));
+&#125;, 1000);
+// 产生数据1
+subject.next(1);
+// 产生数据2
+subject.next(2);
+// 延时3s产生数据3
+setTimeout(() =&gt; &#123;
+  subject.next(3);
+&#125;, 3000);
+// output
+// stream 1 1 //立即输出
+// stream 2 1 //立即输出
+// stream 1 2 //立即输出
+// stream 2 2 //立即输出
+// stream 1 3 //3s后输出
+// stream 2 3 //3s后输出
+// stream 3 3 //3s后输出
+</code></pre>
+<p>可以看到，Subject的行为和发布订阅模式非常接近，subscribe去订阅，next触发。事件的订阅通过subscribe，事件的触发使用next，从而实现一个发布订阅的模式。可以说，笔者本人是看到这个Subject，终于和已有的知识体系打通，之后才重新阅读官方文档，才算是弄懂了点皮毛。当然，subject还有别的用法，此处不再详细介绍</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>讲了这么多，其实整个Rxjs的内容还非常多，本文的初衷只是坑点记录，帮助未入门的同学更快把握到精髓，在看官网的文档前读一读，比起上来就理解几个英文概念，能少走不少弯路。流启动、流的停止等都是笔者个人的理解，并非统一的叫法，仅仅是方便理解而起的，不要太过在意。</p>
+<p>本人也还在学习中，共勉。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.crimx.com/2018/02/16/understanding-rxjs/">https://blog.crimx.com/2018/02/16/understanding-rxjs/</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.jerry-hong.com/series/rxjs/">https://blog.jerry-hong.com/series/rxjs/</a></li>
+</ol>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2020/07/13/vscode%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%BE%E5%88%B0xxx.jsx%E7%9A%84%EF%BC%9Avscode%E7%82%B9%E5%87%BB%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%ACjsx%E5%AE%9A%E4%B9%89/">vscode是如何找到xxx.jsx的：vscode点击无法跳转jsx定义</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2020/11/09/%E6%9E%81%E7%AE%80webpack%E6%8F%92%E4%BB%B6%EF%BC%9A%E5%BD%BB%E5%BA%95%E8%A7%A3%E5%86%B3vscode%E7%82%B9%E5%87%BB%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%AC%E9%97%AE%E9%A2%98/">极简webpack插件：彻底解决vscode点击无法跳转问题</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>最简Rxjs入门教程--别再被Rxjs的概念淹没了</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%A6%E4%B9%A0%E5%A7%BF%E5%8A%BF"><span class="toc-text">学习姿势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9D%91%E7%82%B9%E9%A2%84%E8%AD%A6"><span class="toc-text">坑点预警</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Rxjs%E4%BB%8B%E7%BB%8D"><span class="toc-text">Rxjs介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%90%86%E8%A7%A3%E5%9F%BA%E6%9C%AC%E5%AE%9A%E4%B9%89-observable-observer-subscription"><span class="toc-text">理解基本定义: observable, observer, subscription</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Subject"><span class="toc-text">Subject</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

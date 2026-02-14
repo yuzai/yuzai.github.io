@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>可视化埋点（二）：intersectionObserver 实战经验</span>
+        </h2>
+        <section class="post-content">
+            <p>最近一直在开发可视化埋点系统，其中元素的曝光埋点，就是借助了 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API">intersectionObserver</a> 这个原生 api。也是网上推荐度比较高的方案，同时 2022 年，该 api <a target="_blank" rel="noopener" href="https://caniuse.com/?search=intersection">兼容性</a>也已经很高，同时也有 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/intersection-observer">polyfill</a>，基本上使用无虞。</p>
+<p>intersectionObserver 本身 api 非常简单，但是在实际使用的过程中，由于可视化埋点的一些特殊性以及对埋点准确性的要求，还是遇到了一些 dom 变更后的边缘场景，本文便是对这些边缘场景的一个记录及实现背后的一些考虑。</p>
+<span id="more"></span>
+
+<p>通常来讲，元素的埋点是开发者主动在元素中直接埋点，而笔者正在开发的可视化埋点，在数据收集侧的工作，是异步从后台获取用户需要的元素 xpath，然后再通过 xpath 寻找到元素，调用 intersectionObserver 的 observe 方法进行监听元素的曝光。所以在进行监听的时机上，都是在元素挂载到 dom 后进行元素的监听，那么初次监听，是否会触发其回调，便关系到曝光埋点的准确性。</p>
+<p>同时，可视化埋点也监听页面 dom 的变更，当变更后，需要解除旧元素的监听，同时增加对新元素的监听。那么如果多次监听同一元素，是否会多次触发回调，也影响到曝光的准确性。</p>
+<p>为了快速上线第一版，笔者最初的设计方案为：</p>
+<ol>
+<li>根据服务端返回的 xpath，寻找到对应的 dom 元素，对元素进行 observe</li>
+<li>监听 dom 变更事件，当 dom 发生改变后，重新根据 xpath 寻找 dom 元素，对元素进行再次 observe</li>
+</ol>
+<p>在该方案中，存在几个触发时机可能导致的问题：</p>
+<ol>
+<li>当监听发生在元素渲染到页面后，首次监听的同时，是否会触发回调（影响到初次曝光的准确性）</li>
+<li>多次监听同一 dom 元素，是否会多次触发回调（影响到 dom 变更，多次监听同一元素后，曝光的准确性）</li>
+</ol>
+<p>经过实际测验，得到如下结论：</p>
+<ol>
+<li>当初次监听元素时，会立即触发一次回调</li>
+<li>多次监听同一元素，并不会多次触发回调</li>
+</ol>
+<p>在上述逻辑成立的情况下，笔者最初的方案其实是可以正常工作，对于初次曝光，虽然发生在元素渲染到 dom 之后，但是由于会立即触发一次，故初次曝光能够正常上报。而当 dom 发生变更后，消失的元素，虽然没有调用 unobserve，但是由于该元素消失了，并不会影响后续曝光埋点的上报，所以并没有带来大的问题，而 dom 变更后，元素如果依然存在，虽然再次进行了监听，但是多次监听并不影响同一元素，所以其实也没有问题。</p>
+<p>对于第一版，上线后也确实能够正常工作，但是对于没有 unobserve 这一点，由于 js 的垃圾回收机制，必须是没有引用后才会销毁，而没有 unobserve，那么内部必然会维护一份监听的元素的列表，保留了已经从 dom 中移除的元素的引用，从而造成内存泄漏。</p>
+<p>故需要做一些策略来避免该问题（不然代码也会被吐槽），思路如下：</p>
+<p>维护一份 xpath -&gt; 元素的映射，当 dom 发生变更时，遍历所有 xpath 寻找对应的元素，</p>
+<p>如果元素同映射中一致，那么表示该元素没有发生变更，此时可以直接忽略，什么都不做。</p>
+<p>而如果元素发生变化，那么调用 unobserve 取消旧元素的监听，同时对新元素进行监听即可。</p>
+<p>完整的伪代码如下：</p>
+<pre><code class="js">// 工具函数命名很清晰，含义不赘述
+import &#123; getEleByXpath, getXpathByEle, debounce &#125; from &#39;utils&#39;; 
+
+class track &#123;
+    constructor() &#123;
+        /* 
+        &#123;
+            xpath: &#39;&#39;,
+            id: &#39;&#39;id
+        &#125;
+        */
+        this.config = &#123;&#125; // 存储远程服务端返回的埋点 xpath 信息
+        /*
+            [xpath]: el,
+        */
+        this.map = &#123;&#125; // 维护的 xpath -&gt; el 映射
+        this.observer = null; // intersectionObserver 实例
+    &#125;
+    // 远端获取需要曝光点的元素
+    getConfig() &#123;
+        return fetch(&#39;xxx&#39;).then(res =&gt; &#123;
+            this.config = res;
+            this.config.forEach(item =&gt; &#123;
+                // 初始化 xpath -&gt; el 映射
+                this.map[item.xpath] = null;
+            &#125;)
+        &#125;);
+    &#125;
+    // 监听 dom 变更
+    addDomtreeMutatorObserver() &#123;
+        // 不关心属性变化
+        const config = &#123; attributes: false, childList: true, subtree: true &#125;;
+        // 监听dom变更，消个抖
+        const observer = new MutationObserver(debounce(this.observe.bind(this), 200));
+        observer.observe(document.body, config);
+    &#125;
+    // 监听元素曝光
+    observe() &#123;
+        // 此处可以加个 requestIdleCallback 来增强性能
+        this.config.forEach((item) =&gt; &#123;
+            const targetEl = getEleByXpath(item.xpath);
+
+            // 新旧元素不一致才需要取消旧元素监听，增加新元素监听
+            if (targetEl !== this.map[item.xpath]) &#123;
+                // 元素存在，就监听
+                if (targetEl) &#123;
+                    this.observer.observe(targetEl);
+                &#125;
+                // 取消旧元素的监听
+                if (this.map[shadow.xpath]) &#123;
+                    this.observer.unobserve(this.map[shadow.xpath]);
+                &#125;
+                // 更新map中的el
+                this.map[shadow.xpath] = targetEl;
+            &#125;
+            // 一致，则什么都不做
+        &#125;);
+    &#125;
+    // 创建 intersectionObserver
+    initObserver() &#123;
+        const callback = (entries) =&gt; &#123;
+            entries.forEach((entry) =&gt; &#123;
+                if (entry.intersectionRatio &gt; 0.2) &#123;
+                    const targetXpath = getXpath(entry.target);
+                    for (let i = 0; i &lt; this.config.length; i++) &#123;
+                        if (this.config[i].xpath === targetXpath) &#123;
+                            // xpath一致
+                            // 发送曝光埋点
+                        &#125;
+                    &#125;
+                &#125;
+            &#125;);
+        &#125;;
+
+        const observer = new IntersectionObserver(callback, &#123;
+            threshold: 0.2,
+        &#125;);
+
+        this.observer = observer;
+    &#125;
+    
+    init() &#123;
+        this.getConfig().then(() =&gt; &#123;
+            // 初始化 intersectionObserver
+            this.initObserver();
+            // 监听元素
+            this.observe();
+            // 监听 dom 元素变更
+            this.addDomtreeMutatorObserver();
+        &#125;);
+    &#125;
+&#125;
+</code></pre>
+<p>以上便是精简后的伪代码，其核心的优化点便是维护 xpath -&gt; el 的 map（说实话，一开始笔者其实就想到了 map，但是当时想的是拿 dom 引用作为 key，拿对象做 key 显然是行不通的，就短暂放弃，先上线再说。后来想到用 xpath 做key，才有了这篇文章）。</p>
+<p>其实本文的初衷是记录一下 intersectionObserver 的一些边缘情况及结论（其实还对 intersectionObserver 做了其他一些比较傻的测试），但是在文章编写的过程中发现干巴巴的分析，显得实在是无趣，故夹杂了实际的可视化埋点曝光采集的业务场景，希望没有写的很乱。</p>
+<p>同时，当笔者彻底理清思路后，发现这优化其实不值一提，只是笔者最初在设计可视化埋点方案时，由于对这些 api 的不熟悉，导致的一些迷迷糊糊的摸爬滚打经验，还望懂的同学别笑。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2022/07/17/React%E5%B0%86%E7%BB%84%E4%BB%B6%E4%BD%9C%E4%B8%BA%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95/">React 将组件作为参数进行传递的三种方法</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2022/09/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BB%8E0%E5%88%B01%E6%90%AD%E5%BB%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0/">可视化埋点（一）：从0到1搭建可视化埋点平台</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>可视化埋点（二）：intersectionObserver 实战经验</h4>
+
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

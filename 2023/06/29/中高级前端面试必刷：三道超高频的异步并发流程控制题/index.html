@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>中高级前端面试必刷：三道超高频的异步并发流程控制题</span>
+        </h2>
+        <section class="post-content">
+            <p>这篇文章主要记录下最近面试中，出现超高频次的异步流程控制题。这类型题目，没做过的很容易掉坑里，而做不出来，基本上面试就拜拜了。</p>
+<p>本文主要分为三道题目(都是新鲜的题目哦)，前两题都是控制并发数量的题目，相对高频，第三道是控制并发执行的顺序题，相对低频但是很有实用价值。好了，直接上题。</p>
+<span id="more"></span>
+
+<h3 id="题目1-设计一个异步队列，并发数量为n"><a href="#题目1-设计一个异步队列，并发数量为n" class="headerlink" title="题目1: 设计一个异步队列，并发数量为n"></a>题目1: 设计一个异步队列，并发数量为n</h3><p>这一道题目可以说是超高频次，题目描述如下：</p>
+<p><strong>实现一个 taskpool类，其至少具有 add 方法和最大并发数 max，该 add 方法接收函数(返回值为 promise)，当当前执行的任务数小于设定值 max 时，立即执行，大于 max，则等待任务空闲时执行该任务，模版代码如下:</strong></p>
+<pre><code class="js">class TaskPool &#123;
+  // 在此处写下你的实现
+&#125;
+
+const taskpool = new TaskPool(2);
+
+for (let i = 0; i &lt; 10; i++) &#123;
+    const task = () =&gt; new Promise(resolve =&gt; &#123;
+        // 这里 i 的值也是以前非常高频的闭包题哦
+        setTimeout(() =&gt; &#123;
+            console.log(`task$&#123;i&#125; complete`);
+            resolve(`task$&#123;i&#125;`);
+        &#125;, 2000);
+    &#125;);
+    schedual.add(task);
+&#125;
+
+// 预期输出
+// 2s 后
+// task0 complete
+// task1 complete
+// 再 2s 后
+// task2 complete
+// task3 complete
+// 再 2s 后
+// task4 complete
+// task5 complete
+// ...
+// task8 complete
+// task9 complete
+</code></pre>
+<p>这个题目在我遇到的面试中，非常高频，在面试的场景下第一次遇到这个题，不免手忙脚乱，但是实际上逻辑非常简单，设置当前执行任务数 cur，并设计一个数组(模拟队列)。每次添加任务或者任务执行完，都去执行如下逻辑：</p>
+<ol>
+<li>判断 cur 是否小于 max</li>
+<li>小于 max，cur++, 第一个任务出队并执行，并在执行结束后，cur–，再次执行相同逻辑</li>
+<li>大于 max，不做处理</li>
+</ol>
+<p>如此便可得到本题的答案：</p>
+<pre><code class="js">class TaskPool &#123;
+  // 记录最大并发数量
+  max = 0;
+  // 记录当前在执行中的任务数量
+  cur = 0;
+  // 保存任务
+  tasks = [];
+  constructor(num) &#123;
+    this.max = num;
+  &#125;
+  add(task) &#123;
+    // 每次添加，就是往队列尾部增加任务
+    this.tasks.push(task);
+    // 并执行 run 方法
+    this.run();
+  &#125;
+  run() &#123;
+    // 判断是否还有任务，以及当前执行中的任务是否小于并发数量
+    while (this.tasks.length &amp;&amp; this.cur &lt; this.max) &#123;
+      // 取出队列第一个任务
+      const task = this.tasks.shift();
+      // 记录执行中任务数量 +1
+      this.cur++;
+      // 执行任务
+      task().finally(() =&gt; &#123;
+        // 任务结束后，执行中任务数量 -1
+        this.cur--;
+        // 并执行同样的逻辑
+        this.run();
+      &#125;);
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+<p>可以说是思路比较清晰了。<strong>但是实际在面试中，很多同学很容易把 add 和 run 的逻辑混在一起，此时，由于任务执行完之后，还需要执行同样的 run 逻辑，此时，如果没有把 add 和 run 的逻辑拆开，这里的逻辑就不好写了，这也是很多同学做不出来的根本原因，其实和大部分递归一样，有些初始化的逻辑，和需要反复执行的逻辑，需要拆分开来，这样在需要重复执行某一逻辑时，就可以非常简单的通过递归处理掉。</strong></p>
+<h3 id="题目2-设计一个任务队列，并发数量为-n，按顺序输出任务执行结果"><a href="#题目2-设计一个任务队列，并发数量为-n，按顺序输出任务执行结果" class="headerlink" title="题目2: 设计一个任务队列，并发数量为 n，按顺序输出任务执行结果"></a>题目2: 设计一个任务队列，并发数量为 n，按顺序输出任务执行结果</h3><p>这一题的题目描述如下：</p>
+<p><strong>设计一个函数 schedule，schedule 接收一个数量 n，返回一个新函数，新函数接受一个返回 promise 的函数数组，会按照顺序执行函数，并且同时执行的函数数量不超过 n。并且该函数的返回值是一个 promsie，该 promise 会在所有函数执行完后 resolve, 其值是函数数组的返回值按顺序构成的数组</strong>。看描述比较容易犯迷糊，直接看模版代码和输出示例：</p>
+<pre><code class="js">function schedule(n) &#123;
+    // 在此处写下你的实现
+&#125;
+
+const runTask = schedule(4);
+
+const tasks = new Array(10).fill(0).map((x, i) =&gt; () =&gt; new Promise(resolve =&gt; &#123;
+    setTimeout(() =&gt; &#123;
+        console.log(`task$&#123;i&#125; complete`);
+        resolve(`task$&#123;i&#125;`);
+    &#125;, 2000);
+&#125;));
+
+runTask(tasks).then(console.log);
+
+// 预期输出
+// 2s 后
+// task0 complete
+// task1 complete
+// task2 complete
+// task3 complete
+// 再2s 后
+// task4 complete
+// task5 complete
+// task6 complete
+// task7 complete
+// 再2s 后
+// task8 complete
+// task9 complete
+// [&#39;task0&#39;, &#39;task1&#39;, ..., &#39;task9&#39;]
+</code></pre>
+<p>这一题其实和上一题类似，但是多了几个细节上的变化，从 类，变成了普通函数，这在一定程度上会导致代码相对混乱(但是本质是一样的)。另一个是在任务执行完之后，返回按顺序输出任务执行结果，这里就需要多几个变量来保存任务执行的顺序和结果。</p>
+<p>解答如下：</p>
+<pre><code class="js">function schedule(n) &#123;
+  // 此处不需要做任何操作，借助作用域可直接保存并发限制 n
+  return function (tasks) &#123;
+    // 保存执行结果
+    const res = [];
+    // 待执行的任务队列
+    let queue = [];
+    // 记录当前执行中的任务数量
+    let cur = 0;
+    // 记录执行完成的任务数量
+    let finished = 0;
+    // 映射一下，保留任务的顺序 index，以便后期按顺序存储到 res 中
+    queue = tasks.map((v, index) =&gt; (&#123;
+      task: v,
+      index,
+    &#125;));
+    return new Promise((resolve) =&gt; &#123;
+      // 类似于上一题中的 run，抽离统一的 runTask 逻辑
+      function runTask() &#123;
+        // 判断当前执行中的任务数量和待执行的数量
+        while (cur &lt; n &amp;&amp; queue[0]) &#123;
+          // 取出第一个任务
+          const item = queue.shift();
+          // 执行任务
+          item.task().then((result) =&gt; &#123;
+            // 结束后记录结果
+            res[item.index] = result;
+            // 执行中的任务数量减少
+            cur--;
+            // 完成的任务数量增加
+            finished++;
+            // 如果全部完成
+            if (finished === tasks.length) &#123;
+              // 返回结果
+              resolve(res);
+            &#125; else &#123;
+              // 否则继续执行
+              runTask(resolve);
+            &#125;
+          &#125;);
+          // 增加执行中的任务数量
+          cur++;
+        &#125;
+      &#125;
+      runTask();
+    &#125;);
+  &#125;;
+&#125;
+</code></pre>
+<p>相比于上一题，由于需要按顺序记录结果，所以多了一些中间变量进行存储，整体由于是函数而不是类，代码看起来会略显混乱，但是只要清楚作用域，相信理解起来还是非常容易的。<strong>容易出问题的点，也还是在于 runTask 的抽离，因为会存在递归反复调用，所以如果不做抽离，代码很容易混乱导致写不出来</strong></p>
+<h3 id="题目3-设计一个异步事件队列，能够由任务本身控制后续流程"><a href="#题目3-设计一个异步事件队列，能够由任务本身控制后续流程" class="headerlink" title="题目3: 设计一个异步事件队列，能够由任务本身控制后续流程"></a>题目3: 设计一个异步事件队列，能够由任务本身控制后续流程</h3><p>这一道题的描述如下：</p>
+<p><strong>设计一个类 AsyncQueue，其具备两个方法，tap 和 exec，tap 可以绑定回调(可以绑定多个)，exec 执行回调。回调是一个函数，该函数接受一个入参 cb，如果在该函数中不主动调用 cb，则后续的回调不会执行。</strong> 示例代码如下：</p>
+<pre><code class="js">class AsyncQueue &#123;
+  constructor() &#123;
+    // 你的代码
+  &#125;
+  // 事件注册
+  tap(name, fn) &#123;
+    // 你的代码
+  &#125;
+  // 事件触发
+  exec(name, fn) &#123;
+    // 你的代码
+  &#125;
+&#125;
+
+function fn1(cb) &#123;
+  console.log(&#39;fn1&#39;);
+  cb();
+&#125;
+
+function fn2(cb) &#123;
+  console.log(&#39;fn2&#39;);
+  cb();
+&#125;
+
+function fn3(cb) &#123;
+  setTimeout(() =&gt; &#123;
+    console.log(&#39;fn3&#39;);
+    cb();
+  &#125;, 2000);
+&#125;
+
+function fn4(cb) &#123;
+  setTimeout(() =&gt; &#123;
+    console.log(&#39;fn4&#39;);
+    cb();
+  &#125;, 3000);
+&#125;
+
+// 创建事件队列
+const asyncQueue = new AsyncQueue();
+// 注册事件队列
+asyncQueue.tap(&#39;init&#39;, fn1);
+asyncQueue.tap(&#39;init&#39;, fn2);
+asyncQueue.tap(&#39;init&#39;, fn3);
+asyncQueue.tap(&#39;init&#39;, fn4);
+
+// 执行事件队列
+asyncQueue.exec(&#39;init&#39;, () =&gt; &#123;
+  console.log(&#39;执行结束&#39;);
+&#125;);
+
+// 预期输出
+// fn1
+// fn2
+// 2s 后
+// fn3
+// 再 3s 后
+// fn4
+// 执行结束
+</code></pre>
+<p>这一题和前面两题有比较大的区别，关键点在于任务函数的入参。前面两题后续任务的执行其实是由外部控制的，而本题中，后续任务的执行以及执行的顺序，是由前一个任务本身决定的，不调用 cb，则后续任务不会触发。</p>
+<p>在这个题目中 tap 比较好实现，而 exec 的实现，需要提前把后续任务的执行先构建好，这里相对绕一些。可以直接看解答：</p>
+<pre><code class="js">class AsyncQueue &#123;
+  constructor() &#123;
+    // 函数实现
+    this.events = &#123;&#125;;
+  &#125;
+  // 事件注册
+  tap(name, fn) &#123;
+    if (this.events[name]) &#123;
+      this.events[name].push(fn);
+    &#125; else &#123;
+      this.events[name] = [fn];
+    &#125;
+  &#125;
+  // 事件触发
+  exec(name, fn) &#123;
+    // 函数实现
+    if (this.events[name]) &#123;
+      const dispatch = (i) =&gt; &#123;
+        // 取出第 i 个任务
+        const event = this.events[name][i];
+        if (event) &#123;
+          // 执行的时候，将 dispatch(i + 1) 作为入参提供给当前任务，由其决定调用时机
+          event(() =&gt; dispatch(i+1));          
+        &#125; else &#123;
+          // 都执行完了，则执行回调 fn
+          fn();
+        &#125;
+      &#125;
+      // 手动触发第一个任务的执行
+      dispatch(0);
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+<p><strong>核心就在于 dispatch 的实现，本身会执行第 i 个任务，而在执行第 i 个任务时，将 dispatch(i+1) 作为入参传递给当前任务，由当前任务决定下一次任务的调用时机，以此来实现任务的自由控制</strong>。</p>
+<p>看到这里，其实这一题和 koa 的中间件就非常接近了，由于下一个任务的执行时机由当前任务本身控制，那么当前任务只需要在执行下一任务前后执行个人的逻辑，就能够实现 koa 类似的洋葱模型，而如果加入 acync 等待下一任务执行完之后，就可以实现和 koa 中间件一摸一样的支持异步的洋葱模型。</p>
+<p>感兴趣的同学可以查看 koa 的 <a target="_blank" rel="noopener" href="https://github.com/koajs/compose/blob/master/index.js#L19">相关源码</a>，其实在实现上已经非常接近了。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以上，就是我最近在面试中遇到的和异步控制相关的题目了，这种题目看起来确实会绕一些，前两题都用到了递归，也需要对 promise 有比较正确的理解，不过理解了之后其实思路还是很简单的，任务执行结束后，再次判断队列的状态来决定是否需要运行新的任务。</p>
+<p>第三题相对麻烦一点，看似也是流程控制，但是控制权其实是在任务本身，需要提前构建 next 方法作为入参，才能做到这样的流程控制，稍加改造，就能够实现 koa 的中间件系统。</p>
+<p>最后，这几道题目出现的频次由高到低为： 1 &gt; 2 &gt; 3，即便没有遇到这种题目，变种的概率也是非常大的，但是万变不离其宗，分析好入参，出参，其实就已经成功了一大半了。</p>
+<p>希望能够帮助到接下来需要面试的小伙伴们。祝你们能拿一个好 offer。</p>
+<p>最后的最后，还是希望网上能少一些散播焦虑的文章，实打实的过好自己的生活。(特指：前端已死，前端死透了，前端还没死，前端到底死没死等一系列的文章，建议转行去做营销总监，给你日薪千万呀)。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2023/06/06/%E9%9D%A2%E8%AF%95%E5%AE%98%EF%BC%9A%E7%94%A8%E8%BF%87%20redux%20%E6%98%AF%E5%90%A7%EF%BC%9F%E8%A6%81%E4%B8%8D%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%EF%BC%9F/">面试官：用过 redux 是吧？要不手写一个？</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2024/01/27/2023%20%E8%A2%AB%E8%A3%81%E4%B8%A4%E6%AC%A1%EF%BC%8C%E4%B8%80%E4%BD%8D%2030%E5%B2%81%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/">2023 被裁两次，一位 30岁程序员的年终总结</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>中高级前端面试必刷：三道超高频的异步并发流程控制题</h4>
+<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE1-%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E5%BC%82%E6%AD%A5%E9%98%9F%E5%88%97%EF%BC%8C%E5%B9%B6%E5%8F%91%E6%95%B0%E9%87%8F%E4%B8%BAn"><span class="toc-text">题目1: 设计一个异步队列，并发数量为n</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE2-%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97%EF%BC%8C%E5%B9%B6%E5%8F%91%E6%95%B0%E9%87%8F%E4%B8%BA-n%EF%BC%8C%E6%8C%89%E9%A1%BA%E5%BA%8F%E8%BE%93%E5%87%BA%E4%BB%BB%E5%8A%A1%E6%89%A7%E8%A1%8C%E7%BB%93%E6%9E%9C"><span class="toc-text">题目2: 设计一个任务队列，并发数量为 n，按顺序输出任务执行结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE3-%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E5%BC%82%E6%AD%A5%E4%BA%8B%E4%BB%B6%E9%98%9F%E5%88%97%EF%BC%8C%E8%83%BD%E5%A4%9F%E7%94%B1%E4%BB%BB%E5%8A%A1%E6%9C%AC%E8%BA%AB%E6%8E%A7%E5%88%B6%E5%90%8E%E7%BB%AD%E6%B5%81%E7%A8%8B"><span class="toc-text">题目3: 设计一个异步事件队列，能够由任务本身控制后续流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

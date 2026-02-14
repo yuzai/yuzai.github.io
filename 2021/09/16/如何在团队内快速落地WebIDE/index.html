@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>如何在团队内快速落地WebIDE</span>
+        </h2>
+        <section class="post-content">
+            <p>在云音乐团队内部的WebIDE终于落地了。目前功能上覆盖前端正常的业务开发已无问题，期间也踩了不少坑，故写此篇文章，给想要在团队落地WebIDE做一份参考。当然，一些很细节的问题的处理，一篇文章是不好涵盖的，本文更多的是设计的方案及落地的方向的参考。</p>
+<span id="more"></span>
+
+<h2 id="WebIDE的意义"><a href="#WebIDE的意义" class="headerlink" title="WebIDE的意义"></a>WebIDE的意义</h2><p>其实在发起WebIDE这个项目之初，很多人，上级、同事、部门领导，都会对项目发起质疑：意义在哪？能带来什么业务价值？</p>
+<p>说实话这个问题，最初包括现在我也觉得很难回答，新人上手更方便？远程办公？代码更安全？统计开发人员的写代码时长？私有插件域？</p>
+<p>但是这些，似乎并不是业务开发中的一个特别痛的点。当然，在小程序，faas或者云服务的业务确实能带来一些业务价值，毕竟，这些服务本身有一部分就是靠WebIDE吃饭的。但是排除了这几个业务场景，对于大部分普通的业务团队，其实WebIDE的意义，业务上的价值说实话并不大。</p>
+<p>但是衡量一个项目的价值，并不能仅从业务的角度去思考。WebIDE的其他价值，我个人从团队、研发效率、公司层面梳理了几个点（都是做的差不多之后才凑出来的）：</p>
+<ol>
+<li>激发团队活力，提升新人留存率。本身作为一项不太普及的技术，其实或多或少能够激发团队的思考，增加团队活力。而作为一项未来可能成为前端基建的技术，对于新人的留存是有帮助的。基建不完善，那么新人招来了，内心必定会吐槽，流失也就理所当然。</li>
+<li>切换项目更方便。对于multirepo的前端团队，相信不少同学经常会在3-4个项目间切换，项目启动关闭一次较麻烦不说，对电脑的电量，内存都是不小的负荷。而webide将这一部分负荷转移到远程容器，省去了本地的负荷和每次启动打开的不便(finder -&gt; terminal -&gt; run dev -&gt; open vscode)，说实话，个人感觉开发起来更方便。毕竟启动项目就是打开一个网页，而关闭项目也无需担心进度未保存。</li>
+<li>团队配置化的统一。统一化插件、ide配置，代码移交更顺畅</li>
+<li>远程办公。疫情之下，不多说，不必合适的设备即可写代码，便利性极大提升</li>
+<li>代码更加安全。稍加限制，即可防止代码被拷贝，同时从公司层面，衡量程序员的工作时间会更加方便（ps：我是不会把这个功能做进去的，程序员使用IDE的时长对衡量程序员的价值没有多少参考意义）</li>
+<li>demo编写方便。开源的公开的工具很多，但是往往需要私有包，这一点外部开源项目基本无能为力</li>
+<li>研发平台的整合，闭合研发链路。团队大了，各个平台层出不穷，开发过程中往往会伴随多个平台的切换，将IDE嵌入网页，同时整合各个研发平台，避免反复切换平台带来的繁琐与不便</li>
+<li>私有插件。当然避免团队插件发布共有域的方案也有，但是直接搭建私有插件市场，更加方便直观。</li>
+</ol>
+<p>个人认为，讨论一项还未落地的技术的意义，不见得是一个有意义的讨论。WebIDE的意义有多大，更多的取决于团队能把，或者说想把这个事做的多大。所以本文不在此赘述，对IDE感兴趣？干就完事了。</p>
+<h2 id="业内主流产品、技术方案对比"><a href="#业内主流产品、技术方案对比" class="headerlink" title="业内主流产品、技术方案对比"></a>业内主流产品、技术方案对比</h2><p>虽然WebIDE本身还未流行，但是在各大云厂商，各大国内大厂均已有落地产品，谈不上一个比较新的技术，而其实现方案，也基本明确并且成熟，此处挑几个进行简单介绍。</p>
+<h3 id="vscode流派"><a href="#vscode流派" class="headerlink" title="vscode流派"></a>vscode流派</h3><p>比较流行的方案，代表有<a target="_blank" rel="noopener" href="https://coder.com/">coder</a>, <a target="_blank" rel="noopener" href="https://github.com/cdr/code-server">code-server</a>，<a target="_blank" rel="noopener" href="https://github.com/features/codespaces">vsonline</a>。</p>
+<p>这一类IDE产品，基于vscode进行web端的一些修改，同时贴合github，实现个人项目的webide开发。</p>
+<p>但是缺点很统一：收费且团队难以接入使用（团队登陆检验，gitlab接入），代码安全也难以保证</p>
+<h3 id="Theia"><a href="#Theia" class="headerlink" title="Theia"></a>Theia</h3><p><a target="_blank" rel="noopener" href="https://theia-ide.org/">theia</a>比较流行的方案。一部分功能复用vscode，但是设计初衷便是为了扩展，所以私有化部署，定制化功能极其方便。</p>
+<p>目前有的产品有：</p>
+<p><a target="_blank" rel="noopener" href="https://gitpod.io/">gitpod</a>，阿里系ide（自研kaitian不是基于theia），华为云ide，google云ide。</p>
+<p>在扩展能力上，远超vscode，同时具备全开源，社区活跃度较高，接入改造成本低，不收费的优点</p>
+<p>本人在团队内落地的IDE也是基于该框架。</p>
+<h3 id="stackblitz"><a href="#stackblitz" class="headerlink" title="stackblitz"></a>stackblitz</h3><p><a target="_blank" rel="noopener" href="https://stackblitz.com/">stackblitz</a>相信大家都不陌生，非常方便的一款写demo的IDE，本来个人认为他是与<a target="_blank" rel="noopener" href="https://codesandbox.io/">codesandbox</a>一个流派的，但是他推出了<a target="_blank" rel="noopener" href="https://blog.stackblitz.com/posts/introducing-webcontainers/">web container</a>的概念，提供了非容器化方案的纯前端node环境，可以说非常有价值。</p>
+<p>目前该方案不开源，目前猜测较多的是service worker实现请求拦截，webassembly提供了node的环境，从而实现不需要远程机器，全部都跑在浏览器的一个IDE。</p>
+<p>整体来讲，其技术方案的优点在于不消耗远程资源，但是缺点，一个是不开源，一个是毕竟是模拟的node环境，在各个系统的一些层面可能会有所缺失（猜测）。</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>还有一些其他的方案：</p>
+<ol>
+<li>基于前端构建的<a target="_blank" rel="noopener" href="https://codesandbox.io/">codesandbox</a>，这个网上分析的文章比较多，此处不赘述，其缺点在于没有完整的命令行，跑跑基于webpack的前端页面还行，node代码不能跑起来的，更多的是拿来写ui demo的一个工具。</li>
+<li>阿里的kaitian，纯自研的一款IDE，尝试取代THEIA的一款纯自研的IDE，目前未开源</li>
+<li>coding团队的webide，<a target="_blank" rel="noopener" href="https://coding.net/">coding</a>，曾经开过源，目前不明</li>
+</ol>
+<h3 id="整体对比"><a href="#整体对比" class="headerlink" title="整体对比"></a>整体对比</h3><ol>
+<li>vscode流派：付费，接入不便，扩展不易</li>
+<li>theia流派：业内流行的开源方案，成熟落地产品多，扩展非常容易</li>
+<li>Stackblitz: 技术方案独特，纯前端的WebIDE，但是目前看除了写demo快，团队接入和扩展都没有提供方案</li>
+<li>codesandbox: 前端构建的，更多用来写demo</li>
+<li>kaitian, codeing等自研，不开源，具体不太清楚</li>
+</ol>
+<h3 id="接入方案选择"><a href="#接入方案选择" class="headerlink" title="接入方案选择"></a>接入方案选择</h3><p>对于团队需要的WebIDE，个人认为满足日常的开发是必须的。所以易扩展，一定是排在第一位的，这一点非theia莫属。而开源、不收费、稳定性好、社区活跃也是theia的长处。长期来看，theia的接入成本低、扩展性好，社区活跃方便后期维护，是一个非常棒的方案。本人在云音乐团队落地的也是最终采取的这一方案。</p>
+<h2 id="如何在团队内快速落地"><a href="#如何在团队内快速落地" class="headerlink" title="如何在团队内快速落地"></a>如何在团队内快速落地</h2><p>说了这么多，其实到这一章才算正式开始落地。</p>
+<p>WebIDE作为一项成熟的技术，这几年才逐渐的出现在较多的场合，这里面也是有技术方面的一些原因。目前各大WebIDE的方案，基本都是基于容器的方案，这一方案，需要团队有比较完善的容器化的管理及动态部署的能力。</p>
+<p>所以在落地前，容器化部署的能力是需要团队所必须具备的，当然，使用外部商业化的也可。</p>
+<p>除此之外，一些基本的基础设施也需要比较完善，比如gitlab、成员管理、前后端项目部署等基建产品。</p>
+<p>具备上述能力后，才可以满足快速落地的要求。</p>
+<h3 id="整体结构"><a href="#整体结构" class="headerlink" title="整体结构"></a>整体结构</h3><p>笔者认为，WebIDE的落地可以充分发挥互联网小步迭代，快速上线的迭代方式。先搭小汽车，再做摩托车，最后再到小汽车。一步一步对功能进行完善。</p>
+<p>在笔者看来，一个自行车版WebIDE所需要具备的基础能力有：</p>
+<ol start="2">
+<li>团队成员管理系统 or oa接入</li>
+<li>团队gitlab接入</li>
+<li>私有包安装的能力</li>
+<li>IDE管理，新建，关闭，删除等基本功能</li>
+<li>支持前端项目运行</li>
+</ol>
+<p>出于满足上述能力的需求，笔者最初（后来也只是新增了一些独立的工程）将项目划分为4个工程：</p>
+<ol>
+<li>Ide-studio: 前端管理后台，负责IDE的新建，关闭，后期可拓展出插件市场等功能</li>
+<li>Ide-studio-backend: 纯nodejs后台，一方面负责管理后台的接口，另一方面接入团队成员管理系统，后期可用来拓展私有插件以及共有插件等功能，同时处理和容器化部署平台的协作。</li>
+<li>Ide-extension: 用于开发theia扩展，定制团队特有功能，比如接入团队成员管理系统，记录活跃时间，集成团队内部研发平台等</li>
+<li>Ide-docker: 用于存放ide的docker相关文件。由于theia本身是为拓展而生，只需要一个package.json即可生成ide相关，所以单独将docker镜像的构建伶出来</li>
+</ol>
+<h3 id="落地方案"><a href="#落地方案" class="headerlink" title="落地方案"></a>落地方案</h3><h4 id="theia容器构建"><a href="#theia容器构建" class="headerlink" title="theia容器构建"></a>theia容器构建</h4><p>theia本身已有容器<a target="_blank" rel="noopener" href="https://github.com/theia-ide/theia-apps#theia-docker">启动方案</a>，已经提供了dockerfile文件，可以直接使用该docker进行部署，笔者团队使用的是基于<a target="_blank" rel="noopener" href="https://github.com/theia-ide/theia-apps/tree/master/theia-docker">theia-docker</a>进行的修改。</p>
+<p>官方dockerfile如下，笔者直接在上面增加了自己的注释：</p>
+<pre><code class="dockerfile"># 选择容器底层node依赖
+ARG NODE_VERSION=12.18.3
+FROM node:$&#123;NODE_VERSION&#125;-alpine
+# 增加theia install时需要的必要系统依赖
+RUN apk add --no-cache make pkgconfig gcc g++ python libx11-dev libxkbfile-dev libsecret-dev
+ARG version=latest
+WORKDIR /home/theia
+ADD $version.package.json ./package.json
+# 这个GITHUB_TOKEN，需要在容器构建时指定(由于部分npm包安装需要从github拉取，使用github_token才可以顺利安装)
+ARG GITHUB_TOKEN
+# 安装，同时清理掉全局缓存
+RUN yarn --pure-lockfile &amp;&amp; \
+    NODE_OPTIONS=&quot;--max_old_space_size=4096&quot; yarn theia build &amp;&amp; \
+    yarn theia download:plugins &amp;&amp; \
+    yarn --production &amp;&amp; \
+    yarn autoclean --init &amp;&amp; \
+    echo *.ts &gt;&gt; .yarnclean &amp;&amp; \
+    echo *.ts.map &gt;&gt; .yarnclean &amp;&amp; \
+    echo *.spec.* &gt;&gt; .yarnclean &amp;&amp; \
+    yarn autoclean --force &amp;&amp; \
+    yarn cache clean
+
+# 重新选择底层系统依赖，目的是保留容器系统极简，去掉了theia安装过程中需要的系统依赖，从而减小镜像提及
+FROM node:$&#123;NODE_VERSION&#125;-alpine
+# See : https://github.com/theia-ide/theia-apps/issues/34
+RUN addgroup theia &amp;&amp; \
+    adduser -G theia -s /bin/sh -D theia;
+RUN chmod g+rw /home &amp;&amp; \
+    mkdir -p /home/project &amp;&amp; \
+    chown -R theia:theia /home/theia &amp;&amp; \
+    chown -R theia:theia /home/project;
+# 增加git bash等基础系统依赖
+RUN apk add --no-cache git openssh bash libsecret
+ENV HOME /home/theia
+WORKDIR /home/theia
+COPY --from=0 --chown=theia:theia /home/theia /home/theia
+EXPOSE 3000
+ENV SHELL=/bin/bash \
+    THEIA_DEFAULT_PLUGINS=local-dir:/home/theia/plugins
+ENV USE_LOCAL_GIT true
+USER theia
+# run theia服务，默认运行在3000端口
+ENTRYPOINT [ &quot;node&quot;, &quot;/home/theia/src-gen/backend/main.js&quot;, &quot;/home/project&quot;, &quot;--hostname=0.0.0.0&quot; ]
+</code></pre>
+<p>整体来讲，这是一个比较标准的前端工程运行文件，对docker没有基础的搜一搜看懂也不难。</p>
+<p>不过，其中几个实际踩的坑需要注意一下：</p>
+<ol>
+<li>github_token需要指定，否则会出现部分npm包无法下载的问题。使用自己的github_token即可，生成方法见<a target="_blank" rel="noopener" href="https://docs.github.com/cn/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token">官方文档</a></li>
+<li>构建镜像的时候注意关闭自己电脑的代理(比如charles等)，也会造成npm包安装问题</li>
+</ol>
+<p>当然，这是theia官方的镜像，实际实现自行车版本的WebIDE的时候，还需要执行如下操作：</p>
+<ol>
+<li>注入git公私钥，此处建议使用单个仓库的私钥，使权限最小化</li>
+<li>自动clone目标代码</li>
+<li>注入npm 私有域，从而使用者无需再进行配置</li>
+<li>执行用户自定义的自动化脚本</li>
+</ol>
+<p>这些操作可以自己写一个node脚本，在最后同theia服务的启动一起执行一遍即可。</p>
+<p>而在实际的落地及使用过程中，还遇到一些实际的问题：</p>
+<ol>
+<li>git公私钥如何获取，此处在IDE容器内确实不好获取，存在鉴权等问题，故笔者是在容器创建时(此时是有用户身份信息的)，将相关变量注入到容器的环境变量中，容器内直接拿环境变量的数据构建公私钥即可</li>
+<li>root权限，如dockerfile中所示，theia出于容器的安全考虑，创建了一个工作区，用户的身份都是theia，而系统内的一些依赖其实是不够的，比如gcc, g++等部分npm包安装所需要的系统依赖都没有，另外也没有一些必要的系统依赖比如，curl。所以可以给用户开放root权限</li>
+<li>命令行问题，默认使用的是linux的bash，是没有git、高亮等支持，体验非常差，所以可以把oh-my-zsh集成进去</li>
+</ol>
+<p>为了解决上述问题，笔者在原有的dockerfile中增加了如下命令</p>
+<pre><code class="dockerfile"># 增加系统依赖，以便npm安装可以顺利进行
+RUN apk add --no-cache make pkgconfig gcc g++ python curl
+
+# 安装zsh，美化命令行
+RUN apk add --no-cache git openssh bash zsh libsecret-dev
+
+# 增加root身份，以便用户可以自行增加全局系统依赖
+RUN chmod 4755 /bin/busybox
+RUN echo &#39;root:danger&#39; | chpasswd
+
+# 修改最终的启动命令
+ENTRYPOINT [&quot;/bin/sh&quot;, &quot;/home/cloud-theia/start.sh&quot;]
+
+# 在start.sh中，执行git,npm全局配置的脚本，并且启动theia自身的服务
+</code></pre>
+<p>至此，容器的功能基本完善。可以直接本地构建一个跑起来看看。</p>
+<h4 id="IDE管理页面搭建"><a href="#IDE管理页面搭建" class="headerlink" title="IDE管理页面搭建"></a>IDE管理页面搭建</h4><p>这一部分是比较常规的前端页面，此处大家应该耳熟能详，使用一些中后台模版搭建即可。</p>
+<p>主要具备的功能有：</p>
+<ol>
+<li>IDE的管理：增删查改</li>
+<li>插件的管理：私有&#x2F;公有插件，插件的上传及管理</li>
+<li>基本的团队成员登陆&#x2F;注销</li>
+</ol>
+<p>其中，插件管理可以使用theia本身推荐的<a target="_blank" rel="noopener" href="https://open-vsx.org/">openvsx</a>，本身全开源，也推荐私有化部署后使用。</p>
+<p>笔者当时由于IDE管理系统想和插件管理系统直接无缝切换（懒），只是对接口通过node后台直接转发到openvsx，从而获取其数据，简单快捷的实现了公有插件的获取&#x2F;下载。</p>
+<h4 id="IDE后台服务搭建"><a href="#IDE后台服务搭建" class="headerlink" title="IDE后台服务搭建"></a>IDE后台服务搭建</h4><p>笔者基于egg.js搭建了IDE的后台，主要承载的能力有：</p>
+<ol>
+<li><p>IDE管理，比较常规的后台接口</p>
+</li>
+<li><p>插件管理，私有插件的自存储，公有插件进行转发到openvsx</p>
+</li>
+<li><p>处理网易轻舟云容器部署、域名转发等服务的交互（网易轻舟，个性化等用下来体验还不错）</p>
+</li>
+<li><p>处理IDE容器内，插件安装&#x2F;搜索时需要的一些服务处理</p>
+</li>
+<li><p>基本的成员登陆&#x2F;注销</p>
+</li>
+</ol>
+<p>整体来讲，代码基本跟平时的node服务无差。不再赘述</p>
+<h4 id="theia扩展"><a href="#theia扩展" class="headerlink" title="theia扩展"></a>theia扩展</h4><p>这一部分，应该是大部分没有接触过theia的同学比较难以处理的地方。虽然说theia本身提供了非常方便的扩展能力，但是该方便，还是建立在你对theia的构建有一定的了解之上。</p>
+<p>官网介绍的不多，可以看<a target="_blank" rel="noopener" href="https://theia-ide.org/docs/authoring_extensions/">这篇文章</a>，跑起来问题不大，剩下的用到了查看源码即可。</p>
+<p>但是接入自己的团队，其实需要扩展的地方不多，笔者目前也仅仅改动了以下几条：</p>
+<ol>
+<li>团队成员登陆&#x2F;注销（纯前端扩展）</li>
+<li>团队logo、成员信息展示、相关帮助链接的跳转</li>
+</ol>
+<p>这一部分都还没有涉及到theia的jsonrpc，后端扩展能力。但是自行车版足以。</p>
+<p>上个图吧，其实在扩展能力上，只是用到了一些皮毛：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1guiht5jz3zj61up0u0wjn02.jpg" alt="image-20210916151858921" referrerpolicy="no-referrer"></p>
+<p>笔者在实际使用过程中，还有以下几个环境变量的改动：</p>
+<ol>
+<li>VSX_REGISTRY_URL，这是插件市场的插件源改动，默认是指向openvsx，要实现私有插件，直接改变其到自己的私有市场并实现相关接口即可</li>
+<li>THEIA_WEBVIEW_EXTERNAL_ENDPOINT，webview的web版方案，默认是指向了${uuid}.minibrowser.${hostname}，由于在实际落地场景中，这样修改域名的写法，https泛域名证书也无法使用，必须一个ide申请一个，而webview借助了 service worker，如果不使用https就无法工作，所以笔者这边直接改成了hostname，其利害及缘由可以参考<a target="_blank" rel="noopener" href="https://blog.mattbierner.com/vscode-webview-web-learnings/">此文章</a></li>
+<li>THEIA_MINI_BROWSER_HOST_PATTERN，同上，也是改成了hostname，来完成图片文件的预览</li>
+</ol>
+<h4 id="其他-1"><a href="#其他-1" class="headerlink" title="其他"></a>其他</h4><p>文档站建设，模版建设等一些常规的操作，不再赘述</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>整体来讲，上述都搭建好之后，一个团队可用的webide就做好了。</p>
+<p>目前笔者团队的webide，已经能够满足日常的开发使用，后续会进一步增加扩展，作为各个研发平台的承载点，解决目前开发过程中的不同平台反复切换的问题。</p>
+<p>当然，实际落地中，还会有很多琐碎的细节问题，大家可以一起交流哈。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>webide作为一项成熟的技术，团队落地整个流程下来，笔者认为回头去看，其实没有什么特别大的坑点以及技术上的难点。</p>
+<p>原本题目准备起：前端小白如何在团队内落地webide，但是后来想想，这就有点误人子弟了，虽然前端相关的代码确实没写几行，但是对其他的一些知识需要一定的储备，比如容器化、node、运维等知识。</p>
+<p>最后，笔者在建立了完备的webide之后，自己的业务都已经在webide上进行开发，但是团队的大部分成员还是持保守态度。后续会继续提升开发体验，让越来越多的成员接纳这个套了老技术的新IDE。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2021/08/16/chrome%2094%E9%A2%84%E8%AE%A1cookie%E7%AD%96%E7%95%A5%E5%86%8D%E5%8A%A0%E7%A0%81%EF%BC%8C%E6%80%8E%E4%B9%88%E6%94%BE%E5%BF%83%E5%A4%A7%E8%83%86%E7%9A%84%E5%8D%87%E7%BA%A7%EF%BC%9F%20/">chrome 94预计cookie策略再加码，怎么放心大胆的升级？</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2021/10/27/100%E8%A1%8C%E4%BB%A3%E7%A0%81%E7%9B%98%E4%B8%80%E4%B8%AAreact%E6%95%B0%E6%8D%AE%E6%B5%81%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">100行代码盘一个react数据流管理工具</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>如何在团队内快速落地WebIDE</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#WebIDE%E7%9A%84%E6%84%8F%E4%B9%89"><span class="toc-text">WebIDE的意义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%9A%E5%86%85%E4%B8%BB%E6%B5%81%E4%BA%A7%E5%93%81%E3%80%81%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88%E5%AF%B9%E6%AF%94"><span class="toc-text">业内主流产品、技术方案对比</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#vscode%E6%B5%81%E6%B4%BE"><span class="toc-text">vscode流派</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Theia"><span class="toc-text">Theia</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stackblitz"><span class="toc-text">stackblitz</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-text">其他</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E5%AF%B9%E6%AF%94"><span class="toc-text">整体对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%85%A5%E6%96%B9%E6%A1%88%E9%80%89%E6%8B%A9"><span class="toc-text">接入方案选择</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%9C%A8%E5%9B%A2%E9%98%9F%E5%86%85%E5%BF%AB%E9%80%9F%E8%90%BD%E5%9C%B0"><span class="toc-text">如何在团队内快速落地</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84"><span class="toc-text">整体结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%90%BD%E5%9C%B0%E6%96%B9%E6%A1%88"><span class="toc-text">落地方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#theia%E5%AE%B9%E5%99%A8%E6%9E%84%E5%BB%BA"><span class="toc-text">theia容器构建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IDE%E7%AE%A1%E7%90%86%E9%A1%B5%E9%9D%A2%E6%90%AD%E5%BB%BA"><span class="toc-text">IDE管理页面搭建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IDE%E5%90%8E%E5%8F%B0%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA"><span class="toc-text">IDE后台服务搭建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#theia%E6%89%A9%E5%B1%95"><span class="toc-text">theia扩展</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B6%E4%BB%96-1"><span class="toc-text">其他</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

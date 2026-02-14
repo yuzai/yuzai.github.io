@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>React Hooks 心智负担：消个抖都消不利索了</span>
+        </h2>
+        <section class="post-content">
+            <p>React Hooks已经有三年多的时间了，团队中也基本上已经很少看到class组件的身影，也很少再看到用不用hooks的争论，笔者认为，hooks优势确实明显，但是随之而来的心智负担也确实存在。就比如，按钮消个抖，非常常见的业务诉求，但是实际写起来，确实并不容易。</p>
+<p>网上也确实有一些优秀的 hooks 库已经进行了实现，但是一些分析介绍的文章，或多或少有点问题。故写此文记录下，写的不好的地方也欢迎交流指出。</p>
+<span id="more"></span>
+
+<h2 id="业务背景"><a href="#业务背景" class="headerlink" title="业务背景"></a>业务背景</h2><p>消抖在日常的开发中遇到的场景非常常见，比如一个输入搜索的逻辑，页面中一个输入框，根据用户输入，从远程拉取结果返回。</p>
+<p>这个场景下，如果不对用户输入进行消抖，那么请求的频率会非常频繁。故需要对输入行为进行消抖，来达到减少请求频次的效果。</p>
+<p>未经消抖的简单的代码如下：</p>
+<pre><code class="jsx">import React, &#123; useCallback, useState &#125; from &#39;react&#39;;
+
+const fakeFetch = (v) =&gt; &#123;
+  return new Promise((resolve) =&gt; &#123;
+    setTimeout(() =&gt; &#123;
+      resolve(JSON.stringify(v));
+    &#125;, 500);
+  &#125;);
+&#125;;
+
+export default function App() &#123;
+  const [value, setValue] = useState(&#39;&#39;);
+  const [res, setRes] = useState(&#39;&#39;);
+  const [fakeFetchCount, setFakeFetchCount] = useState(0);
+
+  const getRes = useCallback((v) =&gt; &#123;
+    setFakeFetchCount((pre) =&gt; pre + 1);
+    fakeFetch(&#123;
+        value: v,
+    &#125;).then((res) =&gt; setRes(res));
+  &#125;, []);
+
+  const onChange = useCallback((e) =&gt; &#123;
+    setValue(e.target.value);
+    getRes(e.target.value);
+  &#125;, []);
+
+  return (
+    &lt;div&gt;
+      &lt;input value=&#123;value&#125; onChange=&#123;onChange&#125; /&gt;
+      &lt;div&gt;&#123;res&#125;&lt;/div&gt;
+      &lt;div&gt;fetch次数: &#123;fakeFetchCount&#125;&lt;/div&gt;
+    &lt;/div&gt;
+  );
+&#125;
+</code></pre>
+<p>效果如图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2jb1szrb1g205h02mt9a.gif" alt="img" referrerpolicy="no-referrer"></p>
+<p>上例中，当用户输入，那么便会进行请求拉取远程接口的返回。这里使用了一个mock的fetch，定时500ms后返回结果。</p>
+<p>可以看出来，每输入一个字母，就会发起一次请求，这在实际的业务中，显然是给服务器带来了不必要的压力。</p>
+<h2 id="消抖方法"><a href="#消抖方法" class="headerlink" title="消抖方法"></a>消抖方法</h2><h3 id="传统的消抖"><a href="#传统的消抖" class="headerlink" title="传统的消抖"></a>传统的消抖</h3><p>正常的消抖比较简单，其本质是在执行时，设定一个延时为 waitTime 的定时函数，每次执行，都先清除上一次的定时器，再新起一个定时器，如果触发频率较快，那么上一次设定好的定时器，会一直被清除，直到该函数不再被触发，从而执行上一次设定好的定时器函数，利用这样的方法，达到消除抖动的目的。</p>
+<p>常见的实现如下：</p>
+<pre><code class="js">function debounce(func, waitTime) &#123;
+  let timer = null;
+
+  return function (...args) &#123;
+    if (timer) &#123;
+      clearTimeout(timer);
+    &#125;
+    timer = setTimeout(() =&gt; &#123;
+      func.apply(this, args);
+    &#125;, waitTime);
+  &#125;;
+&#125;
+</code></pre>
+<h3 id="hooks-写法"><a href="#hooks-写法" class="headerlink" title="hooks 写法"></a>hooks 写法</h3><h4 id="直接消抖"><a href="#直接消抖" class="headerlink" title="直接消抖"></a>直接消抖</h4><p>借助上文的 debounce 函数，很容易在组件中写下如下的消抖方案：</p>
+<pre><code class="jsx">// version 1： 直接消抖的代码
+import React, &#123; useCallback, useState, useEffect &#125; from &#39;react&#39;;
+
+function debounce(func, waitTime) &#123;
+  let timer = null;
+
+  return function (...args) &#123;
+    if (timer) &#123;
+      clearTimeout(timer);
+    &#125;
+    timer = setTimeout(() =&gt; &#123;
+      func.apply(this, args);
+    &#125;, waitTime);
+  &#125;;
+&#125;
+
+const fakeFetch = (v) =&gt; &#123;
+  return new Promise((resolve) =&gt; &#123;
+    setTimeout(() =&gt; &#123;
+      resolve(JSON.stringify(v));
+    &#125;, 500);
+  &#125;);
+&#125;;
+
+export default function App() &#123;
+  const [value, setValue] = useState(&#39;&#39;);
+  const [res, setRes] = useState(&#39;&#39;);
+  const [fakeFetchCount, setFakeFetchCount] = useState(0);
+  
+  // 用debounce函数包裹原函数
+  const getRes = useCallback(
+    debounce((v) =&gt; &#123;
+      setFakeFetchCount((pre) =&gt; pre + 1);
+      fakeFetch(&#123;
+        value: v,
+      &#125;).then((res) =&gt; &#123;
+        setRes(res);
+      &#125;);
+    &#125;, 500),
+    []
+  );
+
+  const onChange = useCallback(
+    (e) =&gt; &#123;
+      setValue(e.target.value);
+      getRes(e.target.value);
+    &#125;,
+    [getRes]
+  );
+
+  return (
+    &lt;div&gt;
+      &lt;input value=&#123;value&#125; onChange=&#123;onChange&#125; /&gt;
+      &lt;div&gt;&#123;res&#125;&lt;/div&gt;
+      &lt;div&gt;fetch次数: &#123;fakeFetchCount&#125;&lt;/div&gt;
+    &lt;/div&gt;
+  );
+&#125;
+</code></pre>
+<p>关键修改点就是将原函数通过 debounce 函数包裹即可，其效果如下图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2jb9uvd2ug207x031q3l.gif" alt="img" referrerpolicy="no-referrer"></p>
+<p>从结果上来看，这样写其实就已经达到了想要的效果。</p>
+<p>但是仔细分析下代码：</p>
+<pre><code class="jsx">const getRes = useCallback(
+    debounce((v) =&gt; &#123;
+      setFakeFetchCount((pre) =&gt; pre + 1);
+      fakeFetch(&#123;
+        value: v,
+      &#125;).then((res) =&gt; &#123;
+        setRes(res);
+      &#125;);
+    &#125;, 500),
+    []
+);
+</code></pre>
+<p>组件每次在渲染的时候，debounce 函数每次都会执行一次，生成一个新的经过消抖的函数，但是由于 useCallback 中的依赖为空，所以 getRes 每次都会使用第一次生成的消抖后的函数，从而在表现上是符合预期的。</p>
+<h4 id="加入了依赖项"><a href="#加入了依赖项" class="headerlink" title="加入了依赖项"></a>加入了依赖项</h4><p>每次都执行一次 debounce 在性能上的损耗可以忽略不计，但是如果 useCallback 有依赖，那么每次 getRes 函数都会是新的消抖后的函数，抛开函数更新后引发的子组件渲染问题不谈，由于消抖函数中存在一个定时器，getRes 函数更新后，旧的消抖后的函数中的定时器无人清除，会被执行，从而缺失了消抖的效果。</p>
+<p>带到实例中，假设服务端的接口，除了需要用户的输入，还需要用户在页面停留的时长作为参数，修改代码如下：</p>
+<pre><code class="jsx">// version2: 加入了停留时长依赖的消抖
+import React, &#123; useCallback, useState, useEffect &#125; from &#39;react&#39;;
+
+function debounce(func, waitTime) &#123;
+  let timer = null;
+
+  return function (...args) &#123;
+    if (timer) &#123;
+      clearTimeout(timer);
+    &#125;
+    timer = setTimeout(() =&gt; &#123;
+      func.apply(this, args);
+    &#125;, waitTime);
+  &#125;;
+&#125;
+
+const fakeFetch = (v) =&gt; &#123;
+  return new Promise((resolve) =&gt; &#123;
+    setTimeout(() =&gt; &#123;
+      resolve(JSON.stringify(v));
+    &#125;, 500);
+  &#125;);
+&#125;;
+
+export default function App() &#123;
+  const [value, setValue] = useState(&#39;&#39;);
+  const [res, setRes] = useState(&#39;&#39;);
+  const [fakeFetchCount, setFakeFetchCount] = useState(0);
+  // 增加用户停留时间状态
+  const [duration, setDuration] = useState(0);
+  
+  // 用户停留时长更新
+  useEffect(() =&gt; &#123;
+    setInterval(() =&gt; &#123;
+      setDuration((pre) =&gt; pre + 1);
+    &#125;, 1000);
+  &#125;, []);
+
+  const getRes = useCallback(
+    debounce((v) =&gt; &#123;
+      setFakeFetchCount((pre) =&gt; pre + 1);
+      fakeFetch(&#123;
+        value: v,
+        // 请求时携带duration参数
+        duration,
+      &#125;).then((res) =&gt; &#123;
+        setRes(res);
+      &#125;);
+    &#125;, 500),
+    // 增加对用户停留时长状态的依赖
+    [duration]
+  );
+
+  const onChange = useCallback(
+    (e) =&gt; &#123;
+      setValue(e.target.value);
+      getRes(e.target.value);
+    &#125;,
+    [getRes]
+  );
+
+  return (
+    &lt;div&gt;
+      &lt;input value=&#123;value&#125; onChange=&#123;onChange&#125; /&gt;
+      &lt;div&gt;&#123;res&#125;&lt;/div&gt;
+      &lt;div&gt;fetch次数: &#123;fakeFetchCount&#125;&lt;/div&gt;
+    &lt;/div&gt;
+  );
+&#125;
+</code></pre>
+<p>核心的修改在于，原来 useCallback 中的依赖为空，现在依赖了用户停留时长 duration，效果如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2jc30phs5g20em0310ve.gif" alt="version3" referrerpolicy="no-referrer"></p>
+<p>当一直快速输入时，fetch 次数还一直在增加，这个其实就是由于 duration 这个状态每隔 1s 更新一次，此时 getRes 函数由于依赖了 duration，那么 getRes 函数也会变成新的消抖后的函数，从而导致上一个的 getRes 函数设置的定时器无人清除，从而导致 fetch 的执行。</p>
+<p>简单整理下，就是<strong>直接对原函数使用 debounce 消抖，在普通情况下，是能够达到预期的。</strong></p>
+<p><strong>但是当原函数对外部有依赖，同时组件在消抖函数执行的期间，触发了该依赖的修改，那么此时旧的消抖函数的定时器会无人清理，导致消抖函数还是会被执行，从而达不到预期的效果。</strong></p>
+<p>当然，在上述这个例子中，其实 duration 可以用 useRef 来避免 getRes 函数对它的依赖，但是如果依赖的参数很多呢？此时每一个依赖项都改成 ref, 甚至有些依赖项的修改还需要触发组件的渲染，那么就需要为该状态同时保留 state 和 ref两个变量，即便可以通过自定义hook来封装这层逻辑，代码可读性也会变差。</p>
+<h4 id="维持同一个-timer"><a href="#维持同一个-timer" class="headerlink" title="维持同一个 timer"></a>维持同一个 timer</h4><p>其实通过上述分析，出现问题的核心在于：</p>
+<p>debounce 函数在每次组件渲染后，都会新生成一个函数，此时如果 useCallback 中有依赖，那么上一次的消抖函数生成的定时器可能就没有清理，导致依旧执行带来预期不一致。</p>
+<p>了解了问题，解决方案其实也呼之欲出，<strong>核心就在于维持一个 timer，只要 timer 是同一个，那么不管多少次更新，都能保证上一次 timer 的清除</strong>，代码如下：</p>
+<pre><code class="jsx">// version 4： 维持同一个 timer
+import React, &#123; useCallback, useState, useEffect, useRef &#125; from &#39;react&#39;;
+
+const fakeFetch = (v) =&gt; &#123;
+  return new Promise((resolve) =&gt; &#123;
+    setTimeout(() =&gt; &#123;
+      resolve(JSON.stringify(v));
+    &#125;, 500);
+  &#125;);
+&#125;;
+
+export default function App() &#123;
+  const [value, setValue] = useState(&#39;&#39;);
+  const [res, setRes] = useState(&#39;&#39;);
+  const [fakeFetchCount, setFakeFetchCount] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  useEffect(() =&gt; &#123;
+    setInterval(() =&gt; &#123;
+      setDuration((pre) =&gt; pre + 1);
+    &#125;, 1000);
+  &#125;, []);
+  
+  // 用 ref 维持同一个timer
+  const timerRef = useRef(null);
+
+  const getRes = useCallback(
+    (v) =&gt; &#123;
+      if (timerRef.current) &#123;
+        clearTimeout(timerRef.current);
+      &#125;
+      timerRef.current = setTimeout(() =&gt; &#123;
+        setFakeFetchCount((pre) =&gt; pre + 1);
+        fakeFetch(&#123;
+          value: v,
+          duration,
+        &#125;).then((res) =&gt; &#123;
+          setRes(res);
+        &#125;);
+      &#125;, 500);
+    &#125;,
+    [duration]
+  );
+
+  const onChange = useCallback(
+    (e) =&gt; &#123;
+      setValue(e.target.value);
+      getRes(e.target.value);
+    &#125;,
+    [getRes]
+  );
+
+  return (
+    &lt;div&gt;
+      &lt;input value=&#123;value&#125; onChange=&#123;onChange&#125; /&gt;
+      &lt;div&gt;&#123;res&#125;&lt;/div&gt;
+      &lt;div&gt;停留时长：&#123;duration&#125;s&lt;/div&gt;
+      &lt;div&gt;fetch次数: &#123;fakeFetchCount&#125;&lt;/div&gt;
+    &lt;/div&gt;
+  );
+&#125;
+</code></pre>
+<p>其效果如下图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2jd4jhzmrg20em03dabg.gif" alt="img" referrerpolicy="no-referrer"></p>
+<p>看起来好像是符合预期的，确实是当用户停止输入后，延时一段时间才进行 fetch。</p>
+<p>但是这里其实还隐藏了一个 bug, 由于时延时执行的，虽然 useCallback 加入了 duration 作为依赖，当用户最后一次输入结束后，会开启一个定时器函数，该函数延时一定时间后发出 fetch 请求。</p>
+<p>如果 duration 在用户最后一次输入结束后发生了改变，那么定时器使用的其实是上一次的 duration，严格来讲，与预期是不符的。可以在上述例子中，将延时改成 5000ms，效果会比较明显，如下图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2jdbj3ye6g20em03djt1.gif" alt="img" referrerpolicy="no-referrer"></p>
+<p>在上图中，将消抖函数延时的长度改成了5s，当用户第一次停止输入时，是5s左右，当定时器真正执行时，大约是 10s 左右，而实际传递给服务器的时间是停止输入时的 duration, 5s。当然，在这个场景下，可能是符合业务预期的，但是如果还依赖其他参数，其他参数也这延时的 5s 发生了改变，但是请求时是旧的值，很有可能会带来线上bug。</p>
+<h4 id="维持同一个函数"><a href="#维持同一个函数" class="headerlink" title="维持同一个函数"></a>维持同一个函数</h4><p>在维持了同一个 timer 后，确实消除了上一个 timer 未清除带来的频繁执行问题，但是由于消抖函数是延迟 xxxms 执行的，那么此时如果依赖项发生变化，但是用户又没有新的行为触发生成新的消抖函数，那么就会访问到旧的依赖项，从而带来潜在的bug。</p>
+<p><strong>对于延迟带来的旧依赖项问题，其实在 hooks 中非常常见，一般通过 ref 即可解决，但是在这个问题中，如果把消抖函数依赖的参数 ref 化，一方面参数数量不确定，另一方面也不好把逻辑抽离出来，换个思路，可以把函数 ref 化</strong>。代码看起来会更容易理解一些，如下：</p>
+<pre><code class="jsx">// version5: 维持同一个timer, func
+import React, &#123; useCallback, useState, useEffect, useRef &#125; from &#39;react&#39;;
+
+const fakeFetch = (v) =&gt; &#123;
+  return new Promise((resolve) =&gt; &#123;
+    setTimeout(() =&gt; &#123;
+      resolve(JSON.stringify(v));
+    &#125;, 500);
+  &#125;);
+&#125;;
+
+export default function App() &#123;
+  const [value, setValue] = useState(&#39;&#39;);
+  const [res, setRes] = useState(&#39;&#39;);
+  const [fakeFetchCount, setFakeFetchCount] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  useEffect(() =&gt; &#123;
+    setInterval(() =&gt; &#123;
+      setDuration((pre) =&gt; pre + 1);
+    &#125;, 1000);
+  &#125;, []);
+
+  const timerRef = useRef(null);
+  
+  // ref 维持函数
+  const funcRef = useRef(null);
+
+  // 原函数定义
+  const getRes = useCallback(
+    (v) =&gt; &#123;
+      setFakeFetchCount((pre) =&gt; pre + 1);
+      fakeFetch(&#123;
+        value: v,
+        duration,
+      &#125;).then((res) =&gt; &#123;
+        setRes(res);
+      &#125;);
+    &#125;,
+    [duration]
+  );
+  
+  // 始终跟原函数保持一致
+  funcRef.current = getRes;
+  
+  // 消抖逻辑
+  const getResDebounced = useCallback((...args) =&gt; &#123;
+    if (timerRef.current) &#123;
+      clearTimeout(timerRef.current);
+    &#125;
+    timerRef.current = setTimeout(() =&gt; &#123;
+      // 定时器中通过访问ref，避免闭包带来的访问旧值的问题
+      funcRef.current.apply(null, args);
+    &#125;, 5000);
+  &#125;, []);
+
+  const onChange = useCallback(
+    (e) =&gt; &#123;
+      setValue(e.target.value);
+      getResDebounced(e.target.value);
+    &#125;,
+    [getResDebounced]
+  );
+
+  return (
+    &lt;div&gt;
+      &lt;input value=&#123;value&#125; onChange=&#123;onChange&#125; /&gt;
+      &lt;div&gt;&#123;res&#125;&lt;/div&gt;
+      &lt;div&gt;停留时长：&#123;duration&#125;s&lt;/div&gt;
+      &lt;div&gt;fetch次数: &#123;fakeFetchCount&#125;&lt;/div&gt;
+    &lt;/div&gt;
+  );
+&#125;
+</code></pre>
+<p>核心在于：</p>
+<ol>
+<li>新建funcRef，同步 getRes 函数，始终保持最新</li>
+<li>新建 getRefDebounced 函数，该函数中使用 funcRef.current 作为定时器中执行的函数。</li>
+</ol>
+<p>通过这样的方式，延时执行时，始终执行最新的函数，也就是使用了最新参数的 getRes 函数，从而解决 hooks 中，延时执行带来的用到旧依赖项的 bug（通常称为 hooks 闭包问题）。</p>
+<h4 id="封装自定义hook"><a href="#封装自定义hook" class="headerlink" title="封装自定义hook"></a>封装自定义hook</h4><p>上述代码已经比较清晰了，但是每一次消抖都定义这么多玩意，真的吃不消，hooks 的一大好处就是逻辑的封装，那么自然是要封装一个自定义的消抖 hooks 了。如下：</p>
+<pre><code class="jsx">function useDebounceFn(fn, delay) &#123;
+  const timerRef = useRef(null);
+  const fnRef = useRef(fn);
+  fnRef.current = fn;
+
+  const fnDebounced = useCallback(
+    function (...args) &#123;
+      if (timerRef.current) &#123;
+        clearTimeout(timerRef.current);
+      &#125;
+      timerRef.current = setTimeout(() =&gt; &#123;
+        fnRef.current.apply(this, args);
+      &#125;, delay);
+    &#125;,
+    [delay]
+  );
+
+  return fnDebounced;
+&#125;
+</code></pre>
+<p>通过 ref 维持同一个 timer, 再通过 fnRef, 始终保持跟外部的 fn 同步，最后返回 fnDebounced。</p>
+<p>这里有几个细节：</p>
+<ol>
+<li><p>fnRef.current &#x3D; fn, 要不要用 useEffect 包裹，这里我的观点是不需要，useEffect会做一次比较，其实有比较的这个功夫，赋值也不耽误事，实际套个循环（hooks并不推荐，此处仅做实验），1000次左右的话，直接赋值会在0.1ms左右，而useEffect会在1ms左右，差别也不算大。套不套 useEffect 影响真的不大。</p>
+</li>
+<li><p>fnDebounced中的 useCallback 中的函数，一定要使用 普通函数 而非 箭头函数。因为一旦使用箭头函数，那么 this 其实外面就改变不了了。虽然在函数组件中，this 变得越来越不常用，但是可以通过普通函数保留这个 this， 以便外界需要的时候自行使用。</p>
+</li>
+<li><p>依赖项 deps 放在哪里？不需要放 deps 的地方，全部交由外部传递进来的fn处理，如果需要根据 deps 变化而更新消抖函数，那么直接在外部的 fn 中处理即可。</p>
+</li>
+</ol>
+<p>完整的示例代码如下：</p>
+<pre><code class="jsx">// version5: 维持同一个timer, func
+import React, &#123; useCallback, useState, useEffect, useRef &#125; from &#39;react&#39;;
+
+const fakeFetch = (v) =&gt; &#123;
+  return new Promise((resolve) =&gt; &#123;
+    setTimeout(() =&gt; &#123;
+      resolve(JSON.stringify(v));
+    &#125;, 500);
+  &#125;);
+&#125;;
+
+function useDebounceFn(fn, delay) &#123;
+  const timerRef = useRef(null);
+  const fnRef = useRef(fn);
+
+  fnRef.current = fn;
+
+  const fnDebounced = useCallback(
+    function (...args) &#123;
+      if (timerRef.current) &#123;
+        clearTimeout(timerRef.current);
+      &#125;
+      timerRef.current = setTimeout(() =&gt; &#123;
+        fnRef.current.apply(this, args);
+      &#125;, delay);
+    &#125;,
+    [delay]
+  );
+
+  return fnDebounced;
+&#125;
+
+export default function App() &#123;
+  const [value, setValue] = useState(&#39;&#39;);
+  const [res, setRes] = useState(&#39;&#39;);
+  const [fakeFetchCount, setFakeFetchCount] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  useEffect(() =&gt; &#123;
+    setInterval(() =&gt; &#123;
+      setDuration((pre) =&gt; pre + 1);
+    &#125;, 1000);
+  &#125;, []);
+
+  const getRes = useCallback(
+    (v) =&gt; &#123;
+      setFakeFetchCount((pre) =&gt; pre + 1);
+      fakeFetch(&#123;
+        value: v,
+        duration,
+      &#125;).then((res) =&gt; &#123;
+        setRes(res);
+      &#125;);
+    &#125;,
+    [duration]
+  );
+
+  const getResDebounced = useDebounceFn(getRes, 500);
+
+  const onChange = useCallback(
+    (e) =&gt; &#123;
+      setValue(e.target.value);
+      getResDebounced(e.target.value);
+    &#125;,
+    [getResDebounced]
+  );
+
+  return (
+    &lt;div&gt;
+      &lt;input value=&#123;value&#125; onChange=&#123;onChange&#125; /&gt;
+      &lt;div&gt;&#123;res&#125;&lt;/div&gt;
+      &lt;div&gt;停留时长：&#123;duration&#125;s&lt;/div&gt;
+      &lt;div&gt;fetch次数: &#123;fakeFetchCount&#125;&lt;/div&gt;
+    &lt;/div&gt;
+  );
+&#125;
+</code></pre>
+<p>效果如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2jgp1ooexg20em03djs1.gif" alt="img" referrerpolicy="no-referrer"></p>
+<p>改成 5000ms 延迟后，在调用时，也会走当下的 duration 而非上一次的值。效果如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2jgqhk9isg20em03d0tb.gif" alt="img" referrerpolicy="no-referrer"></p>
+<p>至此，一通分析下，终于得到了一个还算满意无 bug 的消抖自定义hook。</p>
+<p>当然这个版本下，也还有可以优化的地方，就是当组件卸载后，对 timer 的消除，来避免组件卸载后回调的执行，代码如下：</p>
+<pre><code class="jsx">function useDebounceFn(fn, delay) &#123;
+  const timerRef = useRef(null);
+  const fnRef = useRef(fn);
+
+  fnRef.current = fn;
+  
+  
+  // 增加组件卸载时，timer 的清除
+  useEffect(() =&gt; &#123;
+    return () =&gt; &#123;
+      if (timerRef.current) &#123;
+        clearTimeout(timerRef.current);
+      &#125;
+    &#125;;
+  &#125;, []);
+
+  const fnDebounced = useCallback(
+    function (...args) &#123;
+      if (timerRef.current) &#123;
+        clearTimeout(timerRef.current);
+      &#125;
+      timerRef.current = setTimeout(() =&gt; &#123;
+        fnRef.current.apply(this, args);
+      &#125;, delay);
+    &#125;,
+    [delay]
+  );
+
+  return fnDebounced;
+&#125;
+</code></pre>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文通过一个常见的根据用户输入发请求的消抖业务场景入手，从最基础的写法，到 hooks 写法，分析了其中的 bug 及存在的问题，并最终得出了自定义 hooks 的写法。</p>
+<p>整体而言，hooks 让 react 组件变的十分纯粹，每次的渲染，不过就是将函数重新执行一遍，相比于 class 组件的生命周期，函数式的组件确实纯粹了许多。</p>
+<p>但是由于异步操作以及依赖项的存在，还是导致了不少的闭包问题，也让消抖等一些常见的操作一不小心就掉坑里了。</p>
+<p>不过梳理其常见的心智负担之后，其实 hooks 还是又方便又纯粹，而消抖自定义 hooks 也充分展现了其逻辑易复用的好处。</p>
+<p>最后，都看到这了，点个赞吧. ╮(╯_╰)╭ ·</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2022/05/10/%E5%A4%AA%E5%8D%B7%E4%BA%86%EF%BC%8C%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E5%8F%88%E8%A7%81%E6%99%BA%E5%8A%9B%E9%A2%98/">太卷了，前端面试又见智力题.</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2022/07/17/React%E5%B0%86%E7%BB%84%E4%BB%B6%E4%BD%9C%E4%B8%BA%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95/">React 将组件作为参数进行传递的三种方法</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>React Hooks 心智负担：消个抖都消不利索了</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%9A%E5%8A%A1%E8%83%8C%E6%99%AF"><span class="toc-text">业务背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B6%88%E6%8A%96%E6%96%B9%E6%B3%95"><span class="toc-text">消抖方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%A0%E7%BB%9F%E7%9A%84%E6%B6%88%E6%8A%96"><span class="toc-text">传统的消抖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#hooks-%E5%86%99%E6%B3%95"><span class="toc-text">hooks 写法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B4%E6%8E%A5%E6%B6%88%E6%8A%96"><span class="toc-text">直接消抖</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E5%85%A5%E4%BA%86%E4%BE%9D%E8%B5%96%E9%A1%B9"><span class="toc-text">加入了依赖项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%B4%E6%8C%81%E5%90%8C%E4%B8%80%E4%B8%AA-timer"><span class="toc-text">维持同一个 timer</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%B4%E6%8C%81%E5%90%8C%E4%B8%80%E4%B8%AA%E5%87%BD%E6%95%B0"><span class="toc-text">维持同一个函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%81%E8%A3%85%E8%87%AA%E5%AE%9A%E4%B9%89hook"><span class="toc-text">封装自定义hook</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

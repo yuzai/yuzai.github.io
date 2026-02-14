@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>深入聊聊Qwen3的混合推理：全球唯三，开源唯一</span>
+        </h2>
+        <section class="post-content">
+            <p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/CZE3NebDV2Y1CkNh7UN5wg">上一篇文章：深入聊聊 Qwen3：我们外行除了高呼沸腾了，还应该知道什么?
+</a>，深入分析了 Qwen3 的跑分评测是否有水分，如下图：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505081412402.png" referrerpolicy="no-referrer"></p>
+<p>结论是 Qwen3 在跑分上，确实是做到了各个指标都基本达到了开源第一，直逼闭源模型的程度。</p>
+<span id="more"></span>
+
+<p>说是当前 (2025.5.12) 第一开源模型也不为过。</p>
+<p>除此之外，Qwen3 是目前唯一开源的<strong>混合推理模型</strong>，也是全球目前唯三的支持混合推理的模型。</p>
+<p>这篇文章，就着重深入聊聊 Qwen3 的混合推理。</p>
+<h2 id="从-reasoning-model-到-hybrid-reasoning-model"><a href="#从-reasoning-model-到-hybrid-reasoning-model" class="headerlink" title="从 reasoning model 到 hybrid reasoning model"></a>从 reasoning model 到 hybrid reasoning model</h2><p>这里 reasoning，其实是一个比较有趣又容易带来狭义的单词。</p>
+<p>它本身是推理的意思。</p>
+<p>但是大模型每一次的回答，其实也可以算是一次推理，比如很多文章中描述的，这个模型更小，<strong>推理</strong>速度更快。</p>
+<p>也正是因为这个原因，在中文里，对于 reasoning，更多会翻译为<strong>思考</strong>来避免歧义。</p>
+<p>比如 deepseek-r1 的<strong>深度思考</strong>，Qwen3 的发布 <a target="_blank" rel="noopener" href="https://qwenlm.github.io/blog/qwen3/">blog</a> 中，也用的是<strong>思考模式</strong>(thinking model)。</p>
+<p>不过为了全球统一，后文还是称 deepseek-r1 这样只支持深度思考的模型称为<strong>推理模型</strong>。</p>
+<p>而 Qwen3, claude 3.7 这样的模型，称为<strong>混合推理模型</strong>。</p>
+<p>而不支持深度思考的模型，称为<strong>普通模型</strong>(比如 deepseek-v3)。</p>
+<p>对于推理模型，相信国内的用户大多是从 deepseek-r1 的深度思考接触到的。</p>
+<p>当时这个深度思考，可谓是火遍大江南北。</p>
+<p>不过追根溯源，第一个推理模型是 openai 于 2024 年 9.12 发布的 [o1-preview][<a target="_blank" rel="noopener" href="https://openai.com/index/introducing-openai-o1-preview/]">https://openai.com/index/introducing-openai-o1-preview/]</a> 版。</p>
+<p>深度思考的引入，解决了很多复杂的，需要反复推演的问题，比如 AIME (一堆比较复杂的数学题)，现在排名靠前的全是推理模型。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505122002776.png" referrerpolicy="no-referrer"></p>
+<p>ps: 这里其实有几个比较有趣的数据，排名 11 和 排名 16 的 deepseek-v3-0324 和 deepseek-v3，可以看出来经过调教的普通模型，在数学能力上也能大幅提升。而排名 13 的 claude-3.7-sonnet(thinking) 的数据，也说明了，未经调教的推理模型，也不见得在数学能力上能够大幅提升，但是比不思考效果确实要好。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505122015166.png" referrerpolicy="no-referrer"></p>
+<p>当然，在实际的各类大模型的聊天 app 中，基本都是支持开启思考和非思考的。</p>
+<p>只不过相比于 Qwen3 这样的混合模型，背后是两个模型的切换。</p>
+<p>比如 deepseek-r1 和 deepseek-v3，开启深度思考，就是 r1，关闭深度思考，就是 v3。</p>
+<p>目前唯三的混合推理模型时间线如下：</p>
+<p>2025.2.25 日，<a target="_blank" rel="noopener" href="https://www.anthropic.com/news/claude-3-7-sonnet">claude 3.7 sonnet</a> 发布，是<strong>第一个支持混合推理的模型</strong>。</p>
+<p>2025.4.17 日，<a target="_blank" rel="noopener" href="https://developers.googleblog.com/en/start-building-with-gemini-25-flash/">gemini 2.5 flash</a> 发布，是第二个支持混合推理的模型。</p>
+<p>2025.4.29 日，<a target="_blank" rel="noopener" href="https://qwenlm.github.io/blog/qwen3/">Qwen3 系列发布</a>，是第三个支持混合推理的模型，<strong>第一个支持混合推理的开源模型</strong>。</p>
+<h2 id="训练过程"><a href="#训练过程" class="headerlink" title="训练过程"></a>训练过程</h2><p>原本闭源模型的情况下，很难看出来(但是可以猜)，混合推理模型是如何训练出来的。</p>
+<p>但是 Qwen3 开源后，直接把训练过程放出来了：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505122011660.png" referrerpolicy="no-referrer"></p>
+<p>主要是后训练阶段做的工作，先是进行推理的学习，也就是图中的 stage1 和 stage2，长思维链，就是推理模式的训练核心。</p>
+<p>然后再在此基础之上进行非推理模式的学习和融合，也就是 stage3。</p>
+<p>最终进行通用的强化学习，Qwen3 对于指令遵循，函数调用，风格遵循的能力也就是这个阶段进行的提升。</p>
+<p>当然，这么说可能不太好理解，这里说一说更通俗的理解方式，所谓后训练，其实本质上也是灌一堆写好的对话给大模型。</p>
+<p>比如，stage1 和 stage2 的训练数据可能长这个样子：</p>
+<pre><code class="python">messages = [
+    &#123;
+        &quot;role&quot;: &quot;system&quot;,
+        &quot;content&quot;: &quot;你是一名乐于助人的助手。&quot;
+    &#125;,
+    &#123;
+        &quot;role&quot;: &quot;user&quot;,
+        &quot;content&quot;: &quot;1+1 等于几&quot;
+    &#125;,
+    &#123;
+        &quot;role&quot;: &quot;assistant&quot;,
+        &quot;content&quot;: &quot;&lt;think&gt;用户问我 1+1 等于几，这是一个xxxx&lt;/think&gt;正常情况下等于2&quot;
+    &#125;
+]
+</code></pre>
+<p>相比于普通模型的后训练，多了 <strong>think</strong> 这样的标签(实际可能有所差别，毕竟训练数据并不会放出来，此处只是示例)。</p>
+<p>而需要融合非推理模式时，也就是 stage3 时，可以灌入这样的对话：</p>
+<pre><code class="python">messages = [
+    &#123;
+        &quot;role&quot;: &quot;system&quot;,
+        &quot;content&quot;: &quot;你是一名乐于助人的助手。&quot;
+    &#125;,
+    &#123;
+        &quot;role&quot;: &quot;user&quot;,
+        &quot;content&quot;: &quot;1+1 等于几&quot;
+    &#125;,
+    &#123;
+        &quot;role&quot;: &quot;assistant&quot;,
+        &quot;content&quot;: &quot;&lt;think&gt;&lt;/think&gt;正常情况下等于2&quot;
+    &#125;
+]
+</code></pre>
+<p>也就是直接给一个空的 <strong>think</strong> 标签。</p>
+<p>这样，模型就也能学习到不需要思考时的回答。</p>
+<p>如此一来，当外界不需要推理模式时，只需要在 token 化的时候，主动补充上一个空的 <strong>think</strong> 标签。</p>
+<p>由于训练样本中，对于空的 think 已经进行了调教，所以此时大模型就只会补充后面的内容而不做思考。</p>
+<p>从而达到混合推理的效果。</p>
+<p>宽泛一点来讲，其实也能算是提示词工程，只是由于在模型训练阶段已经进行了调教，所以输出更稳定，更规范。</p>
+<p>当然，这些都是个人的推测，并非官方的说明，仅供参考。也可以查阅<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/1900555481715570305">这篇文章</a>。</p>
+<p>而且，说起来简单，实际上训练过程，不论是数据的准备，后期的推理，都是不小的工程。</p>
+<p>不然也不会到现在，也只有三个支持混合推理的模型了。</p>
+<h2 id="混合推理模型一定是优势吗？"><a href="#混合推理模型一定是优势吗？" class="headerlink" title="混合推理模型一定是优势吗？"></a>混合推理模型一定是优势吗？</h2><p>说实话，从普通模型到推理模型，是称得上创新性的突破的。</p>
+<p>但是从推理模型，到混合推理模型，我个人认为：很难称之为创新性的突破 (但是不蒸馒头争口气，Qwen3 第一个开源支持混合推理的模型，这口气妥妥争到了)。</p>
+<p>首先，可以看看大概的一个训练过程：</p>
+<p>预训练数据集 + 思考数据集 &#x3D; 推理模型</p>
+<p>预训练数据集 + 非思考数据集 &#x3D; 普通模型</p>
+<p>预训练数据集 + 思考数据集 + 空思考数据集 &#x3D; 混合推理模型</p>
+<p>其实本质上只是补充了一个思考数据集为空的训练。</p>
+<p>这在一定程度上，会增加模型训练的时长。</p>
+<p>不过可能有读者和我一开始会有一样的困惑：</p>
+<p><strong>会不会给模型带来负面效果？</strong></p>
+<p>在研究之前，我是觉得可能会，毕竟对于模型来讲，多学习了一种思维模式。必然可能会带来理解成本。</p>
+<p>但是实际上，从上面的训练过程能够看出来，只是多了一个空的 think 标签。</p>
+<p>这点理解成本或者说模式的学习，对于大模型来讲可谓是洒洒水了。</p>
+<p>毕竟不论是风格控制，指令遵循，工具调用，哪一个不比学习一个空标签来的复杂。</p>
+<h2 id="混合推理模型的优势"><a href="#混合推理模型的优势" class="headerlink" title="混合推理模型的优势"></a>混合推理模型的优势</h2><p>首先是，争气了。别人有的，国产也有了，别人闭源，国产直接开源，还量大管饱。</p>
+<p>其次，混合推理模型，可能后续，可以把是否思考，交给大模型来做判断。</p>
+<p>除此之外，比如控制预算呀，这些谈不上优势，毕竟如果真想控制预算，完全可以自行切换推理模型和普通模型。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>一句话：Qwen3，担得起开源第一，混合推理，唯一开源的模型，不得不点赞。</p>
+<p>最后是一些碎碎念了：</p>
+<p>其实笔者本身也并非从业人员，只是单纯对大模型的实现细节比较好奇。</p>
+<p>好在有大模型，我在遇到问题的时候，基础的通识，大模型可以迅速帮我补充。</p>
+<p>而复杂一点的最新的一些技术(比如混合推理模型)，可以通过溯源的方式找到最初的文章，自行研究。</p>
+<p>配合之下，也能让笔者这样一个外行，一窥门道。</p>
+<p>不过越研究大模型，越觉得它可能还是存在一些瓶颈。</p>
+<p>不论是函数调用，指令遵循，推理模式，本质其实都是在训练集中加入指定格式的数据。</p>
+<p>不过话说回来，这倒是也接近我们人类的学习方式：</p>
+<p>想想我们学习一门编程语言的时候，其实也是，不断的输入指定格式。</p>
+<p>然后才慢慢理解了这个编程语言。</p>
+<p>最后，Qwen3 还针对性的对函数调用、mcp，agent 的能力做了加强，可以点个关注，等后续更新。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505132257677.png" referrerpolicy="no-referrer"></p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>深入聊聊Qwen3的混合推理：全球唯三，开源唯一</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E-reasoning-model-%E5%88%B0-hybrid-reasoning-model"><span class="toc-text">从 reasoning model 到 hybrid reasoning model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E8%BF%87%E7%A8%8B"><span class="toc-text">训练过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B%E4%B8%80%E5%AE%9A%E6%98%AF%E4%BC%98%E5%8A%BF%E5%90%97%EF%BC%9F"><span class="toc-text">混合推理模型一定是优势吗？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="toc-text">混合推理模型的优势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>es6笔记</span>
+        </h2>
+        <section class="post-content">
+            <p>es6的学习笔记</p>
+<span id="more"></span>
+<h2 id="3-1-对象字面量"><a href="#3-1-对象字面量" class="headerlink" title="3.1 对象字面量"></a>3.1 对象字面量</h2><hr>
+<blockquote>
+<p>三个改进的地方：1.属性值缩写，可计算属性名称，方法定义</p>
+</blockquote>
+<h3 id="3-1-1-属性值缩写"><a href="#3-1-1-属性值缩写" class="headerlink" title="3.1.1 属性值缩写"></a>3.1.1 属性值缩写</h3><p>当变量已经定义后，再定义对象的时候可以直接写变量名称，就会给该对象增加一个属性，属性名称为变量名，属性的值就是对应的变量的值</p>
+<pre><code class="js">var store = &#123;&#125;;
+var s=[1,2,3,4];
+var api=&#123;s,getItem,setItem,clear&#125;;
+
+function getItem(key)&#123;
+  return key in store?store[key]:null;
+&#125;
+function setItem(key,value)&#123;
+  store[key]=value;
+&#125;
+function clear()&#123;
+  store = &#123;&#125;;
+&#125;
+console.log(api.getItem);
+console.log(api.setItem);
+console.log(api.clear);
+console.log(api.s);
+</code></pre>
+<h3 id="3-1-2-可计算属性名"><a href="#3-1-2-可计算属性名" class="headerlink" title="3.1.2 可计算属性名"></a>3.1.2 可计算属性名</h3><p>定义对象时，用方括号括住的属性名，最终的属性名应该是以该属性名命名的变量的值。<strong>不能和第一个特性结合使用</strong></p>
+<pre><code class="js">var expertise = &#39;journalism&#39;
+var person = &#123;
+  name: &#39;Sharon&#39;,
+  age: 27,
+  [expertise]: &#123;
+    years: 5,
+    interests: [&#39;international&#39;, &#39;politics&#39;, &#39;internet&#39;]
+  &#125;
+&#125;
+console.log(person[expertise].interests);
+</code></pre>
+<h3 id="3-1-3-方法定义"><a href="#3-1-3-方法定义" class="headerlink" title="3.1.3 方法定义"></a>3.1.3 方法定义</h3><p>对象中的函数可以直接定义。不必通过function。setter和getter和以前的用法相同，别的函数可以直接采用函数名+参数+定义的形式定义对象的方法。</p>
+<pre><code class="js">var s=4;
+var person=&#123;
+  get fule()&#123;
+    return s;
+  &#125;,
+  set fule(value)&#123;
+    s=value;
+  &#125;,
+  add()&#123;
+    return s+1;
+  &#125;
+&#125;
+console.log(person.fule);//4
+console.log(person.add());//5
+person.fule=10;
+console.log(person.fule);//10
+</code></pre>
+<h2 id="3-2-箭头函数"><a href="#3-2-箭头函数" class="headerlink" title="3.2 箭头函数"></a>3.2 箭头函数</h2><pre><code class="js">var example = function (parameters) &#123;
+  // function body
+&#125;
+var example = (parameters) =&gt; &#123;
+  // function body
+&#125;
+</code></pre>
+<p>箭头函数看起来和匿名函数很像，但是实际上有很大的区别：他们没有函数名，他们被绑定了词法范围。</p>
+<h3 id="3-2-1-词法范围"><a href="#3-2-1-词法范围" class="headerlink" title="3.2.1 词法范围"></a>3.2.1 词法范围</h3><pre><code class="js">var timer=&#123;
+  second:0,
+  start()&#123;
+    setInterval(()=&gt;&#123;
+      console.log(this);//object timer
+      this.second++;
+    &#125;,1000);
+  &#125;
+&#125;
+timer.start();
+setTimeout(function()&#123;console.log(timer.second)&#125;,3700);//3
+</code></pre>
+<pre><code class="js">var timer=&#123;
+  second:0,
+  start()&#123;
+    setInterval(function()&#123;
+      console.log(this);//window
+      this.second++;
+    &#125;,1000);
+  &#125;
+&#125;
+timer.start();
+setTimeout(function()&#123;console.log(timer.second)&#125;,3700);//0
+</code></pre>
+<pre><code class="js">var timer=&#123;
+  second:0,
+  start()&#123;
+    var that=this;
+    setInterval(function()&#123;
+      console.log(that);//window
+      that.second++;
+    &#125;,1000);
+  &#125;
+&#125;
+timer.start();
+setTimeout(function()&#123;console.log(timer.second)&#125;,3700);//3
+</code></pre>
+<p>通过使用箭头函数，可以保证调用对象的方法时this一直绑定在方法的词法范围内，也就是this一直指向对象（不太完善，大部分情况下）。而如果使用匿名函数，词法范围由使用该匿名函数的此法范围决定，一般是window</p>
+<h3 id="3-2-2-箭头函数的简写"><a href="#3-2-2-箭头函数的简写" class="headerlink" title="3.2.2 箭头函数的简写"></a>3.2.2 箭头函数的简写</h3><pre><code class="js">var example = (parameters) =&gt; &#123;
+  // function body
+&#125;
+var double = value =&gt; &#123;//只有一个参数
+  return value * 2
+&#125;
+var double = (value) =&gt; value * 2
+var double = value =&gt; value * 2
+</code></pre>
+<h3 id="3-2-3-优点和使用场景"><a href="#3-2-3-优点和使用场景" class="headerlink" title="3.2.3 优点和使用场景"></a>3.2.3 优点和使用场景</h3><p>十分适合用在词法绑定的匿名函数上。</p>
+<pre><code class="js">[1, 2, 3, 4]
+  .map(value =&gt; value * 2)
+  .filter(value =&gt; value &gt; 2)
+  .forEach(value =&gt; console.log(value))
+// &lt;- 4
+// &lt;- 6
+// &lt;- 8
+</code></pre>
+<p><strong>注意事项</strong><br>当箭头函数的隐含返回值（没有用return）时，必须在对象外围加上()不然和函数的定义是一致的。</p>
+<pre><code class="js">var objectFactory = () =&gt; (&#123; modular: &#39;es6&#39; &#125;)
+
+[1, 2, 3].map(value =&gt; &#123; number: value &#125;)
+// &lt;- [undefined, undefined, undefined]
+
+[1, 2, 3].map(value =&gt; &#123; number: value, verified: true &#125;)
+// &lt;- SyntaxError
+
+[1, 2, 3].map(value =&gt; (&#123; number: value, verified: true &#125;))
+/* &lt;- [
+  &#123; number: 1, verified: true &#125;,
+  &#123; number: 2, verified: true &#125;,
+  &#123; number: 3, verified: true &#125;]
+*/
+</code></pre>
+<h2 id="3-3-assign-destructuring"><a href="#3-3-assign-destructuring" class="headerlink" title="3.3 assign destructuring"></a>3.3 assign destructuring</h2><p>最简单的特性，方便了把对象的属性值赋值给变量</p>
+<h3 id="3-3-1-解构对象"><a href="#3-3-1-解构对象" class="headerlink" title="3.3.1 解构对象"></a>3.3.1 解构对象</h3><pre><code class="js">var pseudonym = character.pseudonym//es5
+var &#123;pseudonym&#125; = character //es6
+
+var alias = character.pseudonym//es5
+var &#123; pseudonym: alias &#125; = character//es6
+
+var person = &#123; scientist: true &#125;
+var type = &#39;scientist&#39;
+var &#123; [type]: value &#125; = person //es6
+console.log(value)
+// &lt;- true
+value = person[type] //es5
+</code></pre>
+<h3 id="3-3-2-解构数组"><a href="#3-3-2-解构数组" class="headerlink" title="3.3.2 解构数组"></a>3.3.2 解构数组</h3><p>跟解构对象一样，只是采用方括号。毕竟操作的对象是数组</p>
+<pre><code class="js">var left = 5
+var right = 7
+[left, right] = [right, left]
+</code></pre>
+<h3 id="3-3-3-解构函数"><a href="#3-3-3-解构函数" class="headerlink" title="3.3.3 解构函数"></a>3.3.3 解构函数</h3><pre><code class="js">function sumOf (a = 1, b = 2, c = 3) &#123;
+  return a + b + c
+&#125;
+console.log(sumOf(undefined, undefined, 4))
+// &lt;- 1 + 2 + 4 = 7
+
+function carFactory (&#123; brand = &#39;Volkswagen&#39;, year = 1999 &#125; = &#123;&#125;) &#123;
+  console.log(brand)
+  console.log(year)
+&#125;
+carFactory()
+// &lt;- &#39;Volkswagen&#39;
+// &lt;- 1999
+</code></pre>
+<h3 id="3-3-4-使用场景"><a href="#3-3-4-使用场景" class="headerlink" title="3.3.4 使用场景"></a>3.3.4 使用场景</h3><pre><code class="js">function getCoordinates () &#123;
+  return &#123; x: 10, y: 22, z: -1, type: &#39;3d&#39; &#125;
+&#125;
+var &#123; x, y &#125; = getCoordinates()
+
+function splitDate (date) &#123;
+  var rdate = /(\d+).(\d+).(\d+)/
+  return rdate.exec(date)
+&#125;
+var [, year, month, day] = splitDate(&#39;2015-11-06&#39;)
+</code></pre>
+<h2 id="3-4-rest参数和扩散运算操作符"><a href="#3-4-rest参数和扩散运算操作符" class="headerlink" title="3.4 rest参数和扩散运算操作符"></a>3.4 rest参数和扩散运算操作符</h2><pre><code class="js">function print () &#123;
+  var list = Array.prototype.slice.call(arguments)
+  console.log(list)
+&#125;
+print(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;)
+// &lt;- [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]
+</code></pre>
+<p>在es5中，获取参数比较繁琐，在es6中，使用rest参数可以很好的获取函数的参数</p>
+<h3 id="3-4-1-rest-参数"><a href="#3-4-1-rest-参数" class="headerlink" title="3.4.1 rest 参数"></a>3.4.1 rest 参数</h3><pre><code class="js">function print (...list) &#123;
+  console.log(list)
+&#125;
+print(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;)
+// &lt;- [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]
+
+function print (first, ...list) &#123;
+  console.log(first)
+  console.log(list)
+&#125;
+print(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;)
+// &lt;- &#39;a&#39;
+// &lt;- [b&#39;, &#39;c&#39;]
+</code></pre>
+<p>通过3个点来获取参数到list，…前面的参数可以按照原来的方式进行赋值，后面的多余参数会直接赋值给list<br>箭头函数必须加括号如果使用…参数，即便只有一个参数。否则会报错。</p>
+<h3 id="3-4-2-spread操作符"><a href="#3-4-2-spread操作符" class="headerlink" title="3.4.2 spread操作符"></a>3.4.2 spread操作符</h3><p>符号和…操作符一样，可以将数组或者类数组的元素返回到一个数组中。</p>
+<pre><code class="js">var a=[1,2,3,...[2,3],...[3,4],5];
+console.log(a);//1,2,3,2,3,3,4,5
+</code></pre>
+<h2 id="3-5-模板字面量"><a href="#3-5-模板字面量" class="headerlink" title="3.5 模板字面量"></a>3.5 模板字面量</h2><p>可以使用``来定义字符串，这样在字符串内部使用单引号双引号都可以。另外一个好处是可以在其中插入js表达式</p>
+<pre><code class="js">var text = `This is my first template literal`
+</code></pre>
+<h3 id="3-5-1-字符串插值"><a href="#3-5-1-字符串插值" class="headerlink" title="3.5.1 字符串插值"></a>3.5.1 字符串插值</h3><pre><code class="js">var s=`This a template literal $&#123; `with another $&#123; &#39;one&#39; &#125; embedded inside it` &#125;`
+// &lt;- &#39;This a template literal with another one embedded inside it&#39;
+</code></pre>
+<h3 id="3-5-2-多行模板字面量"><a href="#3-5-2-多行模板字面量" class="headerlink" title="3.5.2 多行模板字面量"></a>3.5.2 多行模板字面量</h3><p>可以方便的定义多行字符串</p>
+<pre><code class="js">var escaped =
+&#39;The first line\n\
+A second line\n\
+Then a third line&#39;
+
+var concatenated =
+&#39;The first line\n&#39; +
+&#39;A second line\n&#39; +
+&#39;Then a third line&#39;
+
+var joined = [
+&#39;The first line&#39;,
+&#39;A second line&#39;,
+&#39;Then a third line&#39;
+].join(&#39;\n&#39;)
+
+//es6 with template literal
+var multiline =
+`The first line
+A second line
+Then a third line`
+</code></pre>
+<h3 id="3-5-3-Tagged-Templates"><a href="#3-5-3-Tagged-Templates" class="headerlink" title="3.5.3 Tagged Templates"></a>3.5.3 Tagged Templates</h3><p>不是很懂，有待下一次研究</p>
+<h2 id="3-6-let-和-const"><a href="#3-6-let-和-const" class="headerlink" title="3.6 let 和 const"></a>3.6 let 和 const</h2><p>js变量提升以及作用域很让人困惑，没有块级作用域</p>
+<h3 id="3-6-1-let声明和块级作用域"><a href="#3-6-1-let声明和块级作用域" class="headerlink" title="3.6.1 let声明和块级作用域"></a>3.6.1 let声明和块级作用域</h3><p>let变量具有块级作用域</p>
+<pre><code class="js">let topmost = &#123;&#125;
+&#123;
+  let inner = &#123;&#125;
+  &#123;
+    let innermost = &#123;&#125;
+  &#125;
+  // attempts to access innermost here would throw
+&#125;
+// attempts to access inner here would throw
+// attempts to access innermost here would throw
+</code></pre>
+<p>最常用的地方就是for循环</p>
+<pre><code class="js">for (let i = 0; i &lt; 2; i++) &#123;
+  console.log(i)
+  // &lt;- 0
+  // &lt;- 1
+&#125;
+console.log(i)
+// &lt;- i is not defined
+</code></pre>
+<h3 id="3-6-2-临时死区-TDZ"><a href="#3-6-2-临时死区-TDZ" class="headerlink" title="3.6.2 临时死区 TDZ"></a>3.6.2 临时死区 TDZ</h3><p>进入一个块级作用域，如果在let变量定义之前使用了该变量名，会抛出异常，如果代码在let定义之前企图访问用let定义的变量，都会抛出异常，因为let的变量有临时死区，也就是let变量定义之前，试图访问let变量都会报错。但是在函数中访问并不会报错，除非在定义之前执行了该函数</p>
+<pre><code class="js">&#123;
+  name = &#39;Barbara Penner&#39;
+  // &lt;- ReferenceError: name is not defined
+  let name = &#39;Stephen Hawking&#39;
+&#125;
+</code></pre>
+<h3 id="3-6-3-const声明"><a href="#3-6-3-const声明" class="headerlink" title="3.6.3 const声明"></a>3.6.3 const声明</h3><p>const变量和let变量都具有tdz，也就是在定义之前试图访问均会抛出错误。<br>const变量定义的时候必须要初始化，而且不能被显式赋值。在非严格模式下不会报错，但是该赋值语句不会起作用。但是只是指向的对象不能更改，对象本身可以被更改。</p>
+<pre><code class="js">const people = [&#39;Tesla&#39;, &#39;Musk&#39;]
+people = []
+console.log(people)
+// &lt;- [&#39;Tesla&#39;, &#39;Musk&#39;]
+
+const people = [&#39;Tesla&#39;, &#39;Musk&#39;]
+people.push(&#39;Berners-Lee&#39;)
+console.log(people)
+// &lt;- [&#39;Tesla&#39;, &#39;Musk&#39;, &#39;Berners-Lee&#39;]
+
+const people = [&#39;Tesla&#39;, &#39;Musk&#39;]
+var humans = people
+humans = &#39;evil&#39;
+console.log(humans)
+// &lt;- &#39;evil&#39;
+</code></pre>
+<h3 id="3-6-4-let和const的优点"><a href="#3-6-4-let和const的优点" class="headerlink" title="3.6.4 let和const的优点"></a>3.6.4 let和const的优点</h3>
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2016/11/13/%E4%BD%93%E4%BC%9A/">体会</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2016/11/22/ajax%E6%9C%AC%E5%9C%B0%E9%80%9A%E4%BF%A1/">ajax本地通信</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>es6笔记</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E5%AF%B9%E8%B1%A1%E5%AD%97%E9%9D%A2%E9%87%8F"><span class="toc-text">3.1 对象字面量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-1-%E5%B1%9E%E6%80%A7%E5%80%BC%E7%BC%A9%E5%86%99"><span class="toc-text">3.1.1 属性值缩写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-2-%E5%8F%AF%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7%E5%90%8D"><span class="toc-text">3.1.2 可计算属性名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-3-%E6%96%B9%E6%B3%95%E5%AE%9A%E4%B9%89"><span class="toc-text">3.1.3 方法定义</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0"><span class="toc-text">3.2 箭头函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-1-%E8%AF%8D%E6%B3%95%E8%8C%83%E5%9B%B4"><span class="toc-text">3.2.1 词法范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-2-%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E7%9A%84%E7%AE%80%E5%86%99"><span class="toc-text">3.2.2 箭头函数的简写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-3-%E4%BC%98%E7%82%B9%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">3.2.3 优点和使用场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-assign-destructuring"><span class="toc-text">3.3 assign destructuring</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-1-%E8%A7%A3%E6%9E%84%E5%AF%B9%E8%B1%A1"><span class="toc-text">3.3.1 解构对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-2-%E8%A7%A3%E6%9E%84%E6%95%B0%E7%BB%84"><span class="toc-text">3.3.2 解构数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-3-%E8%A7%A3%E6%9E%84%E5%87%BD%E6%95%B0"><span class="toc-text">3.3.3 解构函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-4-%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">3.3.4 使用场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-4-rest%E5%8F%82%E6%95%B0%E5%92%8C%E6%89%A9%E6%95%A3%E8%BF%90%E7%AE%97%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">3.4 rest参数和扩散运算操作符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-1-rest-%E5%8F%82%E6%95%B0"><span class="toc-text">3.4.1 rest 参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-2-spread%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">3.4.2 spread操作符</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-5-%E6%A8%A1%E6%9D%BF%E5%AD%97%E9%9D%A2%E9%87%8F"><span class="toc-text">3.5 模板字面量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-1-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8F%92%E5%80%BC"><span class="toc-text">3.5.1 字符串插值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-2-%E5%A4%9A%E8%A1%8C%E6%A8%A1%E6%9D%BF%E5%AD%97%E9%9D%A2%E9%87%8F"><span class="toc-text">3.5.2 多行模板字面量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-3-Tagged-Templates"><span class="toc-text">3.5.3 Tagged Templates</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-6-let-%E5%92%8C-const"><span class="toc-text">3.6 let 和 const</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-1-let%E5%A3%B0%E6%98%8E%E5%92%8C%E5%9D%97%E7%BA%A7%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-text">3.6.1 let声明和块级作用域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-2-%E4%B8%B4%E6%97%B6%E6%AD%BB%E5%8C%BA-TDZ"><span class="toc-text">3.6.2 临时死区 TDZ</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-3-const%E5%A3%B0%E6%98%8E"><span class="toc-text">3.6.3 const声明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-4-let%E5%92%8Cconst%E7%9A%84%E4%BC%98%E7%82%B9"><span class="toc-text">3.6.4 let和const的优点</span></a></li></ol></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

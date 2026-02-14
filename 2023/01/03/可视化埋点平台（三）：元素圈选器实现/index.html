@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>可视化埋点（三）：元素圈选器实现</span>
+        </h2>
+        <section class="post-content">
+            <p>在实现可视化埋点的过程中，元素圈选是其功能中不可或缺的一环，其能力具备一定的通用性，故将其逻辑从 可视化埋点平台 中剥离出来，单独作为一个独立的工具方法暴露出来，源代码及演示可直接在 <a target="_blank" rel="noopener" href="https://github.com/yuzai/dom-inspector-pro">github仓库中</a> 查看。本文主要是对其实现的拆解和其中关键点的记录。</p>
+<span id="more"></span>
+
+<h2 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h2><p>整体的 <a target="_blank" rel="noopener" href="https://blog.maxiaobo.com.cn/dom-inspector-pro/demo/index.html">demo</a> 可以在此处查看。</p>
+<p>整体来讲，圈选器的功能在于：</p>
+<p>enable 前，用户可自由交互，此时点击、移动并不会被阻碍。</p>
+<p>而 enable 后，当用户移动鼠标&#x2F;移动端移动手指，便会高亮当前选择的元素的大小、padding 及 margin 等。</p>
+<p>而当用户鼠标点击 &#x2F; 移动端手指离开 后，将会触发选中的回调，可视化埋点平台在这一环节唤起 埋点录入表单。</p>
+<p>从整体的思路上来讲，整个 元素圈选器 的核心功能在于：</p>
+<ol>
+<li>计算元素的大小、位置，属性，并增加蒙层</li>
+<li>列表元素的判定、多选</li>
+<li>兼容 pc&#x2F;mobile</li>
+</ol>
+<p>除此之外需要具备 开关能力，以免影响用户正常交互。</p>
+<h3 id="元素位置、大小及属性计算"><a href="#元素位置、大小及属性计算" class="headerlink" title="元素位置、大小及属性计算"></a>元素位置、大小及属性计算</h3><p>首先是元素的位置计算，一个非常简单的方法是借助现成的 api: <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect">Element.getBoundingClientRect
+</a>。</p>
+<p>通过该方法拿到的 left, top，便是元素相对于视区左上角的位置，这样在后续添加蒙层的时候，以此作为元素位置即可。</p>
+<p>但是实际在添加蒙层时，左上角是包含了 margin 的位置，故此处通过 left - ‘margin-left’， top - ‘margin-top’ 作为元素在左上角的位置。</p>
+<p>而对于元素的大小，可以通过 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetWidth">element.offsetWidth</a> 来获取，这一值包含了元素的 border padding 及 content，故元素实际的宽高需要减去左右 border 和 左右 padding，才是元素的 实际宽高。</p>
+<p>对于元素的属性：margin, padding，border，可以通过 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle">Window.getComputedStyle
+</a> 获取。</p>
+<p>得到上述数据后，整个元素的位置、大小、margin&#x2F;padding&#x2F;border 值都得到了完整的值，此时便可以按照这一尺寸绘制元素的蒙层。</p>
+<p>但是在实际的场景中，还存在元素通过 transform 后缩放的场景，此处对上述用到的 api 和 transform scale 的关系进行梳理。</p>
+<ol>
+<li>获取元素的位置，Element.getBoundingClientRect，获取到的是缩放后的位置。</li>
+<li>获取元素的大小，offsetWidth，获取到的是缩放前的宽高</li>
+<li>获取元素的属性，padding&#x2F;margin&#x2F;border，Window.getComputedStyle,获取到的是缩放前的值。</li>
+</ol>
+<p>可以看出来，元素的位置是缩放后的，而大小、属性是缩放前的，实际蒙层的位置和大小是无法对应的。</p>
+<p>此时有两种方案，一种是根据缩放比例，计算缩放后的大小、属性，另一种方式是直接在父元素上追加同等的缩放比例，从而获取到实际的蒙层大小。本文采用的是后一种方案。</p>
+<p>通过 ele.offsetWidth &#x2F; getComputedStyle().width 拿到元素本身的缩放比例，此时对蒙层父元素追加反向比例的缩放，即可正确添加缩放后的蒙层。此时，由于位置一直取的是左上角，故实际并不需要关心元素的 transform-origin，始终使用左上角即可保证蒙层的位置正确。</p>
+<p>但是实际处理时，由于元素的位置是 left - ‘margin-left’ 获得的，此时由于 left 是缩放后的，而 margin-left 是缩放前，所以此处还需要对 left 乘上比例后再相减，实际的 left 值计算出后，再除以缩放比例即可解决。</p>
+<p>实际的场景中，还存在一种情况，就是对整个 html 文档流的缩放，这一场景是在一些 h5 页面，需要兼容 pc 12px 的字体时，以前一些旧的页面会先对 整个页面按照放大 3 倍的尺寸开发，然后在最外层再套一个 transform: scale(0.333) 来实现对 12px 字体的兼容。</p>
+<p>要兼容该场景，首先需要全局插入一个辅助元素，用于检测 html 上的缩放。</p>
+<p>元素的大小、位置及属性计算不进行修改，全部使用缩放前的值，但是蒙层父元素的缩放比例需要进行调整，从原本的 仅进行元素的缩放，改为进行元素的缩放并还原 html 的缩放。</p>
+<p>这是因为由于蒙层本身被进行了缩放，而元素也被进行了自身和 html 的双重缩放，所以蒙层父元素仅需要按照元素的实际缩放比例进行缩放，但是实际由于蒙层还被 html 的缩放了一层，故需要针对性的抵消缩放比例才可以正常展示蒙层的大小。</p>
+<p>以上便是整个元素大小、位置及属性获取的方案，也解决了边界的 transform 场景，实际中还会有一些额外的处理，比如 元素的 tips 由于存在文字，其展示就不进行元素大小的缩放，仅抵消掉 html 带来的缩放比例即可。</p>
+<h3 id="列表元素的判定"><a href="#列表元素的判定" class="headerlink" title="列表元素的判定"></a>列表元素的判定</h3><p>在实际的页面中，往往存在列表元素，这些元素结构类似但是每一行又有数据 or 样式上的差别，对于这种元素，在可视化埋点中，往往需要智能检测且需要批量选择。</p>
+<p>对于列表场景，每一行往往有迹可循，而判定列表元素，往往也是找到一行。当然，实际的判定还是需要按照一定的规则，在这里，我定的几个判定规则有：</p>
+<ol>
+<li>当前元素的子节点，最少具有 5个，且相同 tag 及相同 className 的数量要大于 70%。</li>
+<li>当前元素的孙节点们的 tag 连接起的字符串，相同的数量要超过 70%。</li>
+<li>如果不满足，则从其父节点再开始查找，一直到 document.body 为止。</li>
+</ol>
+<p>通过这样的方式，实测能够覆盖业务中的大部分列表场景。</p>
+<h3 id="挂载位置"><a href="#挂载位置" class="headerlink" title="挂载位置"></a>挂载位置</h3><p>在实际可视化埋点过程中，圈选蒙层的挂载位置，一开始是放在 body 的最后一个元素，但是实际场景中，会存在动态 modal 这样的场景，会动态的在 body 最后追加元素，此时该元素的 xpath 便会收到蒙层元素的影响，导致统计偏差，故在参考 vconsole 后，将元素转移到了 html 下，从而减少对业务元素的影响。</p>
+<h3 id="pc-x2F-mobile-兼容"><a href="#pc-x2F-mobile-兼容" class="headerlink" title="pc&#x2F;mobile 兼容"></a>pc&#x2F;mobile 兼容</h3><p>pc 端 与 mobile 端，一方面是将 mousemove 替换为 touchmove。</p>
+<p>而另一方面，圈选结束的时机在 mobile 端丢失。原本 pc 端通过 body 上捕获阶段的点击事件进行圈选结束的判定，而 mobile 端，由于 click 事件在 touchmove 后不会触发，故需要在 touchend 中创建自定义事件，触发 body 上的点击。</p>
+<p>除此之外，mobile 端还存在移动触发页面滚动的情况，此处本文采用了对所有元素增加 touch-action: none 的方法，避免了移动端手指滚动时对全局页面的影响。</p>
+<p>同时，移动端 touchmove 的 target 并不会指向当前 move 的元素，需要使用一些 api 进行当前元素的获取，伪代码如下：</p>
+<pre><code class="js">if (e instanceof TouchEvent &amp;&amp; e.touches) &#123;
+    const changedTouch = e.changedTouches[0];
+    return document.elementFromPoint(changedTouch.clientX, changedTouch.clientY);
+&#125;
+</code></pre>
+<p>同时，由于该方案回获取当前位置的元素，也就是说如果手指下方的元素是蒙层元素，那么也会被选中，所以需要对 蒙层等无关元素增加 touch-action: none 来避免被选中。</p>
+<p>至此，便完成了 mobile 端的兼容。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>整体来讲，圈选器的实现并不复杂，麻烦的点主要集中在特殊场景的处理及 dom 的操作上。</p>
+<p>元素位置、大小、属性的获取，是否受 transform scale 影响，是否存在 html 上的缩放，都是一些常见的边界条件。</p>
+<p>而移动端的兼容、列表元素的判定，也为可视化埋点的整体能力进行了增强。</p>
+<p>同时，此 dom-inspector-pro，也在 api 上进行了拓展，更多的回调也能满足更多的场景使用。</p>
+<p>最后，欢迎交流，给个赞就更好啦。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2023/01/02/2022%20%E5%B9%B4%E7%BB%88%E9%9A%8F%E7%AC%94%20--%20%E4%BB%8A%E5%B9%B4%E5%8D%87%E8%81%8C%E5%95%A6/">2022 年终随笔 -- 今年升职啦</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2023/01/06/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E5%A6%82%E4%BD%95%E7%BB%B4%E6%8C%81%20Xpath%20%E7%A8%B3%E5%AE%9A%E6%80%A7/">可视化埋点（四）：如何维持 Xpath 稳定性</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>可视化埋点（三）：元素圈选器实现</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-text">整体流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%83%E7%B4%A0%E4%BD%8D%E7%BD%AE%E3%80%81%E5%A4%A7%E5%B0%8F%E5%8F%8A%E5%B1%9E%E6%80%A7%E8%AE%A1%E7%AE%97"><span class="toc-text">元素位置、大小及属性计算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%97%E8%A1%A8%E5%85%83%E7%B4%A0%E7%9A%84%E5%88%A4%E5%AE%9A"><span class="toc-text">列表元素的判定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%82%E8%BD%BD%E4%BD%8D%E7%BD%AE"><span class="toc-text">挂载位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pc-x2F-mobile-%E5%85%BC%E5%AE%B9"><span class="toc-text">pc&#x2F;mobile 兼容</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

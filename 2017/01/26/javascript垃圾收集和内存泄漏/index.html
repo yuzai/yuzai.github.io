@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>javascript垃圾收集和内存泄漏</span>
+        </h2>
+        <section class="post-content">
+            <p>这几天在写代码的时候一直想到一个问题，内存的问题，这个问题解决不了，始终不能安安心心写代码（我这里又又又定义了一个变量，闭包能访问到它，但是我在闭包函数中并没有访问他，闭包一直存在，不占内存吗？之前也一直有一个问题，不解决也是寝食难安，见<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/46a752b117fb">事件处理函数中this的指向以及函数上下文的继承</a>），以前写c,c++的时候，似乎每次全局作用域有数组我不用了，我就手动给它删除了（局部变量出了作用域就自行销毁），而写javascript的时候意识到，虽然避免使用了全局变量，可是因为闭包的存在难道不会导致内存的泄漏（只要闭包函数存在，就始终拥有对外部函数的作用域的访问权限）？</p>
+<span id="more"></span>
+<p>之前第一次看《javascript高级程序设计》的时候，记得有一节是说垃圾回收机制，当时连对象，应用，原型什么的都没有搞清楚，那章基本上也就跳过了，现在回想起来，似乎我很少在js中对其内存进行管理，除了我不想要某个属性了，会delete一下，别的都没有进行管理，那么Js不需要内存管理吗？不会发生内存泄漏？</p>
+<h3 id="js垃圾回收机制"><a href="#js垃圾回收机制" class="headerlink" title="js垃圾回收机制"></a>js垃圾回收机制</h3><p>Js有自己的垃圾回收机制，会帮助开发者管理内存。回收机制会查找应用无法到达的内存。这其实跟我们的初衷是有一些细微但是很重要的差别，该机制是寻找无法到达的内存，而我们想要的其实是寻找我不会再使用的内存。一块内存（一个变量，引用），只有开发者我们自己才知道会不会再用到，而检测机制，只能检测到程序中别的地方不会再调用的内存（也正常，要是检测机制能检测到那个变量我不用了才奇怪了）。所以，如果我们不使用某个变量了，让程序别的地方都引用不到它，垃圾回收机制就能够发现并处理它，而内存泄漏的根本原因就是我们不打算继续使用的内存还存在着引用，从程序别的地方可以访问到它，就不会对其进行释放。<br>综上可以这么说：<strong>js的回收机制的关键是理解可到达的概念。从跟(window)出发，能够到达的变量都会留在内存中，只有无法到达的节点(变量，函数)才会被回收机制回收。从而完成内存的释放。而引起内存泄漏的根本原因就是存在不想要的引用，使得不需要的内存能够从根节点到达，从而无法释放该内存。</strong></p>
+<h3 id="js回收机制示例"><a href="#js回收机制示例" class="headerlink" title="js回收机制示例"></a>js回收机制示例</h3><h5 id="普通对象回收机制"><a href="#普通对象回收机制" class="headerlink" title="普通对象回收机制"></a>普通对象回收机制</h5><p>如下代码：</p>
+<pre><code class="js">function Menu(title) &#123;
+  this.title = title
+  this.elem = document.getElementById(&#39;id&#39;)
+&#125;
+
+var menu = new Menu(&#39;My Menu&#39;)
+
+document.body.innerHTML = &#39;&#39;  // (1)
+
+menu = new Menu(&#39;His menu&#39;) // (2)
+</code></pre>
+<p>在第一步执行完之后，此时由于document.body中改成了空，那么此时menu中this.elem是否还存在？根据Js垃圾回收机制，虽然document.body中无法访问到elem了，但是还能够从menu.elem中访问到该元素，存在指向该内存(document.getElementById(‘id’))的引用(menu.elem)，所以该元素占用的内存并没有被真正的释放。当执行第二步之后，menu.elem指向空，此时，没有引用指向该元素，该内存被真正释放。</p>
+<h5 id="循环引用收集机制"><a href="#循环引用收集机制" class="headerlink" title="循环引用收集机制"></a>循环引用收集机制</h5><p>先上代码：</p>
+<pre><code class="js">function setHandler() &#123;
+
+  var elem = document.getElementById(&#39;id&#39;)
+
+  elem.onclick = function() &#123;
+    // ...
+  &#125;
+
+&#125;
+</code></pre>
+<p>上述代码，属于一个经典的闭包，虽然，elem.onclick中没有任何代码，但是依然在内存中保存了elem变量（闭包的特性），所以在这个例子中，存在如下的循环引用：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3967512-2231f6c978f663b6.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="循环引用.jpg" referrerpolicy="no-referrer"><br>elem变量的onclick指向的函数，内部保存了一个指向serHandler的作用域的引用，而该作用域中又存在该elem的引用，所以出现了循环引用的情况。这个onclick函数一般会随着elem的消失而被释放（在现代浏览器中，什么情况下不会清除见下文）。所以，在现代浏览器中，一般通过下列代码即可释放该内存。</p>
+<pre><code class="js">function cleanUp() &#123;
+  var elem = document.getElementById(&#39;id&#39;)
+  elem.parentNode.removeChild(elem)
+&#125;
+</code></pre>
+<p>在现代浏览器中，移除elem节点就可以移除绑定的对应事件。（IE&lt;8中不能，原因见下文。不得不说，以后我再也不用担心移除元素对应事件没有解除的问题了，毕竟2017年了嘛）。</p>
+<h3 id="js常见内存泄漏"><a href="#js常见内存泄漏" class="headerlink" title="js常见内存泄漏"></a>js常见内存泄漏</h3><h5 id="IE-lt-8-DOM-JS-泄漏"><a href="#IE-lt-8-DOM-JS-泄漏" class="headerlink" title="IE&lt;8 DOM-JS 泄漏"></a>IE&lt;8 DOM-JS 泄漏</h5><p>在上面实例中，使用cleanUp函数清除元素节点并不能清除onclick函数，因为清除了dom元素，但是因为在elem.onclick的作用域中还存在对该元素的引用，所以并没有对其进行回收（IE老版本中使用的DOM对象采用的是引用计数的回收机制，在这里不进行深入讨论，引用计数的回收机制不行，我也就不深入了）。解决方法如下：<br><img src="http://upload-images.jianshu.io/upload_images/3967512-7324eb4c9cef0c41.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="解决方案.png" referrerpolicy="no-referrer"><br>这样处理之后也就不存在循环引用的问题，如果需要在onclick函数中使用elem,直接使用this（事件触发函数中this指向元素本身）即可。因为onclick中没有保存对elem的引用，所以删除元素的时候不存在因为循环引用的关系无法删除elem。</p>
+<h5 id="IE-lt-9-ajax内存泄漏"><a href="#IE-lt-9-ajax内存泄漏" class="headerlink" title="IE&lt;9 ajax内存泄漏"></a>IE&lt;9 ajax内存泄漏</h5><pre><code class="js">var xhr = new XMLHttpRequest() // or ActiveX in older IE
+
+xhr.open(&#39;GET&#39;, &#39;/server.url&#39;, true)
+
+xhr.onreadystatechange = function() &#123;
+  if(xhr.readyState == 4 &amp;&amp; xhr.status == 200) &#123;           
+    // ...
+  &#125;
+&#125;
+
+xhr.send(null)
+</code></pre>
+<p>xhr是一个被浏览器跟踪的对象，当xhr请求结束后，该引用会被浏览器回收，xhr就不能被到达，从而进行内存回收，但是IE&lt;9不会做这个处理。是因为其实这里存在一个循环引用：<br><img src="http://upload-images.jianshu.io/upload_images/3967512-0ab87d2d2741ae72.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="ajax循环引用.png" referrerpolicy="no-referrer"><br>上图中，浏览器对xhr有一个内部的引用，在xhr回调函数处理结束之后会删除这个内部引用，但是因为在onreadystatechange函数中存在对xhr的引用，因为IE采用引用计数的回收机制，并不会对xhr进行清除，从而导致内存泄漏。解决方案如下图：<br><img src="http://upload-images.jianshu.io/upload_images/3967512-c3a8ffc6da47080c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="解决方案.png" referrerpolicy="no-referrer"><br>上图中，在处理完xhr.send(null)之后增加xhr&#x3D;null就可以使循环打破，从而在xhr回调函数处理完毕之后对xhr进行回收。<br>修正代码如下：</p>
+<pre><code class="js">var xhr = new XMLHttpRequest()
+
+xhr.open(&#39;GET&#39;, &#39;jquery.js&#39;, true)
+
+xhr.onreadystatechange = function() &#123;
+  if(this.readyState == 4 &amp;&amp; this.status == 200) &#123;           
+    document.getElementById(&#39;test&#39;).innerHTML++
+  &#125;
+&#125;
+
+xhr.send(null)
+   xhr = null
+</code></pre>
+<p>在现代浏览器中，其实上述这两个问题均不需要进行考虑，主要是IE残留的对DOM的回收机制的问题。</p>
+<h5 id="setInterval"><a href="#setInterval" class="headerlink" title="setInterval"></a>setInterval</h5><p>定时函数的作用域一直保存在内存中，造成内存泄漏的原因在于，定时函数里面的函数如果本身不实现任何功能，但是有没有clear，就会一直占用内存。这个只需要在不需要定时函数之后进行clear即可。</p>
+<h5 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h5><p>闭包函数对外部函数的所有变量均有引用，所以只要闭包函数还存在，对这些变量的引用就一直存在，即便闭包函数中并没有对其进行访问，所以就造成了内存的泄漏，这一点其实也很好解决，在l临时使用的变量在使用之后令其&#x3D;null即可。如下：</p>
+<pre><code class="js">function f() &#123;
+  var data = &quot;Large piece of data, probably received from server&quot;
+
+  /* do something using data */
+
+  function inner() &#123;
+    // ...
+  &#125;
+ data = null;
+  return inner
+&#125;
+</code></pre>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这几天其实在网上看了很多文章，几乎每篇文章关于内存泄漏的书法都不太一致，有些文章说了一些循环引用的问题，但是没有指定是所有的浏览器不能使用还是只有IE,有些文章对js的回收机制并没有给出很好的解释。<br>我尽可能的总结了一些我认为比较正确的结论，由于这种泄漏的问题不好进行直接的验证，所以文章中可能会出现错误，如果有误，希望能进行指出！</p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://auth0.com/blog/four-types-of-leaks-in-your-javascript-code-and-how-to-get-rid-of-them/">4 Types of Memory Leaks in JavaScript and How to Get Rid Of Them</a></li>
+<li><a target="_blank" rel="noopener" href="http://javascript.info/tutorial/memory-leaks">Memory leaks</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.ibm.com/developerworks/library/wa-memleak/">Memory leak patterns in JavaScript</a></li>
+</ol>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2017/01/24/%E5%8E%9F%E7%94%9Fjs%E5%B0%81%E8%A3%85ajax/">原生javascript封装ajax</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2017/01/30/es6%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7/">es6实用技巧</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>javascript垃圾收集和内存泄漏</h4>
+<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#js%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6"><span class="toc-text">js垃圾回收机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#js%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E7%A4%BA%E4%BE%8B"><span class="toc-text">js回收机制示例</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E5%AF%B9%E8%B1%A1%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6"><span class="toc-text">普通对象回收机制</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8%E6%94%B6%E9%9B%86%E6%9C%BA%E5%88%B6"><span class="toc-text">循环引用收集机制</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#js%E5%B8%B8%E8%A7%81%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-text">js常见内存泄漏</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#IE-lt-8-DOM-JS-%E6%B3%84%E6%BC%8F"><span class="toc-text">IE&lt;8 DOM-JS 泄漏</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#IE-lt-9-ajax%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-text">IE&lt;9 ajax内存泄漏</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#setInterval"><span class="toc-text">setInterval</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%97%AD%E5%8C%85"><span class="toc-text">闭包</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

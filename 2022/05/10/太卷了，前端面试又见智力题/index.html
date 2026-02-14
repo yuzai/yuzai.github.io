@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>太卷了，前端面试又见智力题.</span>
+        </h2>
+        <section class="post-content">
+            <p>面试碰到智力题，低情商，太卷了，高情商，综合实力考察！</p>
+<p>最近互联网裁员风头正盛，虽然真实的感觉是身边失业的朋友并不多，甚至有些同学的年终还超出预期，而且有些公司的坑位还逆势上涨。</p>
+<p>说实话，时常感觉自己跟不上对这些现象的理解，故只能分享几道新鲜出炉的前端智力题，让大脑从业务代码的繁杂中抽离出来活动活动。</p>
+<span id="more"></span>
+
+<h2 id="题一：数格子"><a href="#题一：数格子" class="headerlink" title="题一：数格子"></a>题一：数格子</h2><p>题目描述：8x8的正方形棋盘，一共有多少个正方形格子。比如1x1的棋盘，只有一个正方形，而2x2的棋盘，则有4个边长为1的小格子+1个边长为2的大正方形，一共五个。</p>
+<p>题目分析，这个题应该会感觉熟悉，记不清是小学还是初中，经常让人数来着。这个题目，多画几个，找出规律就可以解决了。</p>
+<p>对于3x3的格子，有9个边长为1小格子，4个边长为2组成的格子，再加上最外层边长为3的大格子，也就是3x3 + 2x2 + 1 &#x3D; 14</p>
+<p>而对于4*4的格子，有16个边长为1的小格子，然后是9个边长为2的格子，再加4个边长为3的格子，再加上一个边长为4的大格子，也就是 4x4 + 3x3 + 2x2 + 1 &#x3D; 30。</p>
+<p>依次类推，8x8的棋盘，则为 8x8 + 7x7 + … + 2x2 + 1。</p>
+<p>说实话，这题很简单，小学的时候做起来可能有点吃力，但是现在回头看，有点耐心，这点规律还是容易看出来的。</p>
+<h2 id="题二：倒水"><a href="#题二：倒水" class="headerlink" title="题二：倒水"></a>题二：倒水</h2><p>题目描述：一个容量无限的水龙头，两个容量确定的杯子，一个4升，一个9升，如何倒出6升水。</p>
+<p>这题其实也是个智力题，但是因为步骤较多，在脑子中堆栈的深度较深，紧张的时候容易答不上来。</p>
+<p>答案如下：</p>
+<p>将9升杯子倒满，倒入4升的杯子中，此时9升杯子中剩余5升，将4升杯子倒掉，再将9升杯子剩余的水倒入4升杯子，此时9升杯子中剩余1升水，将4升杯子倒掉，9升杯子中剩余1升倒入4升杯子中，此时9升杯子水为0，4升杯子中还有1升水。此时将9升杯子倒满，倒入4升杯子中，由于4升杯子原本有1升水，那么9升会被倒掉3升，便得到了题目要的6升水。</p>
+<p>说实话，此题并不复杂，但是全凭脑子想的话，堆栈较深，不见得简单。似乎好像确实能判断下智商。</p>
+<h2 id="题三：随机数生成"><a href="#题三：随机数生成" class="headerlink" title="题三：随机数生成"></a>题三：随机数生成</h2><p>题目描述：有一个可以等概率生成随机数1-3的函数，random3，要求写出一个可以生成random7的函数，可以等概率的生成数字1-7。</p>
+<p>这个题目，应该是面试题中还算频率较高的题目，自古多情留不住，唯有套路得人心。这种题目，如果是第一次接触，必然要耗费不少时间，但是此类型题目一旦理解过，就再也不是问题了。</p>
+<p>解法如下：</p>
+<p>step1: 通过random3生成random9<br>step2: random9中剔除大于7，即可生成random7。</p>
+<p>其中，第一步可能相对有点绕，如何通过random3生成random9，可以分两步：</p>
+<p>第一步：执行一次random3，得到的结果称为a<br>第二步：再执行一次random3，得到的结果称为b<br>第三步：将第一步得到的a想像成1-9中的[1-3], [4-6], [7-9]区间，如果a为1，那么表示结果落在第一个区间，具体是1-3中的哪个数字，由数字b决定，用公示表示，即结果c &#x3D; (a - 1) * 3 + b</p>
+<p>而从random9生成random7，只需要不断循环，如果结果小于等于7，那么输出，否则再次循环，直到结果落在1-7之间输出即可。由于题目并没有要求每次生成的时间相同，而只是概率相同，这样的方法是满足题目要求的。</p>
+<p>举一反三，random x生成random y的套路如下：</p>
+<p>如果x &gt; y，那么直接多次执行random x，剔除大于y的结果即可。<br>如果x &lt; y，那么借助区间，生成 random x^2，判断x ^2是否 &lt; y，如果还小，那么继续生成 random x^4,直到区间大于y即可。</p>
+<p>js伪代码如下:</p>
+<pre><code class="js">random3;
+
+function random9() &#123;
+    const a = random3();
+    const b = random3();
+    const c = (a - 1) * 3 + b;
+    return c;
+&#125;
+
+function random7() &#123;
+    let res = random9();
+    while (res &gt; 7) &#123;
+        res = random9();
+    &#125;
+    return res;
+&#125;
+</code></pre>
+<h2 id="题四：大富翁"><a href="#题四：大富翁" class="headerlink" title="题四：大富翁"></a>题四：大富翁</h2><p>题目描述：有一个大富翁游戏，骰子共6个数，每次掷骰子等概率产生1-6，可以往前走对应数字个格子，问，不经过100个各自的概率。</p>
+<p>这个题目，相对有点绕，也有点动态规划的意思。简单分析<br>到达第一个格子的概率是 1&#x2F;6</p>
+<p>到达第二个格子的概率是 1&#x2F;6 + 到达第一个格子并且掷出1的概率</p>
+<p>到达第三个格子的概率 1&#x2F;6 + 到达第1个格子且掷出2的概率 + 到达第2个格子且掷出1的概率</p>
+<p>以此类推：<br>到达第七个格子的概率，便是用户到达第一个格子并掷出6的概率 + 到达第二个格子并掷出5的概率 + 到达第三个格子掷出4的概率 + 到达第四个格子掷出3的概率 + 到达第五个各自掷出2的概率 + 到达第六个格子掷出1的概率</p>
+<p>到达第n个格子的概率，就是达到n-1的概率并掷出1的概率 + 达到n-2的概率并掷出2的概率 + 达到n-3的概率并掷出3的概率 + 达到n-4的概率并掷出4的概率 +<br>达到n-5的概率并掷出5的概率 +<br>达到n-6的概率并掷出6的概率</p>
+<p>以n表示格子数，可以得到如下公式：</p>
+<p>如果n &gt; 6:</p>
+<p>f(n) &#x3D; 1&#x2F;6 * f(n-1) +  1&#x2F;6 * f(n-2) + 1&#x2F;6 * f(n-3) + 1&#x2F;6 * f(n-4) + 1&#x2F;6 * f(n-5) + 1&#x2F;6 * f(n-6);</p>
+<p>而如果n &lt;&#x3D; 6 ，那么需要特殊处理，因为 n-x 可能会小于0，如果n-x小于0，那么概率便加0。同时由于可以直接到达，那么必定有1&#x2F;6的概率保底。公示如下：</p>
+<p>f(n) &#x3D; 1&#x2F;6 +<br>1&#x2F;6 * (n - 1 &gt; 0 ? f(n-1) : 0) +<br>1&#x2F;6 * (n - 2 &gt; 0 ? f(n-2) : 0) +<br>1&#x2F;6 * (n - 3 &gt; 0 ? f(n-3) : 0) +<br>1&#x2F;6 * (n - 4 &gt; 0 ? f(n-4) : 0) +<br>1&#x2F;6 * (n - 5 &gt; 0 ? f(n-5) : 0)。</p>
+<p>根据公式，这就是一道入门的动态规划题，写出代码不难。其实和经典动态规划题目<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/climbing-stairs/">爬楼梯</a>如出一辙。难倒是不难，但是没有接触过动态规划思想的同学，估计难受了。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>说实话，前端的面试中，其实本身就有很多和业务相关的可以问的坑在里面，像原型，闭包作用域，react hooks中，与实际业务贴合的坑本身就很多，还要问智力题的话，其实多少有点说不过去。</p>
+<p>碰到智力题就当来了个脑力运动吧，大脑做做运动也是极好的。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2022/02/22/%E6%89%93%E9%80%A0%E8%BD%BB%E9%87%8F%E7%BA%A7WebIDE%EF%BC%8C%E7%9C%8B%E8%BF%99%E4%B8%80%E7%AF%87%E4%B8%87%E5%AD%97%E9%95%BF%E6%96%87%E5%B0%B1%E5%A4%9F%E5%95%A6/">如何打造轻量级 WebIDE</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2022/05/27/React%20Hooks%20%E5%BF%83%E6%99%BA%E8%B4%9F%E6%8B%85%EF%BC%9A%E6%B6%88%E4%B8%AA%E6%8A%96%E9%83%BD%E6%B6%88%E4%B8%8D%E5%88%A9%E7%B4%A2%E4%BA%86/">React Hooks 心智负担：消个抖都消不利索了</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>太卷了，前端面试又见智力题.</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E4%B8%80%EF%BC%9A%E6%95%B0%E6%A0%BC%E5%AD%90"><span class="toc-text">题一：数格子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E4%BA%8C%EF%BC%9A%E5%80%92%E6%B0%B4"><span class="toc-text">题二：倒水</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E4%B8%89%EF%BC%9A%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90"><span class="toc-text">题三：随机数生成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E5%9B%9B%EF%BC%9A%E5%A4%A7%E5%AF%8C%E7%BF%81"><span class="toc-text">题四：大富翁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

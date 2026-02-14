@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>无限滚动的优化方案(二)：懒加载实现</span>
+        </h2>
+        <section class="post-content">
+            <p>之前对预加载的实现方案做了介绍，这一篇文章主要是我对图片的懒加载的实现的一个总结。主要包括：</p>
+<ol>
+<li>视区检测</li>
+<li>图片懒加载及延迟显示<span id="more"></span></li>
+</ol>
+<h3 id="实例简介"><a href="#实例简介" class="headerlink" title="实例简介"></a>实例简介</h3><p>之前一直对单页应用有兴趣，所以自己写了一个前端路由，相关的文章见<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/5a5813648d87">这里</a>，这个单页应用采取hash的方式实现路由。最终的实例页面见<a target="_blank" rel="noopener" href="http://blog.xiaoboma.com/dazhequan2/">这里</a>。仓库在<a target="_blank" rel="noopener" href="https://github.com/yuzai/dazhequan2">这里</a>是一个经典的单页应用。要做优化的就是主页的信息滚动。这些信息通过ajax从服务器端获取，这里为了方便，服务器端会一直返回数据，哪怕是重复的。页面如下：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3967512-be21f70733f0963a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png" referrerpolicy="no-referrer"></p>
+<h3 id="懒加载"><a href="#懒加载" class="headerlink" title="懒加载"></a>懒加载</h3><p>可以看到，页面中，每一条消息都有一个图片，这个时候，如果在dom刚刚建立好，就对所有的图片进行加载，此时，占用过多的下载通道（我的是每次显示10条消息，接近页面底部时会预加载），会导致后面的信息加载速度变慢，用户体验不好。而图片懒加载是指：<strong>图片进入用户视野才会进行加载，而不是在dom树一构建好就进行加载。</strong> 道理很简单，但是我在实现的过程中还是碰到了一些问题，下面就是我的实现方案。</p>
+<h3 id="懒加载实现方案"><a href="#懒加载实现方案" class="headerlink" title="懒加载实现方案"></a>懒加载实现方案</h3><h4 id="总体变量以及函数定义"><a href="#总体变量以及函数定义" class="headerlink" title="总体变量以及函数定义"></a>总体变量以及函数定义</h4><pre><code class="js">//记录图片的序号
+let num = 0;
+//记录是否正在获取数据，保证请求只做一次
+let state = true;
+//记录图片数据，index,src,height三个关键元素
+var img_data =[];
+//记录表单的距离页面顶端的距离
+var list_height = 0;
+
+function getH(obj) &#123;
+   //获得对象距离页面顶端的距离
+&#125;
+function lazy_load()&#123;
+  //图片懒加载的实现函数
+&#125;
+function getInfo()&#123;
+   //从服务器端获取商家发布的新信息
+   //并向图片数据中存放图片信息 
+&#125;
+function main()&#123;
+  //主函数
+  //实现初始化
+  //滚动事件的绑定等
+&#125;
+</code></pre>
+<h4 id="获取元素相对页面顶部的高度"><a href="#获取元素相对页面顶部的高度" class="headerlink" title="获取元素相对页面顶部的高度"></a>获取元素相对页面顶部的高度</h4><p>这个函数其实不难，主要涉及到目标元素下面几个属性：</p>
+<ol>
+<li>node.offsetTop：相对其父元素的位置</li>
+<li>node.offsetParent： 元素的父元素<br>所以，要获取元素相对页面顶部的高度，其实只需要进行递归或者迭代就能实现，这里采用迭代实现：</li>
+</ol>
+<pre><code class="js">function getH(obj) &#123;
+    var h = 0;
+    while (obj) &#123;
+        h += obj.offsetTop;
+        obj = obj.offsetParent;
+    &#125;
+    return h;
+&#125;
+</code></pre>
+<h4 id="数据的缓存"><a href="#数据的缓存" class="headerlink" title="数据的缓存"></a>数据的缓存</h4><p>程序中，通过Ajax从服务器获取数据，每次最多获取10条，在dom中，img标签最开始并不指定src，src存储在ajax获取到的信息中，我将其存入：img_data中，与它一同存入的，还有该图片的高度height，第几条信息index。<br>这里的height，可以采用上面的迭代得到，但是每次迭代对资源损耗比较大，事实上也是没有必要的，因为每条信息是固定的高度，所以根据其是第几条信息，再获取一个list相对页面顶部的高度，就能得到图片相对页面顶部的高度。我这里每个图片(100px)算上间隙（40px）就是140px，只需要获取整个列表相对顶部的高度，就能得到每个图片相对页面顶部的距离。<br>程序中大概像这样子：</p>
+<pre><code class="js">img_data.push(&#123;
+        index:(num),
+        height:list_height+(140)*(num),
+        src:data.src,
+        loaded:false //定期清理，加载之后的图片信息进行清除，降低内存使用 
+      &#125;)
+</code></pre>
+<h4 id="视区的检测"><a href="#视区的检测" class="headerlink" title="视区的检测"></a>视区的检测</h4><p>图片是否落在用户视区，需要用到以下高度：</p>
+<ol>
+<li>height1:document.body.scrollTop:浏览器滚动的高度</li>
+<li>height2:document.body.clientHeight:可视区域的高度</li>
+<li>height3:node.height：也就是之前获取到的元素相对页面顶部的高度（并不是相对可视区域的顶部）<br>当<code>height3&gt;heihgt1且height3&lt;height2+height1</code>的时候，可以认为这个元素是出现在用户视区的，从而将img_data的src赋值给这个块的img标签，当图片加载好之后，opacity配合transition实现动态的浮现（据说，人感觉这样加载的速度更快）。这一块大致的代码如下：</li>
+</ol>
+<pre><code class="js">function lazy_load()&#123;
+var height1 = document.body.scrollTop+document.body.clientHeight;
+  img_data.forEach(function(item)&#123;
+    if(!item.loaded &amp;&amp; item.height&gt;document.body.scrollTop-100 &amp;&amp; item.height &lt; height1)&#123;
+      var img = document.querySelector(&quot;img[img-index=&#39;&quot;+item.index+&quot;&#39;]&quot;);
+//选择该图片
+      if(img)&#123;
+        img.src = item.src;
+        item.loaded = true; //下面对img_data进行filter的函数，减少内存消耗
+        img.onload = function()&#123;
+          img.style.opacity = 1;//配合transition可以实现一个渐入的效果
+        &#125;
+        img.onerror = function()&#123;
+          img.style.opacity = 1;
+          img.src = &#39;/failed.jpg&#39;;//加载失败，
+        &#125;
+      &#125;
+    &#125;
+  img_data = img_data.filter(function(item)&#123;
+    return !item.loaded;
+  &#125;)
+&#125;
+</code></pre>
+<h4 id="滚动函数的绑定"><a href="#滚动函数的绑定" class="headerlink" title="滚动函数的绑定"></a>滚动函数的绑定</h4><p>直接将上述函数和window.onscroll进行绑定是不太理想的，因为滚动函数的触发频率很高，而视区的检测如果每次滚动都进行检测，那么，一方面造成性能上的损失，一方面，似乎所有的图片都能被检测到出现在了视区，从而导致所有的图片都会被加载，并没有起到懒加载的作用。所以在这里，我使用了函数消抖，原理也不难，网上的实现很多，这里给出我的实现：</p>
+<pre><code class="js">method.debounce = function(func,delay)&#123;
+  var timer;
+  return function()&#123;
+    var args = arguments;
+    var context = this;
+    clearTimeout(timer);
+    timer = setTimeout(function()&#123;
+      func.apply(this,args);
+    &#125;,delay);
+  &#125;
+&#125;
+</code></pre>
+<p>和上述lazy_load结合，进行绑定，代码如下：</p>
+<pre><code class="js">var lazy_event = method.debounce(lazy_load,500);//此处500ms可以适当缩小
+method.addevent(window,&#39;scroll&#39;,lazy_event);
+</code></pre>
+<p>和消抖函数结合之后，用户的滚动不会触发lazy_load，只有当用户停止滚动才会执行lazy_load，从而达到图片懒加载的效果。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这次无限滚动，我实现了两种方案：预加载与图片懒加载，配合消抖和节流以及缓存，能够很好的提升页面性能。希望面试的时候能用上吧。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2017/03/10/Js%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E5%AE%9E%E7%8E%B0%E5%8F%8A%E7%A8%B3%E5%AE%9A%E6%80%A7%E5%88%86%E6%9E%90/">js快速排序实现及稳定性分析</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2017/03/16/js%E5%BF%8D%E8%80%85%E7%A7%98%E7%B1%8D%E7%AC%94%E8%AE%B0/">js忍者秘籍笔记：3-5</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>无限滚动的优化方案(二)：懒加载实现</h4>
+<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E4%BE%8B%E7%AE%80%E4%BB%8B"><span class="toc-text">实例简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%87%92%E5%8A%A0%E8%BD%BD"><span class="toc-text">懒加载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%87%92%E5%8A%A0%E8%BD%BD%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88"><span class="toc-text">懒加载实现方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E5%8F%98%E9%87%8F%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0%E5%AE%9A%E4%B9%89"><span class="toc-text">总体变量以及函数定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%85%83%E7%B4%A0%E7%9B%B8%E5%AF%B9%E9%A1%B5%E9%9D%A2%E9%A1%B6%E9%83%A8%E7%9A%84%E9%AB%98%E5%BA%A6"><span class="toc-text">获取元素相对页面顶部的高度</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%9A%84%E7%BC%93%E5%AD%98"><span class="toc-text">数据的缓存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%86%E5%8C%BA%E7%9A%84%E6%A3%80%E6%B5%8B"><span class="toc-text">视区的检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BB%9A%E5%8A%A8%E5%87%BD%E6%95%B0%E7%9A%84%E7%BB%91%E5%AE%9A"><span class="toc-text">滚动函数的绑定</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>Cursor初体验，2小时上线房来财小程序</span>
+        </h2>
+        <section class="post-content">
+            <p>如果说 IDE 是利剑，那么 AI 可能更多扮演的是剑灵的角色 – 芋仔</p>
+<span id="more"></span>
+
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503071102464.webp" alt="剑来" referrerpolicy="no-referrer"></p>
+<p>上一篇文章讲述了我即便付费也要选择 Cursor 的原因，这一篇就要实战啦。</p>
+<p>毕竟 20刀，只是拿来写写公司代码的话，着实有点不划算。</p>
+<p>隔壁产品经理，设计师，都开始 2 天上线 “人生app” 了。程序员也不能落下(毕竟付了费了)。</p>
+<p>刚好之前一直跟老婆计算自家房子到底是赚了还是亏了，这个话题往往以机会成本不好计算，而无法得到一个精确的数字。</p>
+<p>索性做个小程序，来计算房子的收益或亏损吧：起名房来财。</p>
+<p>ps: 欢迎大家来体验我的小程序，房来财(原名房亏亏，房价在跌，但是祝大家发财)，还在备案中，只能通过小程序码来访问啦。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503071058291.jpg" alt="房来财" referrerpolicy="no-referrer"></p>
+<h2 id="聊点题外话"><a href="#聊点题外话" class="headerlink" title="聊点题外话"></a>聊点题外话</h2><p>ps: 本来不打算介绍机会成本的，但是发现身边不知道这个词的大有人在，就还是先简单说一下机会成本。</p>
+<p>假设老王，用 200w 买了一套房子，过了5年，240w 把房子卖掉了，老王逢人就吹，我这房子赚了40w。</p>
+<p>但是这40w真的是卖房的盈利吗？如果200w没有买房，按照 2% 的年化，放银行，简单算，5年利息最少也有20w了，这还是在没有计算复利的情况下。</p>
+<p>所谓复利，就是每年，把利息和本金都取出来，重新放银行，比如第一年年底，利息是 4w，那么第二年就是 204w 产生利息，一共是 40800，如此往复，5年利息总额只会大于 20w。而现实中，复利往往是可以以按月计，甚至按天计。</p>
+<p>那么这里面，利息以及利息带来的复利，就是这 200w 的机会成本。</p>
+<p>当然，老王也有可能拿 200w 去炒股，可能亏个底朝天或者年化 10%，这都是机会成本。</p>
+<p>ps: 如果老王拿 200w 去买个跑车，5年后 50w卖掉，那么老忘是不是可以对外说，这房子帮我赚了 190w 呢！</p>
+<h2 id="10s第一版，AI-绝对能替代我的工作"><a href="#10s第一版，AI-绝对能替代我的工作" class="headerlink" title="10s第一版，AI 绝对能替代我的工作"></a>10s第一版，AI 绝对能替代我的工作</h2><p>作为程序员，本身就有很多的小程序开发经验，所以相比于产品经理&#x2F;设计师，少去了一个确定技术选型的阶段。</p>
+<p>直接 uniapp 上，当然，也可以 command+enter 让 cursor 再来介绍下项目结构和优劣。</p>
+<p>接下来就开始正式合作了，就像新员工一样，一开始的时光总是美好的。</p>
+<p>很快(10s左右)，就按照我的想法，生成了小程序的首页和计算结果页。</p>
+<p>可以进行简单的计算，收益 &#x3D; 卖出价格 - 买入价格 - 剩余未还贷款。</p>
+<p>同时，样式上，Cursor 自动选择了 uni-ui，也还能看的过去，如果我来写的话，应该也就刚刚好建好文件，写几个 form。</p>
+<p>不得不说，在初始化这一点上，AI 完全能替代我的工作。</p>
+<h2 id="这也不对，那也解决不了，AI-你还太嫩"><a href="#这也不对，那也解决不了，AI-你还太嫩" class="headerlink" title="这也不对，那也解决不了，AI 你还太嫩"></a>这也不对，那也解决不了，AI 你还太嫩</h2><p>有了第一版之后，必然是要引入更复杂的场景，比如全款时，增加机会成本，也就是 200w 放银行的收益。</p>
+<p>而贷款时，首付有机会成本，每个月的月供，也有机会成本。</p>
+<p>AI 在用月供去计算机会成本时，认为只有本金，是需要计算机会成本的。</p>
+<p>但是实际上，月供中不论是本金部分还是收益部分，都是支出，都是有机会成本的。</p>
+<p>不过好在很快 AI 能够调整过来。</p>
+<p>但是，修好了这个，在计算最终收益的时候又出现了计算错误，本来剩余未还贷款，应该是总贷款额 - 月供中的本金部分，这下好了，直接总贷款额 - 月供。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503050937963.png" alt="月供" referrerpolicy="no-referrer"></p>
+<p>应该是受到机会成本计算方式的干涉。</p>
+<p>经过一番沟通后，也还算能调整过来。</p>
+<p>但是又出现了新的问题，单位不对了，月供，每个月的单位都是元，而卖房价格，买入价格，都是百万元，单位换算上出现了非常多的问题。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503050935009.png" alt="单位不一致问题" referrerpolicy="no-referrer"></p>
+<p>到这里其实我已经不耐烦了，这点时间，计算的逻辑我应该都写好了。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503050935745.png" alt="bug 这么多" referrerpolicy="no-referrer"></p>
+<p>让人吐血的其实还在后面，当我们终于调整好了计算逻辑，我人眼看过去，计算应该没有问题的时候，直接去视图上查看计算结果，看着每一项的结果都是0，我几近崩溃。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503050939597.png" alt="我放弃" referrerpolicy="no-referrer"></p>
+<h2 id="PUA-不动-AI，只能-PUA-自己：就算是我的姿势有问题吧"><a href="#PUA-不动-AI，只能-PUA-自己：就算是我的姿势有问题吧" class="headerlink" title="PUA 不动 AI，只能 PUA 自己：就算是我的姿势有问题吧"></a>PUA 不动 AI，只能 PUA 自己：就算是我的姿势有问题吧</h2><p>到这一步，其实我是比较失望的。</p>
+<p>如果事事都要我说清楚的话，尤其是逻辑部分的代码，如果我自己把逻辑梳理的清清楚楚，那么写代码，debug，也就是分分钟的事情。</p>
+<p>还是硬着头皮自己去看看 AI 的代码哪里出了问题(毕竟付费了)。</p>
+<p>经过 debug 后，对于计算结果为 0 的问题，应该还是上下文理解的问题。</p>
+<p>我当时用的是 chat 模式(当时还没有 agent 模式)，虽然我在一开始 command+enter 把上下文已经给 AI 去理解。</p>
+<p>但是后来单独修改计算逻辑的时候，虽然还是在一个 chat 中，但是做了比较多的调整都是仅针对计算逻辑的，导致<strong>计算模块的输入输出变量名和页面中的变量名对不上</strong>。</p>
+<p>这是一番调整后，AI 失效的根本原因。</p>
+<p>这里我只能 PUA 自己：</p>
+<p><strong>AI 的前后一致性问题还有待加强！需要自己多关注上下文的注入。</strong></p>
+<p>经此发现，改变不了 AI，那就改变我自己把。如此一来，逻辑部分和 UI 部分的结合，可算是完成。</p>
+<p>整体功能上相比于 10s 的第一版，补充了我第一版中最缺失的关于贷款利息、机会成本的计算，可以说是能够满足我最初的预期了</p>
+<h2 id="Cursor-的其他问题"><a href="#Cursor-的其他问题" class="headerlink" title="Cursor 的其他问题"></a>Cursor 的其他问题</h2><p>下面是我在 Cursor 使用中，发现 AI 这个”剑灵”(claude-3.5-sonnet)的一些其他问题：</p>
+<h3 id="AI-也很固执-像极了那个刚入职的小伙子"><a href="#AI-也很固执-像极了那个刚入职的小伙子" class="headerlink" title="AI 也很固执(像极了那个刚入职的小伙子)"></a>AI 也很固执(像极了那个刚入职的小伙子)</h3><p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503060937646.png" alt="AI的代码" referrerpolicy="no-referrer"></p>
+<p>上图是 AI 的代码，可以看到它通过 slot 来覆盖 form 的 label 标签，由于样式上的问题，label 看起来就很不搭。</p>
+<p>我试图让 AI 自行调整样式，但是它多次调整，都还是存在 label 超出换行的问题，同时样式也比较丑。</p>
+<p>经过我自己查阅文档，替换了 slot 的写法，转为借助 form 组件的 label 属性，如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503060939415.png" alt="我的代码" referrerpolicy="no-referrer"></p>
+<p>至此，form 组件上的一些 label 参数才生效。样式也比较顺眼</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503060941193.png" alt="我的代码" referrerpolicy="no-referrer"></p>
+<p>但是很快，我又让它修改一个功能时，AI 在它上一次修改的基础上而不是我改动之后的基础上对代码进行了调整。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503061957722.png" alt="固执" referrerpolicy="no-referrer"></p>
+<p>同样的问题不止发生一次：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503061958462.png" alt="固执" referrerpolicy="no-referrer"></p>
+<p>说他固执，不过分吧？</p>
+<h3 id="AI-私自篡改代码"><a href="#AI-私自篡改代码" class="headerlink" title="AI 私自篡改代码"></a>AI 私自篡改代码</h3><p>在 form 生成之后，由于 组件都有一个 clear 的 x 符号，我个人不喜欢，就手动修改去除了clear(现在想想自己真该打，让 AI 干就行了，你为啥手贱)。</p>
+<p>只是令我没想到的是，在后续下达其他命令时，AI 又偷偷把我的代码给改回去了！</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503061959180.png" alt="改我代码" referrerpolicy="no-referrer"></p>
+<h3 id="AI-其实挺烦的"><a href="#AI-其实挺烦的" class="headerlink" title="AI 其实挺烦的"></a>AI 其实挺烦的</h3><p>不知道我开启了什么开关，AI 在每次调整好之后，都会问我，您觉得这样修改合适吗？</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503062006433.png" alt="合适吗？" referrerpolicy="no-referrer"></p>
+<p>对此，刚开始我觉得AI还挺有礼貌，但是后来想想，这话我真的很难回。</p>
+<p>如果接受，我就点 apply 了，如果不接受，我就自己改了，那你这么问，是想让我说接受？</p>
+<p>关键是我回不回，你都会固执的在下一次修改直接用你这一版的代码啊！！！</p>
+<p>而且我是来写代码的，不是跟您聊天啊！</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>以上便是我和 Cursor 的初体验。</p>
+<p>整体来讲，开发速度远超程序员。</p>
+<p>但是在逻辑的理解和样式的debug上，稍微复杂一点的逻辑和bug，都会带来比较多无效的沟通。</p>
+<p>像极了仙侠小说中刚刚生出灵智的剑灵，没有精确的指令就只能做些批量相对简单的工作。</p>
+<p>复杂的逻辑交互，必须主人梳理清楚，才有可能完整无误的实现。</p>
+<p>而对于相对难找的 bug，大概率是解决不了的(可能会给你很多方案，但是大概率无效)。</p>
+<p>当然，在使用过程中也发现有 cursorrules 这个东西的存在，后期也会尝试加入自己的 rules，比如不要再问我接不接受啦，烦死了。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503071104024.jpeg" alt="烦死了" referrerpolicy="no-referrer"></p>
+<p>最后，欢迎大家来体验我的小程序，房来财(原名房亏亏，房价在跌，但是祝大家发财)，还在备案中，只能通过小程序码来访问啦。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503071058291.jpg" alt="房来财" referrerpolicy="no-referrer"></p>
+<p>AI程序员时代(饭碗随时会丢)，我也组建了一个前端抱团取暖群，欢迎加我微信来撩：mxb151，加群备注简单的自我介绍和加群哦。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2025/03/03/Cursor%20VS%20Trae%EF%BC%8C%E5%8D%B3%E4%BE%BF%E4%BB%98%E8%B4%B9%E6%88%91%E8%BF%98%E6%98%AF%E9%80%89%E6%8B%A9%E4%BA%86Cursor/">Cursor VS Trae，即便付费我还是选择了Cursor</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2025/03/10/%E7%94%A8%E4%B8%8AOpenManus%E4%BA%86%EF%BC%8C%E8%BF%99%E7%8E%A9%E6%84%8F%E6%9C%89%E7%82%B9%E5%83%8F.../">用上OpenManus了，这玩意有点像...</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>Cursor初体验，2小时上线房来财小程序</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%81%8A%E7%82%B9%E9%A2%98%E5%A4%96%E8%AF%9D"><span class="toc-text">聊点题外话</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10s%E7%AC%AC%E4%B8%80%E7%89%88%EF%BC%8CAI-%E7%BB%9D%E5%AF%B9%E8%83%BD%E6%9B%BF%E4%BB%A3%E6%88%91%E7%9A%84%E5%B7%A5%E4%BD%9C"><span class="toc-text">10s第一版，AI 绝对能替代我的工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%99%E4%B9%9F%E4%B8%8D%E5%AF%B9%EF%BC%8C%E9%82%A3%E4%B9%9F%E8%A7%A3%E5%86%B3%E4%B8%8D%E4%BA%86%EF%BC%8CAI-%E4%BD%A0%E8%BF%98%E5%A4%AA%E5%AB%A9"><span class="toc-text">这也不对，那也解决不了，AI 你还太嫩</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PUA-%E4%B8%8D%E5%8A%A8-AI%EF%BC%8C%E5%8F%AA%E8%83%BD-PUA-%E8%87%AA%E5%B7%B1%EF%BC%9A%E5%B0%B1%E7%AE%97%E6%98%AF%E6%88%91%E7%9A%84%E5%A7%BF%E5%8A%BF%E6%9C%89%E9%97%AE%E9%A2%98%E5%90%A7"><span class="toc-text">PUA 不动 AI，只能 PUA 自己：就算是我的姿势有问题吧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cursor-%E7%9A%84%E5%85%B6%E4%BB%96%E9%97%AE%E9%A2%98"><span class="toc-text">Cursor 的其他问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#AI-%E4%B9%9F%E5%BE%88%E5%9B%BA%E6%89%A7-%E5%83%8F%E6%9E%81%E4%BA%86%E9%82%A3%E4%B8%AA%E5%88%9A%E5%85%A5%E8%81%8C%E7%9A%84%E5%B0%8F%E4%BC%99%E5%AD%90"><span class="toc-text">AI 也很固执(像极了那个刚入职的小伙子)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AI-%E7%A7%81%E8%87%AA%E7%AF%A1%E6%94%B9%E4%BB%A3%E7%A0%81"><span class="toc-text">AI 私自篡改代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AI-%E5%85%B6%E5%AE%9E%E6%8C%BA%E7%83%A6%E7%9A%84"><span class="toc-text">AI 其实挺烦的</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

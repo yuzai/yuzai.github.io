@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>es6笔记三</span>
+        </h2>
+        <section class="post-content">
+            <p>es6的学习笔记(三)</p>
+<span id="more"></span>
+
+<h3 id="promise"><a href="#promise" class="headerlink" title="promise"></a>promise</h3><blockquote>
+<p>promise，按照我的理解来说，是一种异步回调更优雅的写法</p>
+</blockquote>
+<blockquote>
+<p>An alternative to callbacks and events</p>
+</blockquote>
+<p>fetch(‘&#x2F;items’)类似于ajax中的get，不过返回值是一个promise.</p>
+<pre><code class="js">fetch(&#39;/items&#39;).then(
+  //do something
+  ()=&gt;console.log(&#39;hello&#39;)//此处加;是会报错的，一句话的箭头函数不应该有分号
+)
+</code></pre>
+<pre><code class="js">//写法一
+const p = fetch(&#39;/items&#39;)
+p.then(res =&gt; &#123;
+// handle response
+&#125;)
+p.catch(error =&gt; &#123;
+// handle error
+&#125;)
+//写法二
+const p = fetch(&#39;/items&#39;)
+p.then(
+res =&gt; &#123;
+// handle response
+&#125;,
+err =&gt; &#123;
+// handle error
+&#125;
+) //上述两种写法是等价的
+</code></pre>
+<p>then和catch函数分别处理p的正确和错误。.then和.catch的返回值均是一个Promise，所以它的级联(chaining)变得很简单。</p>
+<pre><code class="js">p.then(null, error =&gt; &#123;
+// handle error
+&#125;)//此写法等价于p.catch(error=&gt;&#123;&#125;)
+</code></pre>
+<h4 id="promise的创建方法"><a href="#promise的创建方法" class="headerlink" title="promise的创建方法"></a>promise的创建方法</h4><ol>
+<li>使用new Promise创建。Promise本质上是一个对象，可以使用New字符进行创建</li>
+</ol>
+<pre><code class="js">new Promise(function(resolve,reject)&#123;
+  setTimeout(function()&#123;
+    if(Math.random()&gt;0.5)
+      resolve(&#39;random success&#39;);
+    else
+      reject(new Error(&#39;failed&#39;));
+    &#125;,1000);
+  &#125;).then(data=&gt;console.log(data),err=&gt;console.log(err));
+</code></pre>
+<ol start="2">
+<li>也可以使用Promise.resolve和.reject直接创建，这种形式的Promise会直接执行。</li>
+</ol>
+<pre><code class="js">Promise.resolve(&#123;result:&#39;false&#39;&#125;).then((data)=&gt;console.log(data.result))//这种形式的Promise会立即执行，结束后执行then里面的函数
+</code></pre>
+<h4 id="then，catch函数的返回值"><a href="#then，catch函数的返回值" class="headerlink" title="then，catch函数的返回值"></a>then，catch函数的返回值</h4><p>在一个then或者catch中，函数可以返回一个数值，抛出一个err，或者返回一个thenable的对象。<br>不论resolve的返回值是什么，均会执行下一个then函数，因为使用了resole)，而reject的返回值不论是什么，都会执行catch，而then和catch是根据其返回值（reaction）来决定下一步执行then还是catch函数。</p>
+<ol>
+<li>当返回值是一个数值的时候：其返回值会作为下一个then函数的输入数据，不会触发catch函数。如下面的代码，第一个resolve的返回值是数值2<br>之后执行then,返回2*7&#x3D;14，因为返回了一个数值，继续执行下面的then，一直到最后，输出x&#x3D;11。</li>
+</ol>
+<pre><code class="js">Promise
+  .resolve(2)
+  .then(x =&gt; x * 7)
+  .then(x =&gt; x - 3)
+  .then(x =&gt; console.log(x))
+// &lt;- 11
+</code></pre>
+<ol start="2">
+<li>当返回值是一个Promise的对象的时候，会等待其中的resolve或者reject函数执行。</li>
+</ol>
+<pre><code class="js">Promise
+  .resolve(2)
+  .then(x =&gt; new Promise(function (resolve) &#123;
+    setTimeout(() =&gt; resolve(x * 1000), x * 1000)
+  &#125;))
+  .then(x =&gt; console.log(x))
+// &lt;- 2000
+</code></pre>
+<p>上述函数的第二个返回值是是一个promise对象，2s之后会执行resolve函数，返回值是2000，所以继续执行then，输出2000.</p>
+<ol start="3">
+<li>返回值(英文是reaction，类似于一个动作的反应，我感觉转换成程序语言，就是返回值的意思)是一个err，就会执行catch函数，而then函数不会被执行。</li>
+</ol>
+<pre><code class="js">Promise.resolve(new Error(&#39;failed&#39;))
+  .then(()=&gt;&#123;throw new Error(&#39;failed&#39;)&#125;)
+.then(null,data=&gt;console.log(data));
+</code></pre>
+<p><strong>关于then,catch,resolve,reject的一些实例解释</strong></p>
+<pre><code class="js">//实例1，通过new新建Promise，在resolver中，执行reject函数并reaction一个错误，
+//所以接下来会执行catch函数，data=上一步中的返回值（reaction）
+//也就是new Error(&#39;oops&#39;)
+new Promise((resolve, reject) =&gt; reject(new Error(&#39;oops&#39;)))
+  .catch(err =&gt; console.error(err))
+//这段代码实现了和实例1一样的功能，也就是说，在resolver中执行throw，
+//抛出一个错误，也会导致程序直接执行接下来的catch函数，与reject(&#39;返回值&#39;)的效果相同
+new Promise((resolve, reject) =&gt; &#123; throw new Error(&#39;oops&#39;); &#125;)
+  .catch(err =&gt; console.error(err))  
+
+//这段代码在then函数中抛出了一个错误，所以会在下一步执行catch函数
+  Promise
+    .resolve(2)
+    .then(x =&gt; &#123; throw new Error(&#39;failed&#39;); &#125;)
+    .catch(err =&gt; console.error(err))
+</code></pre>
+<h4 id="promise-all和race"><a href="#promise-all和race" class="headerlink" title="promise.all和race"></a>promise.all和race</h4><p>The Promise.all method takes an array of promises and returns a single promise p. When all promises passed to Promise.all are fulfilled, p becomes fulfilled as well with an array of results sorted according to the provided promises. If a single promise becomes rejected, p settles with its rejection reason immediately.<br>promise.all的参数是一系列的promise数组，返回值是一个promise，当所有的promise完成了，然后他们的返回值会存储在一个数组中，顺序就是放入promise.all中的顺序，相反，如果其中一个错误，p就会立刻返回错误。</p>
+<pre><code class="js">Promise
+  .all([
+    Promise.resolve(12),
+    Promise.resolve(10),
+  ])
+  .then(products =&gt; console.log(products[0], products[1]))
+</code></pre>
+<p>这样的好处就是可以在好几个promise完成之后再一同处理数据。<br>所以，promise.all的输出值有三种情况：</p>
+<ol>
+<li>输出里面promise的返回值</li>
+<li>输出一个单独的错误</li>
+<li>停留在pending的状态，因为其中有至少一个没有执行。</li>
+</ol>
+<p>promise.race与all很相似，只是第一个结束的promise会直接输出，也就是说，返回值就是第一个promise完成的返回值，如果出错，也是返回第一个错误，之后的不会执行。所以叫race</p>
+<pre><code class="js">Promise
+  .race([
+    new Promise(resolve =&gt; setTimeout(() =&gt; resolve(1), 1000)),
+    new Promise(resolve =&gt; setTimeout(() =&gt; resolve(2), 2000))
+  ])
+  .then(result =&gt; console.log(result))
+  // &lt;- 1
+</code></pre>
+<p>**补充：容易误会的一点，Promise.then.catch中的then,catch都是对上一个promise的处理，与Promise(f1,f2)，f1就是then,f2就是catch，这两者是等价的。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2016/11/22/ajax%E6%9C%AC%E5%9C%B0%E9%80%9A%E4%BF%A1/">ajax本地通信</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2016/11/23/es64/">es64</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>es6笔记三</h4>
+<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#promise"><span class="toc-text">promise</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#promise%E7%9A%84%E5%88%9B%E5%BB%BA%E6%96%B9%E6%B3%95"><span class="toc-text">promise的创建方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#then%EF%BC%8Ccatch%E5%87%BD%E6%95%B0%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="toc-text">then，catch函数的返回值</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#promise-all%E5%92%8Crace"><span class="toc-text">promise.all和race</span></a></li></ol></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

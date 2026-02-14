@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>可视化埋点（一）：从0到1搭建可视化埋点平台</span>
+        </h2>
+        <section class="post-content">
+            <p>近期一直在团队内开发可视化埋点平台，目前已经落地并成功在多个复杂业务中落地使用，在其中也踩了不少坑。故写此篇文章，给想要在团队内落地可视化埋点平台做一份参考，也是对笔者自己实现过程的一个记录。</p>
+<span id="more"></span>
+
+<h2 id="前端埋点的常见合作模式"><a href="#前端埋点的常见合作模式" class="headerlink" title="前端埋点的常见合作模式"></a>前端埋点的常见合作模式</h2><p>笔者见过的团队，埋点大致有几种合作模式。</p>
+<ol>
+<li><p>最原始的方案：wiki 维护埋点信息，产品丢给开发一份 wiki 文件，记录了需要埋点的元素，比如按钮A，按钮B，图片C，同时如果是一个列表，比如一个音乐播放列表的下载按钮，那么产品可能还想要获取下载的音乐名称。开发拿到记录好埋点的 wiki，在点击时上报埋点，携带元素名称，比如按钮A，按钮B，而对于音乐列表的下载按钮，再携带音乐名称。</p>
+</li>
+<li><p>录入平台方案：基本同上一方案一致，但是产品和开发的交流，通过录入平台来维系。这一模式解决了 wiki 维护带来的后续查找不便和随意性。但是录入平台导致了产品要录入更多的信息，比如该该元素截图、附加信息、所属应用等等。而开发侧，由于平台的存在，每一个埋点与平台间，必然存在一个独一无二的 key 维护，开发上报埋点时将其携带，从而在平台上可以进行关联。</p>
+</li>
+<li><p>可视化录入方案：开发侧接入可视化埋点脚本，产品侧直接在可视化埋点平台进行圈选(类似 chrome inspector)，圈选后埋点自动上报。</p>
+</li>
+<li><p>全埋点方案：开发侧接入全埋点脚本，用户的所有点击均会上报，但是由于上报的数据太多，对于存储侧的压力较大。同时由于上报的埋点比较零碎，对数据分析的要求较高。</p>
+</li>
+</ol>
+<p>上述的方案1和方案2，可以统称为手动埋点，其优劣如下：</p>
+<ol>
+<li><p>手动埋点：产品侧和开发侧都有不少的繁琐的工作量。但是该方案非常灵活且埋点的准确性非常高。同时对于不同的页面状态的支持非常简单。</p>
+</li>
+<li><p>可视化录入：开发侧和产品侧都没有什么工作，方便的圈选模式能让产品轻易的进行埋点。但是该方案依赖可视化平台的能力，同时埋点的准确性可能会存在一定的问题。同时，如果页面有不同的状态，此时必须模拟用户进入该状态，才可以进行埋点的圈选工作</p>
+</li>
+<li><p>全埋点 or 无埋点：开发侧和产品侧无额外工作。但是全埋点数据收集上来之后，怎么对数据分析是一个问题，此处笔者并不了解，不做赘述。</p>
+</li>
+</ol>
+<h2 id="可视化埋点平台的功能介绍"><a href="#可视化埋点平台的功能介绍" class="headerlink" title="可视化埋点平台的功能介绍"></a>可视化埋点平台的功能介绍</h2><p>可视化埋点平台功能上的核心，便是提供用户一个可以方便对元素进行圈选的方案。用户可以对目标页面进行元素的选择，从而实现埋点的录入。大致的效果如下：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e6e275237cbf43ebb4740bcf0dde1bc0~tplv-k3u1fbpfcp-zoom-1.image" alt="圈选示意" referrerpolicy="no-referrer"></p>
+<p>用户通过选择元素，录入名称，即可完成埋点的录入。同时，为了满足一些高级场景，可以顺带提供一颗同浏览器几乎一样的元素选择器，如下图：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/64b84bde56234d5888659398e003f638~tplv-k3u1fbpfcp-zoom-1.image" alt="dom圈选示意" referrerpolicy="no-referrer"></p>
+<p>与此同时，可视化埋点平台还需要具备反向圈选的能力，以便给使用者一个正向反馈，可以作为一个埋点是否正确的验证能力。如下图：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dce08a6fb7d04c17beb293f1eefe6764~tplv-k3u1fbpfcp-zoom-1.image" alt="反向圈选示意" referrerpolicy="no-referrer"></p>
+<h2 id="可视化埋点平台的架构设计"><a href="#可视化埋点平台的架构设计" class="headerlink" title="可视化埋点平台的架构设计"></a>可视化埋点平台的架构设计</h2><p>整体的架构图如下：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8969835e23ba4357b1631a1e4658ecb5~tplv-k3u1fbpfcp-zoom-1.image" alt="埋点平台架构" referrerpolicy="no-referrer"></p>
+<p>图中，共分为4个区域：</p>
+<ol>
+<li>管理后台 + 圈选 sdk：位于图中的左上角部分。承担了可视化埋点项目维度的创建，圈选逻辑的实现，以及数据可视化等等功能，是用户能够看到的页面</li>
+<li>node 后台服务及数据服务：位于图中的左下角。其承担了项目的常规后台增删查改的部分，以及同已有的埋点数据对接的能力(由于笔者落地的可视化埋点，其埋点数据的存储及格式沿用了已有的平台)。</li>
+<li>c端页面 采集 sdk：位于图中的右上角部分，主要负责根据后台存储的该页面的埋点信息，反查元素，实现埋点数据的上报</li>
+<li>c端后台：位于图中的右下角部分，主要负责根据 c 端页面返回其埋点配置，由于需要应对大流量的问题，node 端单独拉了出来。</li>
+</ol>
+<p>其中，2、4部分是 node 端提供的一些接口，相对而言比较常规，本文不做赘述。同时，1中项目管理、数据可视化，也是常规的前端页面，并非本文的重点。</p>
+<p>本文将着重讨论1、3部分中，圈选功能和数据采集的实现。</p>
+<h2 id="核心圈选能力的设计"><a href="#核心圈选能力的设计" class="headerlink" title="核心圈选能力的设计"></a>核心圈选能力的设计</h2><p>从表面上来看，用户的操作路径如下：</p>
+<ol>
+<li>点击圈选按钮</li>
+<li>鼠标划入目标页面，在想要埋点的元素上进行点击</li>
+<li>在唤起的弹窗中录入埋点名称，即可完成埋点的录入。</li>
+<li>完成录入后，自动对这些元素进行埋点。</li>
+</ol>
+<p>而实际的内部核心流程如下(一些边界的场景进行了简化)：</p>
+<ol>
+<li>用户在圈选页面打开圈选开关（需要通知目标页面）</li>
+<li>目标页面(以 iframe 的形式嵌在平台内)收到打开消息，开启圈选模式，此时鼠标的移动会在元素上增加浮层</li>
+<li>用户点击，此时需要生成元素的唯一标识，传回给埋点平台</li>
+<li>埋点平台收到消息，让用户填写埋点名称，即可完成这个埋点的录入流程。</li>
+<li>真实用户打开页面后，该页面先获取录入的埋点元素标识</li>
+<li>根据元素标识来反向选择到真实元素</li>
+<li>监听真实元素的曝光和点击，上报埋点</li>
+</ol>
+<p>可以看出: 可视化埋点平台的设计中，存在几个关键点：</p>
+<ol>
+<li>如何获取元素的唯一标记，并可通过该标记反向选择元素</li>
+<li>如何随着鼠标的移动，给元素添加浮层</li>
+<li>频繁的跨域 iframe 通信，该如何简化</li>
+<li>元素的曝光和点击如何同元素标记匹配上报</li>
+</ol>
+<h3 id="元素唯一标记"><a href="#元素唯一标记" class="headerlink" title="元素唯一标记"></a>元素唯一标记</h3><p>要实现不人工埋点，那么就需要给每一个 dom 元素进行标记，而这个标记，本文选择的便是 xpath。本质是记录其在整个 dom 树中的位置，这是一项比较久远的知识。说实话，在做可视化埋点平台前，笔者作为一名前端开发，也基本没有听说过 xpath。</p>
+<p>举个 xpath 的实例，如下图，一个元素在 dom 树中的位置如下：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1c274f965928457aa064a1aaa70d47d1~tplv-k3u1fbpfcp-zoom-1.image" alt="dom示例" referrerpolicy="no-referrer"></p>
+<p>那么可以通过右击 -&gt; 复制 -&gt; 复制xpath&#x2F;复制完整xpath: </p>
+<pre><code class="js">// xpath
+const xpath = &#39;//*[@id=&quot;__next&quot;]/div[1]/div/div/section[1]/article/h1[1]&#39;
+// 完整 xpath
+const fullXpath = &#39;/html/body/div[1]/div[1]/div/div/section[1]/article/h1[1]&#39;
+</code></pre>
+<p>其本质是从当前元素开始，首先确定当前元素处于兄弟节点中同 tag 元素的第几个，比如上图中，其处于 h1 标签的第一个，便是 h1[1]，(如果同级只有一个 h1 元素，那么 chrome 会直接丢弃 [1])。依次往上执行，一直查找到根元素，也就是 html，即可得到元素的完整 xpath。</p>
+<p>但是 chrome 本身没有把这个方法暴露出来，故需要开发者自行实现，一个非常简易的获取元素 xpath 的代码如下：</p>
+<pre><code class="js">function getXpath(ele) &#123;
+    let cur = ele;
+    const path = [];
+    while (cur.nodeType === Node.ELEMENT_NODE) &#123;
+        const currentTag = cur.nodeName.toLowerCase();
+        const nth = findIndex(cur, currentTag);
+        path.push(`$&#123;(cur.tagName).toLowerCase()&#125;$&#123;(nth === 1 ? &#39;&#39; : `[$&#123;nth&#125;]`)&#125;`);
+        cur = cur.parentNode;
+    &#125;
+    return `/$&#123;path.reverse().join(&#39;/&#39;)&#125;`;
+&#125;
+
+// 其中 findIndex 代码如下：
+function findIndex(ele, currentTag) &#123;
+    let nth = 0;
+    while (ele) &#123;
+        if (ele.nodeName.toLowerCase() === currentTag) nth += 1;
+        ele = ele.previousElementSibling;
+    &#125;
+    return nth;
+&#125;
+</code></pre>
+<p>通过 getXpath 方法，可以拿到元素的唯一标记，此时需要做的，便是根据元素的标记，反选回该元素，浏览器提供了原生的方法，如下：</p>
+<pre><code class="js">function getEleByXpath(xpath) &#123;
+    const doc = document;
+    const result = doc.evaluate(xpath, doc);
+    const item = result.iterateNext();
+    return item;
+&#125;
+</code></pre>
+<p>上述方法，可以返回匹配到的第一个元素，即可获得目标元素。</p>
+<p>但是在实际的落地过程中，笔者发现了一些有趣的问题：</p>
+<ol>
+<li><code>svg</code> 元素，无法通过上述的 <code>getEleByXpath</code> 进行反向选择。且监听元素曝光的 api： <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver">intersectionobserver</a>，也不支持监听 <code>svg</code> 元素。</li>
+<li><code>/div/ul</code> 与 <code>/div[1]/ul</code>，对于 <code>/div</code> 的场景，如果 dom 结构中，存在两个 <code>div</code>，如果第一个 <code>div</code> 下，不存在 <code>ul</code> 元素，而第二个 <code>div</code> 下，存在 <code>ul</code> 元素，那么此时 <code>getEleByXpath(&#39;/div/ul&#39;)</code> 的第一个元素，便会命中第二个 <code>div</code>，会出现误判</li>
+<li>对于实际业务中非常常见的动态弹窗场景，由于这些动态弹窗基本都是动态挂载在 <code>body</code> 下，且关闭后直接就销毁，那么对于下一个动态弹窗，由于位置一致，此时非常容易判定为同一个元素，带来误判</li>
+<li>对于实际业务中，常见的三元表达式的场景比如： <code>show ? &lt;div /&gt; : null</code>，由于 <code>show</code> 变量的存在，导致其后面的兄弟元素的位置，会发生变化，从而导致 <code>xpath</code> 不稳定。</li>
+<li>对于实际业务中，策略组件的场景，也非常容易带来 <code>xpath</code> 的重叠，比如 <code>const Comp = comp[type]; return &lt;Comp /&gt;</code></li>
+<li>圈选功能的元素浮层，是否会对 dom 结构带来干扰，如何避免？</li>
+<li>列表元素如何标记？</li>
+</ol>
+<p>这些问题相对而言比较细节，留待后续文章进行讨论，此处还是以串联整个可视化埋点核心链路为准。</p>
+<h3 id="元素圈选功能"><a href="#元素圈选功能" class="headerlink" title="元素圈选功能"></a>元素圈选功能</h3><p>有了元素唯一标识，接下来便是对元素的圈选。（备注：此处参考了开源的 <a target="_blank" rel="noopener" href="https://github.com/luoye-fe/dom-inspector">dom-inspector</a>，在其基础上对多选、xpath，元素浮层等能力进行了解耦和加强，以满足实际场景的需要。）</p>
+<p>圈选的本质，便是在用户鼠标移动的时候，在元素上层出现一个同样大小的浮层，以便用户识别。</p>
+<p>获取用户鼠标移动和鼠标移动处的元素，在 <code>body</code> 上监听 <code>mousemove</code> 事件并取其 <code>target</code> 即可获取目标元素，接下来只需要获取元素的 <code>content</code> 大小、<code>padding</code>、<code>margin</code> 大小及元素的位置，然后根据其位置挂载浮层即可。</p>
+<p>获取元素大小及位置的方法很多，本文列举的仅仅是比较常规的方法(有更好的方案可以评论区讨论交流)，如下：</p>
+<pre><code class="js">// 获取元素的位置
+function findPos(ele) &#123;
+    const computedStyle = getComputedStyle(ele);
+    const pos = ele.getBoundingClientRect();
+    // left，right, top 均 不包含 margin
+    // 减去 margin，可以获取元素加上 margin 后，距离左侧和上侧的真实距离
+    const x = pos.left - parseFloat(computedStyle[&#39;margin-left&#39;]);
+    const y = pos.top - parseFloat(computedStyle[&#39;margin-top&#39;]);
+    const r = pos.right - parseFloat(computedStyle[&#39;margin-right&#39;]);
+
+    return &#123;
+        top: y,
+        left: x,
+        right: r,
+    &#125;;
+&#125;
+
+// 获取元素大小
+export function getElementInfo(ele) &#123;
+    const result = &#123;&#125;;
+    const requiredValue = [
+        &#39;border-top-width&#39;,
+        &#39;border-right-width&#39;,
+        &#39;border-bottom-width&#39;,
+        &#39;border-left-width&#39;,
+        &#39;margin-top&#39;,
+        &#39;margin-right&#39;,
+        &#39;margin-bottom&#39;,
+        &#39;margin-left&#39;,
+        &#39;padding-top&#39;,
+        &#39;padding-right&#39;,
+        &#39;padding-bottom&#39;,
+        &#39;padding-left&#39;,
+        &#39;z-index&#39;,
+    ];
+
+    const computedStyle = getComputedStyle(ele);
+    requiredValue.forEach((item) =&gt; &#123;
+        result[item] = parseFloat(computedStyle[item]) || 0;
+    &#125;);
+    
+    // 用 offsetWidth 减去元素的 border 和 padding，来获取内容的宽高
+    // 不用clientWidth 是因为内敛元素，该属性为0
+    const width = ele.offsetWidth -
+              result[&#39;border-left-width&#39;] -
+              result[&#39;border-right-width&#39;] -
+              result[&#39;padding-left&#39;] -
+              result[&#39;padding-right&#39;];
+
+    const height = ele.offsetHeight -
+              result[&#39;border-top-width&#39;] -
+              result[&#39;border-bottom-width&#39;] -
+              result[&#39;padding-top&#39;] -
+              result[&#39;padding-bottom&#39;];
+
+    result.width = width;
+    result.height = height;
+    return result;
+&#125;
+</code></pre>
+<p>其中，使用 <code>offsetWidth</code> 而不是 <code>clientWidth</code> 是因为 <code>clientWidth</code> 在内联元素中为 0。具体可见 <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/21064101/understanding-offsetwidth-clientwidth-scrollwidth-and-height-respectively">clientWidth vs offsetWidth</a>，而不使用 <code>getBoundingClientRect().width</code> 是因为元素用了 <code>transform</code> 后，该值会随 <code>transform</code> 发生改变，具体可见 <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/43537559/javascript-getboundingclientrect-vs-offsetheight-while-calculate-element-heigh">offsetWidth vs getBoundingClientRect().width</a>。</p>
+<p>当然，上述代码隐藏了 svg 元素的处理，可以使用 <code>getBoundingClientRect().width</code> 或 svg 元素 特有的 <code>getBBox</code> 处理，本文不再赘述。</p>
+<p>计算出元素的位置及宽高后，即可在其位置分别添加：元素内容区、元素 <code>padding</code> 区、元素 <code>border</code> 区、元素 <code>margin</code> 区，以及元素的 tag + 宽高。</p>
+<p>综上，想要实现一个元素圈选器，那么只需要做如下操作：</p>
+<ol>
+<li><code>body</code> 上监听 <code>mousemove</code> 事件(捕获阶段)</li>
+<li>在事件回调中，计算 target 的大小和位置</li>
+<li>依次为元素添加内容、<code>padding</code> 等浮层，即可完成一个元素圈选器的功能。</li>
+</ol>
+<p>在实际应用中，还需要增加圈选开关来控制圈选器的打开与关闭，以免影响用户的正常点击行为，并可以增加上一次 <code>target</code> 的缓存来减少浮层的销毁与创建的频率等等。</p>
+<h3 id="iframe-通信"><a href="#iframe-通信" class="headerlink" title="iframe 通信"></a>iframe 通信</h3><p>在圈选的过程中，平台侧需要通知 iframe 内目标页面开启圈选模式，而 iframe 中，当用户选中元素后，需要计算元素的 xpath 反向通信给平台侧。此处为了方便，后续将平台侧成为 main，而 iframe 内目标页面称为圈选  sdk。main侧记录埋点后，为了便于验证，也需要在用户 hover 到埋点上，通知圈选 sdk 进行元素反选，从而验可以对录入的埋点进行反向验证。</p>
+<p>下图简单描述了两者之间的一个通信：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1db52c0832944f1696354b1ac521be50~tplv-k3u1fbpfcp-zoom-1.image" alt="通信示意" referrerpolicy="no-referrer"></p>
+<p>可以看出，这中间需要频繁的一个 iframe 通信，同时也是一个双端通信，故笔者结合发布订阅模式抽象了一个通用的 iframe 跨域通信类，main 和 圈选sdk 均基于此类进行上层建设。核心代码如下：</p>
+<pre><code class="js">class MsgCenter &#123;
+    constructor(&#123;
+        sender, // 在 main 中 是iframe.contentWindow || 在圈选 sdk 中则是 window.parent
+        receiver, // window in main and iframe
+        source, // current window origin
+        target, // target window origin
+    &#125;) &#123;
+        this.sender = sender;
+        this.receiver = receiver;
+        this.target = target;
+        this.source = source;
+        this.receiver.addEventListener(&#39;message&#39;, this._handleMessage.bind(this));
+
+        this.listeners = &#123;&#125;;
+    &#125;
+
+    /*
+    data: &#123;
+        type: &#39;&#39; // must define
+        ext: &#123;&#125; // 用户自定义数据
+        source, // 源页面 origin
+        target, // 目标页面 origin
+    &#125;
+    */
+    sendMessage(type, ext) &#123;
+        if (!this.target) return;
+        this.sender.postMessage(
+            &#123;
+                source: this.source,
+                target: this.target,
+                type,
+                ext,
+            &#125;,
+            this.target
+        );
+    &#125;
+
+    // 监听type类型消息
+    on(type, callback) &#123;
+        if (this.listeners[type]) &#123;
+            this.listeners[type].push(callback);
+        &#125; else &#123;
+            this.listeners[type] = [callback];
+        &#125;
+    &#125;
+
+    // 取消type类型消息的监听
+    off(type, callback) &#123;
+        if (this.listeners[type]) &#123;
+            this.listeners[type].forEach((cb, index) =&gt; &#123;
+                if (cb === callback) &#123;
+                    this.listeners[type].splice(index, 1);
+                &#125;
+            &#125;);
+        &#125;
+    &#125;
+
+    // 内部根据type分发消息
+    _handleMessage(event) &#123;
+        const &#123; data, origin &#125; = event;
+        // 判断消息来源是否是来自于目标的页面
+        if (origin === this.target) &#123;
+            if (this.listeners[data.type] &amp;&amp; this.listeners[data.type].length) &#123;
+                this.listeners[data.type].forEach((callback) =&gt; callback(data.ext));
+            &#125;
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>在上述代码中，借助发布订阅模式，便可简化 main 和圈选 sdk 中的通信流程，具体使用方法如下：</p>
+<pre><code class="js">// 在 main 中
+const msgCenter = new MsgCenter(&#123;
+    target: iframe.origin, // iframe 页面的 origin
+    source: window.location.origin, // 当前页面的 origin
+    receiver: window,
+    sender: iframe.contentWindow, // 指向 iframe 的 window
+&#125;);
+
+// 向 iframe 发送消息，比如打开圈选开关等
+msgCenter.sendMessage(&#39;enableSelector&#39;, &#123;
+    /*
+    * 可传递自定义数据
+    */
+&#125;);
+
+// 监听来自 iframe 消息
+function receiveXpath(data) &#123;
+    console.log(data.xpath);
+&#125;
+
+msgCenter.on(&#39;targetSelect&#39;, receiveXpath);
+
+// 移除监听
+msgCenter.off(&#39;targetSelect&#39;, receiveXpath);
+</code></pre>
+<p>而圈选 sdk，无非就是 sender 不同，使用伪代码如下：</p>
+<pre><code class="js">// 在 iframe 中
+const msgCenter = new MsgCenter(&#123;
+    target: main.origin, // 圈选平台 页面的 origin
+    source: window.location.origin, // 当前页面的 origin
+    receiver: window,
+    sender: window.parent, // 指向圈选平台 main 的 window
+&#125;);
+</code></pre>
+<p>有了上述方法，可以大大简化代码中关于 iframe 双工通信的监听与取消。</p>
+<p>至此，整个圈选流程的核心模块即可跑通：</p>
+<p>开启圈选时，平台侧 main 向 目标页面 iframe 发送开启圈选消息，iframe 侧收到消息，开启元素圈选功能，选中后，再传递给平台侧，完成元素埋点的录入。同时平台侧 main，在埋点列表被 hover 时，也可向 iframe 发送选中元素消息，iframe 中收到消息，选择对应元素，以便验证埋点对应的元素是否可识别。</p>
+<h3 id="采集侧埋点匹配"><a href="#采集侧埋点匹配" class="headerlink" title="采集侧埋点匹配"></a>采集侧埋点匹配</h3><p>埋点一共两种类型，元素的曝光和点击，下图是其基本流程：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1a321a9a17fe4cbf97d053464fafee59~tplv-k3u1fbpfcp-zoom-1.image" alt="采集侧逻辑" referrerpolicy="no-referrer"></p>
+<p>下面分别对其进行介绍：</p>
+<p>首先是元素的曝光，目前基本都采用 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API">intersectionObserver</a>，该 api <a target="_blank" rel="noopener" href="https://caniuse.com/?search=intersection">兼容性</a>也已经很高，同时也有 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/intersection-observer">polyfill</a>，基本上使用无虞。</p>
+<p>对于元素的曝光埋点，理论上仅遍历一次埋点列表的 xpath，通过前文元素唯一标识介绍的方法 <code>getEleByXpath</code>，找到对应的元素并使用 <code>intersectionObserver</code> 进行监听即可。</p>
+<p>但是不出意外的话，意外便发生了。</p>
+<p>在实际的应用场景中，存在 dom 树变更的场景，此时需要借助 mutationObserver 来进行 dom 树的监听</p>
+<ol>
+<li>dom 树变化，原本不存在的元素可能就出现了，原本存在的元素消失了，如果不做 unobserver 的话，会存在内存泄漏问题</li>
+<li>埋点数量较多的话，遍历可能会带来性能的损耗</li>
+<li>dom 树频繁变化，也会带来性能损耗</li>
+</ol>
+<p>对于 dom 树变化带来的新旧元素的交替，可以存储一份 xpath -&gt; dom node 的映射，在每次遍历时，对比新旧元素，新元素进行 observer, 旧元素进行 unobserver，来避免内存泄漏，其相关细节具体可参考前文，<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/548487339">可视化埋点平台元素曝光采集的思路—intersectionObserver的实战经验</a>。</p>
+<p>而对于埋点数量多，遍历可以通过 requireIdleCallback 包裹执行，不过实际并不会存在太大的性能问题。</p>
+<p>对于 dom 树频繁变化，一方面可以在 mutationObserver 的初始化时，由于属性的变化不会带来 dom 结构的变化，故可忽略属性的变化，减少 mutationObserver 触发的频率，而另一方面，也可通过消抖节流来减少频率。</p>
+<p>元素点击的匹配相对而言会简单一些，只需要在 body 上捕获阶段监听 click 事件，通过计算 event.target 的 xpath，同埋点列表中的 xpath 进行匹配即可判定。但是当 xpath 不完全匹配时，还需要判断点击元素，是否是埋点元素的子元素，如果是子元素，那么也算是匹配，这是因为：</p>
+<p>如果用户录入了一个按钮的元素，而该按钮内部有文字，图片等等其他元素，那么此时点击图片、文字，均可触发该按钮的曝光，故需要对父子元素的场景进行判定，认为符合点击条件，进行上报。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章从元素唯一标识 xpath 讲起，做为圈选侧和采集侧沟通的标记。</p>
+<p>接下来介绍了元素圈选的核心实现，通过计算元素大小、位置，在 mousemove 时为元素添加浮层，实现元素的圈选。</p>
+<p>同时根据发布订阅模式，抽象了圈选平台页面和 iframe 页面的通信环节，为平台和 圈选 sdk 频繁通信打下基础。</p>
+<p>最后介绍了采集侧匹配的方案，从而走通整个可视化埋点的核心链路。</p>
+<h2 id="可视化埋点平台系统链路"><a href="#可视化埋点平台系统链路" class="headerlink" title="可视化埋点平台系统链路"></a>可视化埋点平台系统链路</h2><p>上文介绍了整体的架构和圈选部分核心的细节，本章主要对整个系统的链路进行串联，以便更好的描述整个平台的逻辑。整体结构如下图：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fa4ff8eb991040a18240e6f6fe429c8e~tplv-k3u1fbpfcp-zoom-1.image" alt="整体链路" referrerpolicy="no-referrer"></p>
+<p>平台侧的埋点录入页面，配合圈选 sdk，完成埋点的录入及验证(反向圈选)，采集侧 sdk 通过对埋点进行匹配，对埋点数据进行收集，最终通过 node 服务对数据聚合后，在埋点平台进行可视化的数据呈现。</p>
+<h2 id="还有什么能做的"><a href="#还有什么能做的" class="headerlink" title="还有什么能做的"></a>还有什么能做的</h2><p>如上文所述，笔者可视化埋点平台的核心，便在于元素的唯一标记 xpath、iframe 通信及圈选器能力。</p>
+<p>该方案能够实现预期的效果，对于大部分的场景，都能够满足，但是也存在一些边界问题：</p>
+<ol>
+<li>元素唯一标记 xpath 的不稳定性及可能的重叠问题，需要进行改进</li>
+<li>h5 页面依赖 iframe，而 iframe 中，运行环境毕竟是浏览器，故实际情况可能与客户端内运行不一致，且存在登陆问题(iframe 跨域不携带 cookie问题)。</li>
+<li>pc 端页面的支持</li>
+</ol>
+<p>其中，iframe 的依赖，可以通过将通信层改造成 websocket，圈选页面可以通过扫码在移动端打开，从而模拟和实际用户一摸一样的环境，也顺带解决了登陆问题。</p>
+<p>而对于 xpath 的不稳定性，此处边界场景太多，后续会单独出一篇文章来介绍 xpath 在实际场景中遇到的重叠、不稳定问题，而解决后的 xpath 足以支撑非常复杂的移动端 h5 页面。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>整体来讲，可视化埋点平台的搭建，还是比较有趣的一个项目，确实同我们平时的业务开发不同，在此过程中，笔者也熟悉了像 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver">mutationObserver</a>、<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver">intersectionObserver</a>，这样的存在已久平时却也不接触的原生 api，也熟悉了出现很久的 xpath，而 dom 树的可视化、列表元素的判定，也是比较有趣的一些开发过程。</p>
+<p>同时该平台也确实可以减轻产品&#x2F;运营、开发埋点的不便，整体的方案及细节相信本文也讲的比较详细了，觉得还不错的话可以点赞鼓励下哦。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2022/07/31/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AintersectionObserver%20%E5%AE%9E%E6%88%98%E7%BB%8F%E9%AA%8C/">可视化埋点（二）：intersectionObserver 实战经验</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2023/01/02/2022%20%E5%B9%B4%E7%BB%88%E9%9A%8F%E7%AC%94%20--%20%E4%BB%8A%E5%B9%B4%E5%8D%87%E8%81%8C%E5%95%A6/">2022 年终随笔 -- 今年升职啦</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>可视化埋点（一）：从0到1搭建可视化埋点平台</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E5%9F%8B%E7%82%B9%E7%9A%84%E5%B8%B8%E8%A7%81%E5%90%88%E4%BD%9C%E6%A8%A1%E5%BC%8F"><span class="toc-text">前端埋点的常见合作模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%E7%9A%84%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D"><span class="toc-text">可视化埋点平台的功能介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-text">可视化埋点平台的架构设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%9C%88%E9%80%89%E8%83%BD%E5%8A%9B%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="toc-text">核心圈选能力的设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%83%E7%B4%A0%E5%94%AF%E4%B8%80%E6%A0%87%E8%AE%B0"><span class="toc-text">元素唯一标记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%83%E7%B4%A0%E5%9C%88%E9%80%89%E5%8A%9F%E8%83%BD"><span class="toc-text">元素圈选功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iframe-%E9%80%9A%E4%BF%A1"><span class="toc-text">iframe 通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%87%E9%9B%86%E4%BE%A7%E5%9F%8B%E7%82%B9%E5%8C%B9%E9%85%8D"><span class="toc-text">采集侧埋点匹配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%E7%B3%BB%E7%BB%9F%E9%93%BE%E8%B7%AF"><span class="toc-text">可视化埋点平台系统链路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%98%E6%9C%89%E4%BB%80%E4%B9%88%E8%83%BD%E5%81%9A%E7%9A%84"><span class="toc-text">还有什么能做的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

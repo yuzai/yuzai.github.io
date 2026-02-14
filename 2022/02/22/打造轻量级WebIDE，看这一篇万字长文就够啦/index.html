@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>如何打造轻量级 WebIDE</span>
+        </h2>
+        <section class="post-content">
+            <p>之前在团队中基于 <a target="_blank" rel="noopener" href="https://theia-ide.org/">theia</a>，搭建了一套 CloudIDE（其相关介绍见此<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/411030285">文章</a>），其本质是将 IDE 的前端运行在浏览器 or 本地 electron，而文件系统，多语言服务等，运行在远端容器侧，中间通过 rpc 进行通信从而完成整个 IDE 的云端化。</p>
+<p>而目前团队在低代码平台的建设中，发现还是需要一些简单的 IDE 场景，如果采用容器化的方案，那么每一个 IDE 可能就需要一个容器，不论是启动速度，还是资源的占用，都不太合适。</p>
+<p>团队急需一款轻量级的 IDE 来嵌入低代码平台中，故近期着手开发了一款基于 monaco-editor 的轻量级且不依赖后端容器的 IDE。</p>
+<span id="more"></span>
+
+<p>对于依赖容器化技术，能够提供完整终端能力的 IDE，在本文中，称之为 CloudIDE，而仅仅依赖浏览器能力的 IDE，本文称之为 WebIDE。本文想要分享的 IDE 属于后者。</p>
+<p>得益于 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/">monaco-editor</a> 的强大，使用 monaco-editor 去搭建一个简单的 WebIDE 非常容易，但是要把多文件支持、<a target="_blank" rel="noopener" href="https://eslint.org/">ESLint</a>、<a target="_blank" rel="noopener" href="https://prettier.io/">Prettier</a>、代码补全等功能加进去，并不是一件容易的事情。</p>
+<p>本文意在分享我在建设 WebIDE 中学到的一些经验，以及一些解决方案，希望能够帮助到有同样需求的同学。同时，这不是一篇手把手的文章，仅仅是介绍一些决策的思路及示例代码。完整的代码见 <a target="_blank" rel="noopener" href="https://github.com/yuzai/base-editor">github</a>，同时也搭建了一个 <a target="_blank" rel="noopener" href="https://blog.maxiaobo.com.cn/base-editor/build/index.html">demo</a> 可以体验(demo 依赖不少静态文件，部署在 github pages 上，访问速度过慢可能无法正常加载，可以clone后run dev查看，移动端也建议通过chrome打开)，也提供了一个 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/yuzai-base-editor">npm 组件</a>可以当作 react 组件直接使用。</p>
+<h2 id="引入monaco-editor"><a href="#引入monaco-editor" class="headerlink" title="引入monaco-editor"></a>引入monaco-editor</h2><p>引入 monaco-editor 的方式主要是两种，amd 或者 esm。</p>
+<p>两者接入方式都比较容易，我均有尝试。</p>
+<p>相对来讲，起初更偏向于 esm 方式，但是由于 <a target="_blank" rel="noopener" href="https://github.com/microsoft/monaco-editor/issues/2671">issue</a> 问题，导致打包后，在当前项目中可以正常使用，但是当把它作为 npm 包发布后，他人使用时，打包会出错。</p>
+<p>故最终采取第一种方式，通过动态插入 script 标签来引入 monaco-editor，项目中通过定时器轮 window.monaco 是否存在来判断 monaco-editor 是否加载完成，如未完成，提供一个 loading 进行等待。</p>
+<h2 id="多文件支持"><a href="#多文件支持" class="headerlink" title="多文件支持"></a>多文件支持</h2><p>monaco-editor 的官方例子中，基本都是单文件的处理，不过多文件处理也非常简单，本文在此处仅做简单的介绍。</p>
+<p>多文件处理主要涉及到的就是 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/modules/monaco.editor.html#create">monaco.editor.create</a> 以及 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/modules/monaco.editor.html#createModel">monaco.editor.createModel</a> 两个api。</p>
+<p>其中，createModel 就是多文件处理的核心 api。根据文件路径创建不同的 model，在需要切换时，通过调用 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.IStandaloneCodeEditor.html#setModel">editor.setModel</a> 即可实现多文件的切换</p>
+<p>创建多文件并切换的一般的伪代码如下：</p>
+<pre><code class="js">const files = &#123;
+    &#39;/test.js&#39;: &#39;xxx&#39;,
+    &#39;/app/test.js&#39;: &#39;xxx2&#39;,
+&#125;
+
+const editor = monaco.editor.create(domNode, &#123;
+    ...options,
+    model: null, // 此处model设为null，是阻止默认创建的空model
+&#125;);
+
+Object.keys(files).forEach((path) =&gt;
+    monaco.editor.createModel(
+        files[path],
+        &#39;javascript&#39;,
+        new monaco.Uri().with(&#123; path &#125;)
+    )
+);
+
+function openFile(path) &#123;
+    const model = monaco.editor.getModels().find(model =&gt; model.uri.path === path);
+    editor.setModel(model);
+&#125;
+
+openFile(&#39;/test.js&#39;);
+</code></pre>
+<p>通过再编写一定的 ui 代码，可以非常轻易的实现多文件的切换。</p>
+<h3 id="保留切换之前状态"><a href="#保留切换之前状态" class="headerlink" title="保留切换之前状态"></a>保留切换之前状态</h3><p>通过上述方法，可以实现多文件切换，但是在文件切换前后，会发现鼠标滚动的位置，文字的选中态均发生丢失的问题。</p>
+<p>此时可以通过创建一个 map 来存储不同文件在切换前的状态，核心代码如下：</p>
+<pre><code class="js">const editorStatus = new Map();
+const preFilePath = &#39;&#39;;
+
+const editor = monaco.editor.create(domNode, &#123;
+    ...options,
+    model: null,
+&#125;);
+
+function openFile(path) &#123;
+    const model = monaco.editor
+        .getModels()
+        .find(model =&gt; model.uri.path === path);
+        
+    if (path !== preFilePath) &#123;
+        // 储存上一个path的编辑器的状态
+        editorStatus.set(preFilePath, editor.saveViewState());
+    &#125;
+    // 切换到新的model
+    editor.setModel(model);
+    const editorState = editorStates.get(path);
+    if (editorState) &#123;
+        // 恢复编辑器的状态
+        editor.restoreViewState(editorState);
+    &#125;
+    // 聚焦编辑器
+    editor.focus();
+    preFilePath = path;
+&#125;
+</code></pre>
+<p>核心便是借助editor实例的 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.IStandaloneCodeEditor.html#saveViewState">saveViewState</a> 方法实现编辑器状态的存储，通过 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.IStandaloneCodeEditor.html#restoreViewState">restoreViewState</a> 方法进行恢复。</p>
+<h3 id="go-to-definition"><a href="#go-to-definition" class="headerlink" title="go to definition"></a>go to definition</h3><p>monaco-editor 作为一款优秀的编辑器，其本身是能够感知到其他model的存在，并进行相关代码补全的提示。但是我们最常用的 cmd + 点击，默认是不能够跳转的。虽然 hover 上去能看到相关信息，但是默认不能跳转。</p>
+<p>这一条也算是比较常见的问题了，详细的原因及解决方案可以查看此 <a target="_blank" rel="noopener" href="https://github.com/microsoft/monaco-editor/issues/2000">issue</a>。</p>
+<p>简单来说，库本身没有实现这个打开，是因为如果允许跳转，那么用户没有很明显的方法可以再跳转回去。</p>
+<p>实际中，可以通过覆盖 openCodeEditor 的方式来解决，在没有找到跳转结果的情况下，自己实现 model 切换</p>
+<pre><code class="js">    const editorService = editor._codeEditorService;
+    const openEditorBase = editorService.openCodeEditor.bind(editorService);
+    editorService.openCodeEditor = async (input, source) =&gt;  &#123;
+        const result = await openEditorBase(input, source);
+        if (result === null) &#123;
+            const fullPath = input.resource.path;
+            // 跳转到对应的model
+            source.setModel(monaco.editor.getModel(input.resource));
+            // 此处还可以自行添加文件选中态等处理
+        
+            // 设置选中区以及聚焦的行数
+            source.setSelection(input.options.selection);
+            source.revealLine(input.options.selection.startLineNumber);
+        &#125;
+        return result; // always return the base result
+    &#125;;
+</code></pre>
+<h3 id="受控"><a href="#受控" class="headerlink" title="受控"></a>受控</h3><p>在实际编写 react 组件中，往往还需要对文件内容进行受控的操作，这就需要编辑器在内容变化时通知外界，同时也允许外界直接修改文本内容。</p>
+<p>先说内容变化的监听，monaco-editor 的每个 model 都提供了 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ITextModel.html#onDidChangeContent">onDidChangeContent</a> 这样的方法来监听文件改变，可以继续改造我们的 openFile 函数。</p>
+<pre><code class="js">
+let listener = null;
+
+function openFile(path) &#123;
+    const model = monaco.editor
+        .getModels()
+        .find(model =&gt; model.uri.path === path);
+        
+    if (path !== preFilePath) &#123;
+        // 储存上一个path的编辑器的状态
+        editorStatus.set(preFilePath, editor.saveViewState());
+    &#125;
+    // 切换到新的model
+    editor.setModel(model);
+    const editorState = editorStates.get(path);
+    if (editorState) &#123;
+        // 恢复编辑器的状态
+        editor.restoreViewState(editorState);
+    &#125;
+    // 聚焦编辑器
+    editor.focus();
+    preFilePath = path;
+    
+    if (listener) &#123;
+        // 取消上一次的监听
+        listener.dispose();
+    &#125;
+    
+    // 监听文件的变更
+    listener = model.onDidChangeContent(() =&gt; &#123;
+        const v = model.getValue();
+        if (props.onChange) &#123;
+            props.onChange(&#123;
+                value: v,
+                path,
+            &#125;)
+        &#125;
+    &#125;)
+&#125;
+</code></pre>
+<p>解决了内部改动对外界的通知，外界想要直接修改文件的值，可以直接通过 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ITextModel.html#setValue">model.setValue</a> 进行修改，但是这样直接操作，就会丢失编辑器 undo 的堆栈，想要保留 undo，可以通过 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ITextModel.html#pushEditOperations">model.pushEditOperations</a> 来实现替换，具体代码如下：</p>
+<pre><code class="js">function updateModel(path, value) &#123;
+    let model = monaco.editor.getModels().find(model =&gt; model.uri.path === path);
+    
+    if (model &amp;&amp; model.getValue() !== value) &#123;
+        // 通过该方法，可以实现undo堆栈的保留
+        model.pushEditOperations(
+            [],
+            [
+                &#123;
+                    range: model.getFullModelRange(),
+                    text: value
+                &#125;
+            ],
+            () =&gt; &#123;&#125;,
+        )
+    &#125;
+&#125;
+</code></pre>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>通过上述的 monaco-editor 提供的 api，基本就可以完成整个多文件的支持。</p>
+<p>当然，具体到实现还有挺多的工作，文件树列表，顶部 tab，未保存态，文件的导航等等。不过这部分属于我们大部分前端的日常工作，工作量虽然不小但是实现起来并不复杂，此处不再赘述。</p>
+<h2 id="ESLint支持"><a href="#ESLint支持" class="headerlink" title="ESLint支持"></a>ESLint支持</h2><p>monaco-editor 本身是有语法分析的，但是自带的仅仅只有语法错误的检查，并没有代码风格的检查，当然，也不应该有代码风格的检查。</p>
+<p>作为一名现代的前端开发程序员，基本上每个项目都会有 ESLint 的配置，虽然 WebIDE 是一个精简版的，但是 ESLint 还是必不可少。</p>
+<p>ESLint 的原理，是遍历语法树然后检验，其核心的 Linter，是不依赖 node 环境的，并且官方也进行了单独的打包输出，具体可以通过 clone<a target="_blank" rel="noopener" href="https://github.com/ESLint/ESLint">官方代码</a> 后，执行 npm run webpack 拿到核心的打包后的 ESLint.js。其本质是对 <a target="_blank" rel="noopener" href="https://github.com/ESLint/ESLint/blob/main/lib/linter/linter.js">linter.js</a> 文件的打包。</p>
+<p>同时官方也基于该打包产物，提供了 ESLint 的官方 <a target="_blank" rel="noopener" href="https://eslint.org/demo">demo</a>。</p>
+<p>该 linter 的使用方法如下：</p>
+<pre><code class="js">import &#123; Linter &#125; from &#39;path/to/bundled/ESLint.js&#39;;
+
+const linter = new Linter();
+
+// 定义新增的规则，比如react/hooks, react特殊的一些规则
+// linter中已经定义了包含了ESLint的所有基本规则，此处更多的是一些插件的规则的定义。
+linter.defineRule(ruleName, ruleImpl)；
+
+linter.verify(text, &#123;
+    rules: &#123;
+        &#39;some rules you want&#39;: &#39;off or warn&#39;,
+    &#125;,
+    settings: &#123;&#125;,
+    parserOptions: &#123;&#125;,
+    env: &#123;&#125;,
+&#125;)
+</code></pre>
+<p>如果只使用上述 linter 提供的方法，存在几个问题：</p>
+<ol>
+<li>规则太多，一一编写太累且不一定符合团队规范</li>
+<li>一些插件的规则无法使用，比如 react 项目强依赖的 ESLint-plugin-react, react-hooks的规则。</li>
+</ol>
+<p>故还需要进行一些针对性的定制。</p>
+<p>在日常的 react 项目中，基本上团队都是基于 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/ESLint-config-airbnb">ESLint-config-airbnb</a> 规则配置好大部分的 rules，然后再对部分规则根据团队进行适配。</p>
+<p>通过阅读 ESLint-config-airbnd 的代码，其做了两部分的工作：</p>
+<ol>
+<li>对 ESLint 的自带的大部分规则进行了配置</li>
+<li>对 ESLint 的插件，ESLint-plugin-react, ESLint-plugin-react-hooks 的规则，也进行了配置。</li>
+</ol>
+<p>而 ESLint-plugin-react, ESLint-plugin-react-hooks，核心是新增了一些针对 react 及 hooks 的规则。</p>
+<p>那么其实解决方案如下：</p>
+<ol>
+<li>使用打包后的 ESLint.js 导出的 linter 类</li>
+<li>借助其 defineRule 的方法，对 react, react&#x2F;hooks 的规则进行增加</li>
+<li>合并 airbnb 的规则，作为各种规则的 config 合集备用</li>
+<li>调用 linter.verify 方法，配合3生成的 airbnb 规则，即可实现完整的 ESLint 验证。</li>
+</ol>
+<p>通过上述方法，可以生成一个满足日常使用的 linter 及满足 react 项目使用的 ruleConfig。这一部分由于相对独立，我将其单独放在了一个 github 仓库 <a target="_blank" rel="noopener" href="https://github.com/yuzai/ESLint-browser">yuzai&#x2F;ESLint-browser</a>，可以酌情参考使用，也可根据团队现状修改使用。</p>
+<p>下一步就是调用的时机，在每次代码变更时，频繁同步执行ESLint的verify可能会带来ui的卡顿，在此，我采取方案是：</p>
+<ol>
+<li>通过 webworker 执行 linter.verify</li>
+<li>在 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ITextModel.html#onDidChangeContent">model.onDidChangeContent</a> 中通知 worker 进行执行。并通过消抖来减少执行频率</li>
+<li>通过 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ITextModel.html#getVersionId">model.getVersionId</a>，拿到当前 id，来避免延迟过久导致结果对不上的问题</li>
+</ol>
+<p>主进程核心的代码如下：</p>
+<pre><code class="js">// 监听ESLint web worker 的返回
+worker.onmessage = function (event) &#123;
+    const &#123; markers, version &#125; = event.data;
+    const model = editor.getModel();
+    // 判断当前model的versionId与请求时是否一致
+    if (model &amp;&amp; model.getVersionId() === version) &#123;
+        window.monaco.editor.setModelMarkers(model, &#39;ESLint&#39;, markers);
+    &#125;
+&#125;;
+
+let timer = null;
+// model内容变更时通知ESLint worker
+model.onDidChangeContent(() =&gt; &#123;
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() =&gt; &#123;
+        timer = null;
+        worker.postMessage(&#123;
+            code: model.getValue(),
+            // 发起通知时携带versionId
+            version: model.getVersionId(),
+            path,
+        &#125;);
+    &#125;, 500);
+&#125;);
+</code></pre>
+<p>worker 内核心代码如下：</p>
+<pre><code class="js">// 引入ESLint，内部结构如下：
+/*
+&#123;
+    esLinter, // 已经实例化，并且补充了react, react/hooks规则定义的实例
+    // 合并了airbnb-config的规则配置
+    config: &#123;
+        rules,
+        parserOptions: &#123;
+            ecmaVersion: &#39;latest&#39;,
+            sourceType: &#39;module&#39;,
+            ecmaFeatures: &#123;
+                jsx: true
+            &#125;
+        &#125;,
+        env: &#123;
+            browser: true
+        &#125;,
+    &#125;
+&#125;
+*/
+importScripts(&#39;path/to/bundled/ESLint/and/ESLint-airbnbconfig.js&#39;);
+
+// 更详细的config, 参考ESLint linter源码中关于config的定义: https://github.com/ESLint/ESLint/blob/main/lib/linter/linter.js#L1441
+const config = &#123;
+    ...self.linter.config,
+    rules: &#123;
+        ...self.linter.config.rules,
+        // 可以自定义覆盖原本的rules
+    &#125;,
+    settings: &#123;&#125;,
+&#125;
+
+// monaco的定义可以参考：https://microsoft.github.io/monaco-editor/api/enums/monaco.MarkerSeverity.html
+const severityMap = &#123;
+    2: 8, // 2 for ESLint is error
+    1: 4, // 1 for ESLint is warning
+&#125;
+
+self.addEventListener(&#39;message&#39;, function (e) &#123;
+    const &#123; code, version, path &#125; = e.data;
+    const extName = getExtName(path);
+    // 对于非js, jsx代码，不做校验
+    if ([&#39;js&#39;, &#39;jsx&#39;].indexOf(extName) === -1) &#123;
+        self.postMessage(&#123; markers: [], version &#125;);
+        return;
+    &#125;
+    const errs = self.linter.esLinter.verify(code, config);
+    const markers = errs.map(err =&gt; (&#123;
+        code: &#123;
+            value: err.ruleId,
+            target: ruleDefines.get(err.ruleId).meta.docs.url,
+        &#125;,
+        startLineNumber: err.line,
+        endLineNumber: err.endLine,
+        startColumn: err.column,
+        endColumn: err.endColumn,
+        message: err.message,
+        // 设置错误的等级，此处ESLint与monaco的存在差异，做一层映射
+        severity: severityMap[err.severity],
+        source: &#39;ESLint&#39;,
+    &#125;));
+    // 发回主进程
+    self.postMessage(&#123; markers, version &#125;);
+&#125;);
+</code></pre>
+<p>主进程监听文本变化，消抖后传递给 worker 进行 linter，同时携带 versionId 作为返回的比对标记，linter 验证后将 markers 返回给主进程，主进程设置 markers。</p>
+<p>以上，便是整个 ESLint 的完整流程。</p>
+<p>当然，由于时间关系，目前只处理了 js，jsx，并未对ts,tsx文件进行处理。支持 ts 需要调用 linter 的 defineParser 修改语法树的解析器，相对来讲稍微麻烦，目前还未做尝试，后续有动静会在 github 仓库 <a target="_blank" rel="noopener" href="https://github.com/yuzai/ESLint-browser">yuzai&#x2F;ESLint-browser</a> 进行修改同步。</p>
+<h2 id="Prettier支持"><a href="#Prettier支持" class="headerlink" title="Prettier支持"></a>Prettier支持</h2><p>相比于 ESLint, Prettier 官方支持浏览器，其用法见此<a target="_blank" rel="noopener" href="https://prettier.io/docs/en/browser.html">官方页面</a>, 支持 amd, commonjs, es modules 的用法，非常方便。</p>
+<p>其使用方法的核心就是调用不同的 parser，去解析不同的文件，在我当前的场景下，使用到了以下几个 parser:</p>
+<ol>
+<li>babel: 处理 js</li>
+<li>html: 处理 html</li>
+<li>postcss: 用来处理 css, less, scss</li>
+<li>typescript: 处理 ts</li>
+</ol>
+<p>其区别可以参考<a target="_blank" rel="noopener" href="https://prettier.io/docs/en/options.html#parser">官方文档</a>，此处不赘述。一个非常简单的使用代码如下：</p>
+<pre><code class="js">const text = Prettier.format(model.getValue(), &#123;
+    // 指定文件路径
+    filepath: model.uri.path,
+    // parser集合
+    plugins: PrettierPlugins,
+    // 更多的options见：https://Prettier.io/docs/en/options.html
+    singleQuote: true,
+    tabWidth: 4,
+&#125;);
+</code></pre>
+<p>在上述配置中，有一个配置需要注意：filepath。</p>
+<p>该配置是用来来告知 Prettier 当前是哪种文件，需要调用什么解析器进行处理。在当前WebIDE场景下，将文件路径传递即可，当然，也可以自行根据文件后缀计算后使用 parser 字段指定用哪个解析器。</p>
+<p>在和 monaco-editor 结合时，需要监听 cmd + s 快捷键来实现保存时，便进行格式化代码。</p>
+<p>考虑到 monaco-editor 本身也提供了格式化的指令，可以通过⇧ + ⌥ + F进行格式化。</p>
+<p>故相比于 cmd + s 时，执行自定义的函数，不如直接覆盖掉自带的格式化指令，在 cmd + s 时直接执行指令来完成格式化来的优雅。</p>
+<p>覆盖主要通过 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/modules/monaco.languages.html#registerDocumentFormattingEditProvider">languages.registerDocumentFormattingEditProvider</a> 方法，具体用法如下：</p>
+<pre><code class="js">function provideDocumentFormattingEdits(model: any) &#123;
+    const p = window.require(&#39;Prettier&#39;);
+    const text = p.Prettier.format(model.getValue(), &#123;
+        filepath: model.uri.path,
+        plugins: p.PrettierPlugins,
+        singleQuote: true,
+        tabWidth: 4,
+    &#125;);
+
+    return [
+        &#123;
+            range: model.getFullModelRange(),
+            text,
+        &#125;,
+    ];
+&#125;
+
+monaco.languages.registerDocumentFormattingEditProvider(&#39;javascript&#39;, &#123;
+    provideDocumentFormattingEdits
+&#125;);
+monaco.languages.registerDocumentFormattingEditProvider(&#39;css&#39;, &#123;
+    provideDocumentFormattingEdits
+&#125;);
+monaco.languages.registerDocumentFormattingEditProvider(&#39;less&#39;, &#123;
+    provideDocumentFormattingEdits
+&#125;);
+</code></pre>
+<p>上述代码中 window.require，是 amd 的方式，由于本文在选择引入 monaco-editor 时，采用了 amd 的方式，所以此处 Prettier 也顺带采用了 amd 的方式，并从 cdn 引入来减少包的体积，具体代码如下：</p>
+<pre><code class="js">window.define(&#39;Prettier&#39;, [
+        &#39;https://unpkg.com/Prettier@2.5.1/standalone.js&#39;,
+        &#39;https://unpkg.com/Prettier@2.5.1/parser-babel.js&#39;,
+        &#39;https://unpkg.com/Prettier@2.5.1/parser-html.js&#39;,
+        &#39;https://unpkg.com/Prettier@2.5.1/parser-postcss.js&#39;,
+        &#39;https://unpkg.com/Prettier@2.5.1/parser-typescript.js&#39;
+    ], (Prettier: any, ...args: any[]) =&gt; &#123;
+    const PrettierPlugins = &#123;
+        babel: args[0],
+        html: args[1],
+        postcss: args[2],
+        typescript: args[3],
+    &#125;
+    return &#123;
+        Prettier,
+        PrettierPlugins,
+    &#125;
+&#125;);
+</code></pre>
+<p>在完成 Prettier 的引入，提供格式化的 provider 之后，此时，执行⇧ + ⌥ + F即可实现格式化，最后一步便是在用户 cmd + s 时执行该指令即可，使用 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.IStandaloneCodeEditor.html#getAction">editor.getAction</a> 方法即可，伪代码如下：</p>
+<pre><code class="js">// editor为create方法创建的editor实例
+editor.getAction(&#39;editor.action.formatDocument&#39;).run()
+</code></pre>
+<p>至此，整个 Prettier 的流程便已完成，整理如下：</p>
+<ol>
+<li>amd 方式引入</li>
+<li>monaco.languages.registerDocumentFormattingEditProvider 修改 monaco 默认的格式化代码方法</li>
+<li>editor.getAction(‘editor.action.formatDocument’).run() 执行格式化</li>
+</ol>
+<h2 id="代码补全"><a href="#代码补全" class="headerlink" title="代码补全"></a>代码补全</h2><p>monaco-editor 本身已经具备了常见的代码补全，比如 window 变量，dom，css 属性等。但是并未提供 node_modules 中的代码补全，比如最常见的 react，没有提示，体验会差很多。</p>
+<p>经过调研，monaco-editor 可以提供代码提示的入口至少有两个 api：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/modules/monaco.languages.html#registerCompletionItemProvider">registerCompletionItemProvider</a>，需要自定义触发规则及内容</li>
+<li><a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.typescript.LanguageServiceDefaults.html#addExtraLib">addExtraLib</a>，通过添加 index.d.ts，使得在自动输入的时候，提供由 index.d.ts 解析出来的变量进行自动补全。</li>
+</ol>
+<p>第一种方案网上的文章较多，但是对于实际的需求，导入 react, react-dom，如果采用此种方案，就需要自行完成对 index.d.ts 的解析，同时输出类型定义方案，在实际使用时非常繁琐，不利于后期维护。</p>
+<p>第二种方案比较隐蔽，也是偶然发现的，经过验证，stackbliz 就是用的这种方案。但是 stackbliz 只支持 ts 的跳转及代码补全。</p>
+<p>经过测试，只需要同时在 ts 中的 javascriptDefaults 及 typescriptDefaults 中使用 addExtraLib 即可实现代码补全。</p>
+<p>体验及成本远远优于方案一。</p>
+<p>方案二的问题在于未知第三方包的解析，目前看，stackbliz 也仅仅只是对直系 npm 依赖进行了 .d.ts 的解析。相关依赖并无后续进行。实际也能理解，在不经过二次解析 .d.ts 的情况下，是不会对二次引入的依赖进行解析。故当前版本也不做 index.d.ts 的解析，仅提供直接依赖的代码补全及跳转。不过 ts 本身提供了 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/@typescript/ata">types分析</a> 的能力，后期接入会在 github 中同步。</p>
+<p>故最终使用方案二，内置 react, react-dom 的类型定义，暂不做二次依赖的包解析。相关伪代码如下：</p>
+<pre><code class="js">window.monaco.languages.typescript.javascriptDefaults.addExtraLib(
+    &#39;content of react/index.d.ts&#39;,
+    &#39;music:/node_modules/@types/react/index.d.ts&#39;
+);
+</code></pre>
+<p>同时，通过 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.typescript.LanguageServiceDefaults.html#addExtraLib">addExtraLib</a> 增加的 .d.ts 的定义，本身也会自动创建一个 model，借助前文所描述的 openCodeEditor 的覆盖方案，可以顺带实现 cmd + click 打开 index.d.ts 的需求，体验更佳。</p>
+<h2 id="主题替换"><a href="#主题替换" class="headerlink" title="主题替换"></a>主题替换</h2><p>此处由于 monaco-editor 同 vscode 使用的解析器不同，导致无法直接使用 vscode 自带的主题，当然也有办法，具体可以参考<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040746839">手把手教你实现在 Monaco Editor 中使用 VSCode 主题</a>文章，可以直接使用 vscode 主题，我采取的也是这篇文章的方案，本身已经很详细了，我就不在这里做重复劳动了。</p>
+<h2 id="预览沙箱"><a href="#预览沙箱" class="headerlink" title="预览沙箱"></a>预览沙箱</h2><p>这一部分由于公司内有<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/264990261">基于 codesandbox 的沙箱方案</a>，故实际在公司内部落地时，本文所述的 WebIDE 仅仅作为一个代码编辑与展示的方案，实际预览时走的是基于 codesandbox 的沙箱渲染方案。</p>
+<p>除此之外，得益于浏览器对 modules 的天然支持，也尝试过不打包，直接借助浏览器的 modules 支持，通过 service worker 中对 jsx, less文件处理后做预览的方案。该方案应对简单场景可以直接使用，但是实际场景中，存在对 node_modules 的文件需要特殊处理的情况，没有做更深入的尝试。</p>
+<p>这一部分我也没有做更多深入尝试，故不做赘述。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>本文详细介绍了基于 monaco-editor 打造一款轻量级的 WebIDE 的必备环节。</p>
+<p>整体来讲，monaco-editor 本身的能力比较完善，借助其基础 api 再加上适当的 ui 代码，可以非常快速的构建出一款可用的 WebIDE。但是要做好，并不是那么容易。</p>
+<p>本文在介绍了相关 api 的基础上，对多文件的细节处理、ESLint 浏览器化方案、Prettier 与 monaco 的贴合及代码补全的支持上做了更为详细的介绍。希望能够对有同样需求的同学起到帮助的作用。</p>
+<p>最后，<a target="_blank" rel="noopener" href="https://github.com/yuzai/base-editor">源代码</a>奉上，觉得不错的话，帮忙点个赞 or 小星星就更好啦。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<li><p><a target="_blank" rel="noopener" href="https://blog.expo.dev/building-a-code-editor-with-monaco-f84b3a06deaf">Building a code editor with Monaco
+</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040746839">手把手教你实现在 Monaco Editor 中使用 VSCode 主题</a></p>
+</li>
+</ol>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2022/02/16/%E6%AF%95%E4%B8%9A3%E5%B9%B4%EF%BC%8C%E6%88%91%E5%9C%A8%E5%A4%A7%E5%8E%82%E6%98%AF%E5%A6%82%E4%BD%95%E5%8F%8D%E5%86%85%E5%8D%B7%E7%9A%84%EF%BC%9F/">毕业3年，我在大厂是如何反内卷的？</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2022/05/10/%E5%A4%AA%E5%8D%B7%E4%BA%86%EF%BC%8C%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E5%8F%88%E8%A7%81%E6%99%BA%E5%8A%9B%E9%A2%98/">太卷了，前端面试又见智力题.</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>如何打造轻量级 WebIDE</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E5%85%A5monaco-editor"><span class="toc-text">引入monaco-editor</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E6%96%87%E4%BB%B6%E6%94%AF%E6%8C%81"><span class="toc-text">多文件支持</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%9D%E7%95%99%E5%88%87%E6%8D%A2%E4%B9%8B%E5%89%8D%E7%8A%B6%E6%80%81"><span class="toc-text">保留切换之前状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#go-to-definition"><span class="toc-text">go to definition</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%97%E6%8E%A7"><span class="toc-text">受控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ESLint%E6%94%AF%E6%8C%81"><span class="toc-text">ESLint支持</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Prettier%E6%94%AF%E6%8C%81"><span class="toc-text">Prettier支持</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E8%A1%A5%E5%85%A8"><span class="toc-text">代码补全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E9%A2%98%E6%9B%BF%E6%8D%A2"><span class="toc-text">主题替换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E8%A7%88%E6%B2%99%E7%AE%B1"><span class="toc-text">预览沙箱</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>拆解下技术大佬--4w粉丝的java3y</span>
+        </h2>
+        <section class="post-content">
+            <p>越是贪图圆满，越是搜不干净 — 黑神话悟空</p>
+<p>大家好，我是程序员芋仔，今天这篇文章，主要拆解一下<a target="_blank" rel="noopener" href="https://juejin.cn/user/3438928101642958">Java3y</a>在掘金上的文章，试图看看这位拥有4w粉丝的大佬的成长轨迹和发文规律。</p>
+<span id="more"></span>
+
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051533228.png" alt="敖丙的邀约" referrerpolicy="no-referrer"></p>
+<h2 id="概况"><a href="#概况" class="headerlink" title="概况"></a>概况</h2><p>Java3y，2018-01-30 加入掘金。共计发表 321篇文章，4w+粉丝，点赞量更是达到 27,258，阅读量高达 220w。单从粉丝量和点赞数上可以说，和上一篇的<a target="_blank" rel="noopener" href="https://juejin.cn/post/7410293401365692450">鱼皮</a>都不是一个 Level 的。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051129152.png" alt="Java3y 掘金概况" referrerpolicy="no-referrer"></p>
+<h2 id="高赞文章数据分析"><a href="#高赞文章数据分析" class="headerlink" title="高赞文章数据分析"></a>高赞文章数据分析</h2><p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051145726.png" alt="前100点赞文章" referrerpolicy="no-referrer"></p>
+<p>文章比较多，所以只输出了前100篇的数据。</p>
+<p>根据二八法则计算了一下，大概如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051146921.png" alt="二八法则" referrerpolicy="no-referrer"></p>
+<p>基本上也就是 前100篇的文章，贡献了百分之八十的点赞和收藏。</p>
+<p>字数分布如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051159635.png" alt="前100篇字数分布" referrerpolicy="no-referrer"></p>
+<p>基本也是集中在 2000 - 4000字。</p>
+<h2 id="时间线分析"><a href="#时间线分析" class="headerlink" title="时间线分析"></a>时间线分析</h2><p>前100篇文章时间分布如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051200321.png" alt="前100篇时间分布" referrerpolicy="no-referrer"></p>
+<p>放宽到所有文章，分布如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051201938.png" alt="所有文章时间分布" referrerpolicy="no-referrer"></p>
+<p>总结一下，大致分成这么几个阶段：</p>
+<ol>
+<li>2018，高产高质，181篇文章，三分之一都是高赞文章</li>
+<li>2019-2021，产量下滑到不到50篇，但是质量依旧</li>
+<li>2022, 2023，产量下滑到个位数，点赞均值依旧可观</li>
+<li>2024，产量回升，但是无人问津，点赞均值落到了个位数，下滑异常明显。</li>
+</ol>
+<p>ps：再贴一个点赞率的数据，前 100篇文章中，点赞率基本高于 1%，可见质量确实不错。甚至有 4%，5% 点赞率的文章，可谓是超高质量了。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051211832.png" alt="点赞率分析" referrerpolicy="no-referrer"></p>
+<h2 id="文章内容分析"><a href="#文章内容分析" class="headerlink" title="文章内容分析"></a>文章内容分析</h2><p>该博主时间线明显，所以对前100篇按照时间线进行划分：如下：</p>
+<h3 id="2018"><a href="#2018" class="headerlink" title="2018"></a>2018</h3><p>共计 55 篇：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051217456.png" alt="2018文章数据" referrerpolicy="no-referrer"></p>
+<p>可以看到，这些文章基本以知识点讲解为主。</p>
+<p>标题可以归为：</p>
+<ol>
+<li>xxxx 就是这么简单：讲透一个知识点为主</li>
+<li>xxx 面试题，算法题：以讲解面试题为主</li>
+<li>xxx 入门，外行人都能看懂：大白话讲知识点</li>
+<li>xxxx “观后感”: 学习记录</li>
+</ol>
+<p>基本都以知识点，面试讲解为主，非常吃香。</p>
+<h3 id="2019-2021"><a href="#2019-2021" class="headerlink" title="2019 - 2021"></a>2019 - 2021</h3><p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051224320.png" alt="2019-2021文章" referrerpolicy="no-referrer"></p>
+<p>按照标题可以归纳为：</p>
+<ol>
+<li>什么是 xxx，扫盲 xxx，最全最通俗易懂的的 xx 入门，一文带你入门 xxx：还是以讲解一个知识点为主，入门为主</li>
+<li>在工作中常用的 xxx：就几篇，主打学习资料整理</li>
+<li>面试官问我： xxxx： 主打面试题讲解</li>
+<li>个人成长：就几篇，单独列出来分析</li>
+</ol>
+<h4 id="个人成长"><a href="#个人成长" class="headerlink" title="个人成长"></a>个人成长</h4><ol>
+<li>裸辞，自由职业，再就业，133赞</li>
+<li>毕业半年，买了一台MacBook Pro，110赞</li>
+<li>🔥如何写一篇技术博客，谈谈我的看法，64赞</li>
+</ol>
+<p>整体还是以技术科普+面试讲解为主，很吃香，在此期间个人成长的分享也非常高质。</p>
+<h3 id="2022-2024"><a href="#2022-2024" class="headerlink" title="2022-2024"></a>2022-2024</h3><p>文章数量很少，就全部拉出来了：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051233457.png" alt="文章滑坡" referrerpolicy="no-referrer"></p>
+<p>可以分为几类：</p>
+<h4 id="个人成长-1"><a href="#个人成长-1" class="headerlink" title="个人成长"></a>个人成长</h4><ol>
+<li>毕业四年，随笔：36点赞</li>
+<li>分享一些我技术成长的感悟：27点赞</li>
+<li>2017年，我成为了技术博主：3点赞</li>
+<li>还有一些 2024 年发出来的不太技术的文章，阅读点赞都非常非常低。</li>
+</ol>
+<p>这部分文章，点赞阅读都很低，即便是 4w 粉丝，也无济于事。</p>
+<h4 id="个人项目"><a href="#个人项目" class="headerlink" title="个人项目"></a>个人项目</h4><p>消息推送平台终于要迎来第一版啦！2023年5月份的项目，开源项目，也是该博主付费的主要项目。53赞。这个系统应该是从 2020年底有的苗头，估计也和他的工作内容有关，2021-2023，打磨的时间还是比较久的。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051449786.png" alt="项目提交记录" referrerpolicy="no-referrer"></p>
+<h4 id="技术文章"><a href="#技术文章" class="headerlink" title="技术文章"></a>技术文章</h4><ol>
+<li>我不写单元测试，被批了。316赞</li>
+<li>Java如何实现去重？这是在炫技吗？。146赞</li>
+<li>笑死，面试官又问我SpringBoot自动配置原理。94赞</li>
+<li>如何吃透一个Java项目？77赞</li>
+</ol>
+<p>技术文章也还算受欢迎，更多的偏向面，但是个人成长和个人项目，以及 2024 的一些文章，都不太理想。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>技术科普文章，面试文章，都非常受欢迎，但是也集中在 2018-2021年。</p>
+<p>之后2022-2024，这个博主基本归于平淡期，在掘金上文章产出偏少，除了技术类文章，其他类型文章数据都不太理想。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>从数据来看，知识点讲解类，面试官系列，入门系列都非常受欢迎，但是这样的文章也和时间节点有关系，博主主要集中在 2018-2021年。而后 2022, 2023 的技术讲解，则以面为主，会相对受欢迎一点，但是这样的文章，量不会太多。除此之外个人成长类，或者杂谈类，这位博主的文章在掘金上并不受待见，4w粉丝，这部分文章数据可以说是另一个极端了。到如今2024年，在掘金这个平台上，基本泯然众人。</p>
+<p>而他的一个技术成长路径，其实根据博主个人成长类的文章，串起来，基本就能看个大概。这里我再多说就有点不礼貌了。感兴趣的读者可以自行串联分析。</p>
+<p>最后，也不得不感叹一下，最强生产力是什么—-是大学生。</p>
+<p>也给 java3y 送一首诗吧：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202409051453473.png" alt="叹java3y" referrerpolicy="no-referrer"></p>
+<p>仅供娱乐，切勿当真！</p>
+<p>ps: 听说敖丙和 Java3y 是 cp？有懂的吗？</p>
+<p>从他的个人成长文章中，我提炼出了几个关键节点：</p>
+<ol>
+<li>2017.9 大三：励志成为技术博主。<a target="_blank" rel="noopener" href="https://juejin.cn/post/7389577588174733312">2017年，我成为了技术博主</a></li>
+<li>2018 ~ 2019：大三+大四，蘑菇街实习。多个平台开花，github, 微信公众号，掘金。主打基础知识，面试考点，反响都不错。<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzI4Njg5MDA5NA==&mid=2247484564&idx=1&sn=2390075154749f89e85f4d410309cbd1&chksm=ebd74595dca0cc8357c4acc62c1f7f3c7f2198c320e8d5ca39df3e12dc5604ce6a029d6bd003&token=1712662964&lang=zh_CN###rd">2018总结</a>，<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904034235580429">2019总结</a></li>
+<li>2020 年：开启 《对线面试官系列》：掘金上反响一般，无年中总结</li>
+<li>2021 年：年中裸辞，自由职业，《对线面试官系列》，再就业, <a target="_blank" rel="noopener" href="https://juejin.cn/post/6971612374037954568">两年工作经验，离职了…</a>.<a target="_blank" rel="noopener" href="https://juejin.cn/post/7044687811382870047">裸辞，自由职业，再就业</a>.</li>
+<li>2023 年年中：个人项目消息推送平台开源，打磨了应该有1-2年。最开始出现，是在一个《揭秘系列的内容》2020 年下半年：<a target="_blank" rel="noopener" href="https://juejin.cn/post/6875113793438318605">揭秘！消息管理平台实现原理</a>。<a target="_blank" rel="noopener" href="https://juejin.cn/post/7229318874806616124">消息推送平台终于要迎来第一版啦！</a></li>
+<li>2024 年年中：开始输出《底层程序员系列》。<a target="_blank" rel="noopener" href="https://juejin.cn/post/7362738858109419529">毕业四年，随笔</a></li>
+</ol>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2024/09/04/%E6%8B%86%E8%A7%A3%E4%B8%8B%E6%8A%80%E6%9C%AF%E5%A4%A7%E4%BD%AC--%E7%A8%8B%E5%BA%8F%E5%91%98%E9%B1%BC%E7%9A%AE/">拆解下技术大佬--程序员鱼皮</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2024/09/09/%E4%BB%8E%E6%8A%80%E6%9C%AF%E7%BD%91%E7%BA%A2%E5%88%B0%E8%BF%90%E8%90%A5--%E6%8B%86%E8%A7%A3%E5%AE%8C%E6%95%96%E4%B8%99%E6%88%91%E6%9C%89%E4%B8%80%E4%BA%9B%E7%BB%9D%E6%9C%9B/">从技术网红到运营--拆解完敖丙我有一些绝望</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>拆解下技术大佬--4w粉丝的java3y</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E5%86%B5"><span class="toc-text">概况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E8%B5%9E%E6%96%87%E7%AB%A0%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90"><span class="toc-text">高赞文章数据分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E7%BA%BF%E5%88%86%E6%9E%90"><span class="toc-text">时间线分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E5%86%85%E5%AE%B9%E5%88%86%E6%9E%90"><span class="toc-text">文章内容分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2018"><span class="toc-text">2018</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2019-2021"><span class="toc-text">2019 - 2021</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%AA%E4%BA%BA%E6%88%90%E9%95%BF"><span class="toc-text">个人成长</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2022-2024"><span class="toc-text">2022-2024</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%AA%E4%BA%BA%E6%88%90%E9%95%BF-1"><span class="toc-text">个人成长</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%AA%E4%BA%BA%E9%A1%B9%E7%9B%AE"><span class="toc-text">个人项目</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0"><span class="toc-text">技术文章</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>TS 中箭头函数如何重载</span>
+        </h2>
+        <section class="post-content">
+            <p>这个问题来自于我在网上搜索的时候，基本上清一色的翻译官网的函数重载的章节的内容，对于我想要的箭头函数的重载没有太多帮助。包括官网，其实也没有非常明确的说明箭头函数该如何重载。</p>
+<span id="more"></span>
+
+<p>这里先直接上结论，在 ts 中，可以借助 <a target="_blank" rel="noopener" href="https://www.typescriptlang.org/docs/handbook/2/functions.html#call-signatures">Call Signatures</a> 这个特性来实现箭头函数的重载。原本是用来给函数声明增加静态属性的，但是却可以用来完成箭头函数的类型声明。</p>
+<pre><code class="ts">type Test = &#123;
+  (s: string): string;
+  (s: number): number;
+  (s: string, b: number): number;
+&#125;;
+
+type getState&lt;T&gt; = &#123;
+  (): T;
+  &lt;K extends keyof T&gt;(key: K): T[K];
+&#125;;
+</code></pre>
+<p>本质就是定一个新的类型，键值就用括号包，里面就是不同的入参，函数的返回值就是键值即可。</p>
+<p>但是不出意外的话，意外就会发生，在实操的时候，往往这么写非常不 ok。</p>
+<h2 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h2><p>实战中这么写，类型声明是好写的，但是函数的实现，其实并不好写，以这样一个函数为例：</p>
+<pre><code class="ts">const deal = (a: number | string, b: number | string): number | string =&gt; &#123;
+  if (typeof a === &#39;number&#39; &amp;&amp; typeof b === &#39;number&#39;) &#123;
+    return a + b;
+  &#125;
+  if (typeof a === &#39;string&#39; || typeof b === &#39;string&#39;) &#123;
+    return String(a) + String(b);
+  &#125;
+
+  return 0;
+&#125;;
+</code></pre>
+<p>当入参都是 number 时，返回 number，入参有一个是 string 时，返回 string。</p>
+<p>那么对于这样一个函数，其实存在几个重载的情况：</p>
+<pre><code class="ts">type Deal1 = &#123;
+  (a: number, b: number): number;
+  (a: number, b: string): string;
+  (a: string, b: number): string;
+  (a: string, b: string): string;
+&#125;;
+</code></pre>
+<p>要想把上述类型赋值给 deal 函数，会出现返回值匹配不上的问题。</p>
+<pre><code class="ts">// ts 会提示类型错误：
+// Type &#39;(a: number | string, b: number | string) =&gt; number | string&#39; is not assignable to type &#39;Deal1&#39;.
+// Type &#39;string | number&#39; is not assignable to type &#39;number&#39;.
+const deal: Deal1 = (
+  a: number | string,
+  b: number | string,
+): number | string =&gt; &#123;
+  if (typeof a === &#39;number&#39; &amp;&amp; typeof b === &#39;number&#39;) &#123;
+    return a + b;
+  &#125;
+  if (typeof a === &#39;string&#39; || typeof b === &#39;string&#39;) &#123;
+    return String(a) + String(b);
+  &#125;
+
+  return 0;
+&#125;;
+</code></pre>
+<p>从现象来看，ts 对于这样的写法在做检查的时候，会将当前函数对重载的几个类型都进行检查，看看类型上是否能够赋值，相当于：</p>
+<pre><code class="ts">// 伪代码，理解意思就行
+check1: (a: number, b: number) =&gt; number = (a: number | string, b: number | string) =&gt; number | string);
+check2: (a: number, b: string) =&gt; string = (a: number | string, b: number | string) =&gt; number | string);
+check3: (a: string, b: number) =&gt; string = (a: number | string, b: number | string) =&gt; number | string);
+check4: (a: string, b: string) =&gt; string = (a: number | string, b: number | string) =&gt; number | string);
+</code></pre>
+<p>对于入参，由于是逆变位置，所以 <code>number = number | string</code> 能够赋值，所以参数的类型能够通过校验，而返回值属于顺变位置，所以 <code>number = number | string</code> 是不能通过类型校验的。</p>
+<p>想要将返回值赋值成功，返回值必须是 <code>number &amp; string</code> 或者 any，前者就是 never 了，此时会发现虽然赋值通过了 deal 的校验，但是函数的实现中，就会报返回值错误的问题。如果改成 any，那么虽然不会报错，但是在函数中就缺失了对返回值的检查。如下：</p>
+<pre><code class="ts">// 返回值改为 number &amp; string，
+// 赋值处能够避免类型错误
+const deal: Deal1 = (
+  a: number | string,
+  b: number | string,
+): number &amp; string =&gt; &#123;
+  if (typeof a === &#39;number&#39; &amp;&amp; typeof b === &#39;number&#39;) &#123;
+    // 此时返回值是 never，此处会报类型错误
+    return a + b;
+  &#125;
+  if (typeof a === &#39;string&#39; || typeof b === &#39;string&#39;) &#123;
+    // 此时返回值是 never，此处会报类型错误
+    return String(a) + String(b);
+  &#125;
+
+  // 此时返回值是 never，此处会报类型错误
+  return 0;
+&#125;;
+
+// 返回值改为 any，
+// 赋值处能够避免类型错误
+const deal: Deal1 = (a: number | string, b: number | string): any =&gt; &#123;
+  if (typeof a === &#39;number&#39; &amp;&amp; typeof b === &#39;number&#39;) &#123;
+    return a + b;
+  &#125;
+  if (typeof a === &#39;string&#39; || typeof b === &#39;string&#39;) &#123;
+    return String(a) + String(b);
+  &#125;
+
+  // 此处写任何类型都不会抛错，缺失了原本的期望的校验
+  return undefined;
+&#125;;
+</code></pre>
+<p>那么目前看，想要用这种方式实现箭头函数的重载，就只能将返回值设定为 any，这样，虽然在用户使用的时候能够进行非常好的类型提示，但是开发者本身不能再借助 ts 完成对这个函数的返回值的校验。</p>
+<p>此时还有一种写法，就是 <code>as</code>，写法如下：</p>
+<pre><code class="ts">const deal = ((a: string | number, b: number | string): number | string =&gt; &#123;
+  if (typeof a === &#39;number&#39; &amp;&amp; typeof b === &#39;number&#39;) &#123;
+    return a + b;
+  &#125;
+  if (typeof a === &#39;string&#39; || typeof b === &#39;string&#39;) &#123;
+    return String(a) + String(b);
+  &#125;
+
+  return 0;
+&#125;) as Deal1;
+</code></pre>
+<p>这样的写法，即能够满足函数本身的返回值校验 (可以把 0 改成其他类型试试)，同时，又具备了 Deal1 的重载的类型声明:</p>
+<pre><code class="ts">// case1: number
+const case1 = deal(1, 2);
+
+// case2: number
+const case2 = deal(&#39;1&#39;, 2);
+
+// case3: never，入参类型错误
+const case3 = deal(&#123;&#125;, 2);
+</code></pre>
+<h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h2><p>附上完整的代码：</p>
+<pre><code class="ts">// 重载类型声明
+type Deal1 = &#123;
+  (a: number, b: number): number;
+  (a: number, b: string): string;
+  (a: string, b: number): string;
+  (a: string, b: string): string;
+&#125;;
+
+const deal = ((
+  // 此时入参，返回值的类型可自行限制
+  // 无需挂念 Deal1 中的定义
+  a: string | number,
+  b: number | string,
+): number | string =&gt; &#123;
+  if (typeof a === &#39;number&#39; &amp;&amp; typeof b === &#39;number&#39;) &#123;
+    return a + b;
+  &#125;
+  if (typeof a === &#39;string&#39; || typeof b === &#39;string&#39;) &#123;
+    return String(a) + String(b);
+  &#125;
+  // 这样写，原函数具备校验的能力
+  return 0;
+  // 通过 as 指定类型
+&#125;) as Deal1;
+
+const case1 = deal(1, 2);
+
+const case2 = deal(&#39;1&#39;, 2);
+
+const case3 = deal(&#123;&#125;, 2);
+</code></pre>
+<p>核心就是原函数类型写法一致，重载的类型通过 as 进行赋值，这样就兼顾了类型提示和原函数的类型校验。</p>
+<h2 id="其他方法"><a href="#其他方法" class="headerlink" title="其他方法"></a>其他方法</h2><p>由于 type 和 interface 的用法在此处并无歧义，所以换成 interface 也是 ok。</p>
+<p>另一种就是函数的交叉，也是实现重载的一种方案，如下：</p>
+<pre><code class="ts">type Deal3 = ((a: number, b: number) =&gt; number) &amp;
+  ((a: number, b: string) =&gt; string) &amp;
+  ((a: string, b: number) =&gt; string) &amp;
+  ((a: string, b: string) =&gt; string);
+</code></pre>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文介绍了 TS 实现箭头函数重载的几种方案，借助了 <a target="_blank" rel="noopener" href="https://www.typescriptlang.org/docs/handbook/2/functions.html#call-signatures">Call Signatures</a> 的特性。</p>
+<p>同时给出了这样写，在实战中可能会遇到的类型不匹配的问题及解决方案。希望能够对遇到同样问题的同学有所帮助吧。</p>
+<p>最后，我写了一份 <a target="_blank" rel="noopener" href="https://blog.maxiaobo.com.cn/type-challenge/dist/">TS 类型体操的全题解</a>，也拉了个小群讨论学习 TS，感兴趣的小伙伴可以 <a target="_blank" rel="noopener" href="https://blog.maxiaobo.com.cn/type-challenge/dist/Contactme.html">联系我</a> 一起交流学习呀。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2023/04/25/%E8%82%9D%E4%BA%86%E4%B8%80%E4%B8%AA%E6%9C%88%EF%BC%8C%E8%BF%99%E4%BB%BD%20TS%E7%B1%BB%E5%9E%8B%E6%8C%91%E6%88%98%E9%80%9A%E5%85%B3%E6%89%8B%E5%86%8C%E6%94%B6%E5%A5%BD%E4%BA%86/">肝了一个月，这份 TS类型挑战通关手册收好了</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2023/06/06/%E9%9D%A2%E8%AF%95%E5%AE%98%EF%BC%9A%E7%94%A8%E8%BF%87%20redux%20%E6%98%AF%E5%90%A7%EF%BC%9F%E8%A6%81%E4%B8%8D%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%EF%BC%9F/">面试官：用过 redux 是吧？要不手写一个？</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>TS 中箭头函数如何重载</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E6%93%8D"><span class="toc-text">实操</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-text">最佳实践</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E6%96%B9%E6%B3%95"><span class="toc-text">其他方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>Cursor VS Trae, 深度对比第二弹</span>
+        </h2>
+        <section class="post-content">
+            <p>之前写了一篇关于<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Pxs7H06I7mUA3XKBtdNATA">即便付费，我也还是选择 Cursor 的文章</a>。</p>
+<p>有人喜欢，有人觉得太浅，觉得我选择的理由太过粗暴。</p>
+<p>刚好也用了一段时间的 Cursor，就再来对两款工具进行一个更深度的对比。</p>
+<span id="more"></span>
+
+<h2 id="变量控制"><a href="#变量控制" class="headerlink" title="变量控制"></a>变量控制</h2><ol>
+<li>版本全部用本文发布时的最新版。Cursor 0.47.8, Trae 1.2.1。</li>
+<li>针对同一个项目，我用的是之前写的一个 AI 对话的机器人</li>
+<li>对比的能力维度 1: chat 模式对代码的理解</li>
+<li>对比的能力维度 2: 代码补全的能力, 这一步拆分为路由猜测，utils 意图猜测，变量修改</li>
+<li>agent 能力对比：篇幅限制，放在下一弹</li>
+</ol>
+<p>ps: 这个项目大概的功能如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211111660.png" alt="demo" referrerpolicy="no-referrer"></p>
+<p>对项目有兴趣的可以看看之前的文章, <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/q0BxgiTDjilKPUJFQkvSLg">当抠门程序员，遇到了免费 AI 大模型，我好像用 AI 赚到钱了？</a></p>
+<h2 id="项目讲解能力对比"><a href="#项目讲解能力对比" class="headerlink" title="项目讲解能力对比"></a>项目讲解能力对比</h2><p>首先是 Trae, 通过在 引用中增加当前工作区来获取上下文。得到的篇幅比较长，截取部分如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211116560.png" alt="Trae 分析" referrerpolicy="no-referrer"></p>
+<p>Cursor 中，通过 commond + enter 来完成上下文的注入，得到的回答截取部分如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211118399.png" alt="Cursor 分析" referrerpolicy="no-referrer"></p>
+<p>粗糙来看，两者的分析都很 AI，确实都非常好的完成了分析理解的任务。</p>
+<p>这一点上，可以说是平分秋色吧 (毕竟，他们都夸我了，结构清晰、功能完整哈哈，没说错)。</p>
+<p>但是两者都存在一个体验上的优化，就是当我没有按照他们的要求提供上下文时，对于如何补充上下文提示的不够明显：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211124180.png" alt="提示" referrerpolicy="no-referrer"></p>
+<p>都给 90 分吧。</p>
+<h2 id="代码补全"><a href="#代码补全" class="headerlink" title="代码补全"></a>代码补全</h2><p>程序员最关心的就是代码补全了，这次提供了三个案例，来进行能力的对比：分别是路由猜测，错误处理，和变量替换</p>
+<h3 id="路由猜测"><a href="#路由猜测" class="headerlink" title="路由猜测"></a>路由猜测</h3><p>这个项目是一个单页路由，让他们猜测下一个路由写什么：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211128998.png" referrerpolicy="no-referrer"></p>
+<p>在这一点上，两者很一致，项目本身有首页，登录页，确实下一个可能的路由就是注册页。</p>
+<p>在这一次 PK 上，两者也是平手(虽然我的意图不是注册页，登录即注册)。</p>
+<h3 id="fetch-错误处理猜测"><a href="#fetch-错误处理猜测" class="headerlink" title="fetch 错误处理猜测"></a>fetch 错误处理猜测</h3><p>如下是我原本的代码，非常常见的 Fetch 的代码，当我把鼠标放在图示位置时，我心里想的是帮我多处理几个 code，而不仅仅是 401</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211130709.png" referrerpolicy="no-referrer"></p>
+<p>如下是两者的输出对比：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211129627.png" referrerpolicy="no-referrer"></p>
+<p>右侧是 Trae，可以看到，Trae 帮我处理了 403 之后，剩余情况直接 throw，懂 js 的都知道这里面的门道有多深：我下面的代码不会执行喽。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211149387.png" referrerpolicy="no-referrer"></p>
+<p>而反观 Cursor，403， 404， 500，502，503 都帮我列出来了，不过再往后，Cursor 也会陷入死循环，code 不断加 1，而提示信息始终都是重复。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211137975.png" referrerpolicy="no-referrer"></p>
+<p>ok，从这一把的 PK 来看，Trae 完败，Cursor 虽然有缺陷，但至少我的代码功能逻辑上不会错误。</p>
+<h3 id="修改变量名"><a href="#修改变量名" class="headerlink" title="修改变量名"></a>修改变量名</h3><p>代码中，我们修改变量名之后的意图，往往就是修改本文件中的所有相关变量名。对于 react，如果我们修改了一个 state，我们往往还会希望能够修改对应的 setState 名称。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202503211141526.png" referrerpolicy="no-referrer"></p>
+<p>可以看到，Cursor 完全达到了预期，不仅修改了变量名，还修改了 setState 对应的变量名，并提示我下一步该修改哪里，这一点，给 100 分我都嫌少。</p>
+<p>反观 Trae，纹丝不动。在这一把上，我甚至觉得 copilot 可能都比它强。</p>
+<p>起初我以为是 Trae 对 react 理解不强，换成普通变量，也依旧如此。</p>
+<p>这一波，Cursor 完胜。</p>
+<p>而 Trae，说这个功能点完全是没有的也不过分。</p>
+<h2 id="PK-结论"><a href="#PK-结论" class="headerlink" title="PK 结论"></a>PK 结论</h2><p>chat 模式对代码的理解，大差不差，平分秋色。</p>
+<p>代码补全上，变量名替换，Cursor 100 分都少了，Trae 这个功能几乎等于没有。</p>
+<p>意图猜测上，简单的 Cursor 和 Trae 差不多，复杂点的 Cursor 完胜。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>tab 补全这个能力，是我付费 Cursor 的核心原因，它在工作中，实实在在的提高了工作效率。</p>
+<p>Trae 在这一点上，并没有下功夫。猜测可能和 Trae 的定位有关，可能第一用户不是程序员，而是更多使用 builder(agent) 能力的人。</p>
+<p>从产品维度上来说，Trae 的愿景可能更宏大: 程序员，你别写代码了，产品，设计师，你们快来用我的 builder 吧，大家别看代码，就做你的产品！</p>
+<p>而 Cursor 更为专业，来吧，程序员，我真的很懂你的代码！</p>
+<p>萝卜白菜，各有所爱吧。</p>
+<p>最后，别忘了关注我的公众号：程序员芋仔。持续干货输出。</p>
+<p>AI 程序员时代，我也组建了一个前端抱团取暖群，欢迎加我微信来撩：mxb151，加群备注简单的自我介绍和加群哦。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2025/03/10/%E7%94%A8%E4%B8%8AOpenManus%E4%BA%86%EF%BC%8C%E8%BF%99%E7%8E%A9%E6%84%8F%E6%9C%89%E7%82%B9%E5%83%8F.../">用上OpenManus了，这玩意有点像...</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>Cursor VS Trae, 深度对比第二弹</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="toc-text">变量控制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E8%AE%B2%E8%A7%A3%E8%83%BD%E5%8A%9B%E5%AF%B9%E6%AF%94"><span class="toc-text">项目讲解能力对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E8%A1%A5%E5%85%A8"><span class="toc-text">代码补全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%E7%8C%9C%E6%B5%8B"><span class="toc-text">路由猜测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fetch-%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E7%8C%9C%E6%B5%8B"><span class="toc-text">fetch 错误处理猜测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E5%8F%98%E9%87%8F%E5%90%8D"><span class="toc-text">修改变量名</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PK-%E7%BB%93%E8%AE%BA"><span class="toc-text">PK 结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

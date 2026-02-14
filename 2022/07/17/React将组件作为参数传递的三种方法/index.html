@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>React 将组件作为参数进行传递的三种方法</span>
+        </h2>
+        <section class="post-content">
+            <p>在日常的开发中，开发通用组件的机会其实并不多，尤其是在各种组件库已经遍地都是的情况下。而作为一个通用组件库的使用者，经常会看到把 React 组件作为参数传递下去的场景，每当这个时候，其实或多或少都会有一些疑问，比如：有些组件传递下去的是组件名，而有些组件传递下去的是一个箭头函数返回一个组件，而有些直接传递一个 jsx 创建好的元素，这些传递方案的适用场景如何，有什么不同，是否会导致组件的 memo 失效，是否会引发组件的不必要渲染?</p>
+<p>本文是笔者在阅读了 <a target="_blank" rel="noopener" href="https://ant.design/components/overview-cn/">antd</a>、<a target="_blank" rel="noopener" href="https://mui.com/material-ui/react-button/#buttons-with-icons-and-label">mui</a>, <a target="_blank" rel="noopener" href="https://react-select.com/components">react-select</a> 的 api 之后，结合自己日常业务中使用的组件 api 格式，对传递一个组件作为 React 组件参数的方式的思考和总结，如果有写的不到位的，欢迎补充和指点。</p>
+<span id="more"></span>
+
+<p>大体来讲，传递组件的方式，分为三种：</p>
+<ol>
+<li>传递 jsx 创建好的元素</li>
+<li>传递组件本身</li>
+<li>传递返回 jsx 创建好的元素的函数</li>
+</ol>
+<p>下文也主要展开介绍这三种方式并结合实际场景对比这三种方案。</p>
+<h3 id="方式一：直接传递-jsx-创建好的元素"><a href="#方式一：直接传递-jsx-创建好的元素" class="headerlink" title="方式一：直接传递 jsx 创建好的元素"></a>方式一：直接传递 jsx 创建好的元素</h3><p>在 antd 的组件 api 中，最常见的方式便是这个方法，以 button 为例，有一个 icon 参数便是允许使用者传递一个经过 jsx 创建好的元素。简化后的示例如下：</p>
+<pre><code class="js">function DownloadOutlined() &#123;
+    return /* icon 的实现*/;
+&#125; 
+
+function Button(&#123; icon, children &#125;) &#123;
+    return &lt;button&gt;
+        &#123;icon&#125;
+        &#123;children&#125;
+    &lt;/button&gt;
+&#125;
+
+function App() &#123;
+    return &lt;Button icon=&#123;&lt;DownloadOutlined /&gt;&#125;&gt;test&lt;/Button&gt;
+&#125;
+</code></pre>
+<p>可以看出来，icon 直接传递了一个 jsx 创建好的组件，从而满足了用户自定义 icon 的需求。</p>
+<p>相比于通过字符串枚举内置 icon, 给了用户更大的定制空间。</p>
+<h3 id="方式二：直接传递组件本身"><a href="#方式二：直接传递组件本身" class="headerlink" title="方式二：直接传递组件本身"></a>方式二：直接传递组件本身</h3><p>这一用法在 antd 中很少出现，在 <a target="_blank" rel="noopener" href="https://react-select.com/components">react-select</a> 中比较常见。</p>
+<p>这里为了方便还是以 Button 为例，修改下上文的 Button 组件，将其参数改为传递 <code>DownloadOutlined</code> 而非经过 jsx 创建好的元素 <code>&lt;DownloadOutlined /&gt;</code></p>
+<pre><code class="js">function DownloadOutlined() &#123;
+    return /* icon 的实现*/;
+&#125; 
+
+function Button(&#123; icon: Icon, children &#125;) &#123;
+    return &lt;button&gt;
+    // 渲染方式进行了改变
+    &lt;Icon /&gt;
+    &#123;children&#125;
+    &lt;/Button&gt;
+&#125;
+
+function App() &#123;
+    return &lt;Button icon=&#123;DownloadOutlined&#125;&gt;test&lt;/Button&gt;
+&#125;
+</code></pre>
+<p>通过直接传递组件本身的方式，也可将其传递给子组件进行渲染，当然，子组件渲染的地方也改成了 <code>&lt;Icon /&gt;</code> 而非上文的 <code>&#123;icon&#125;</code>。ps: 上文中由于 jsx 语法要求，将 icon 变量名改成了首字母大写的 Icon。</p>
+<h3 id="方式三：传递一个返回组件的函数"><a href="#方式三：传递一个返回组件的函数" class="headerlink" title="方式三：传递一个返回组件的函数"></a>方式三：传递一个返回组件的函数</h3><p>这一用法用 Button 示例改写如下：</p>
+<pre><code class="js">function DownloadOutlined() &#123;
+    return /* icon 的实现*/;
+&#125; 
+
+function Button(&#123; icon, children &#125;) &#123;
+    return &lt;button&gt;
+    // 渲染方式进行了改变
+    &#123;icon()&#125;
+    &#123;children&#125;
+    &lt;/Button&gt;
+&#125;
+
+function App() &#123;
+    return &lt;Button icon=&#123;() =&gt; &lt;DownloadOutlined /&gt;&#125;&gt;test&lt;/Button&gt;
+&#125;
+</code></pre>
+<p>在这一例子中，由于传递的是个函数，那么返回值在渲染时，改成执行函数即可。</p>
+<h3 id="三种方案的对比"><a href="#三种方案的对比" class="headerlink" title="三种方案的对比"></a>三种方案的对比</h3><p>上文中分别介绍了这三种方案的实现方法，从结果来看，三种方案都能满足传递组件作为组件参数的场景。</p>
+<p>但是在实际的场景中，往往不会这么简单，往往有更多需要考虑的情况。</p>
+<p>情况一： 考虑是否存在不必要的渲染?</p>
+<p>三种方案下，当父组件发生渲染时，Button 组件是否会发生不必要的渲染。示例如下：</p>
+<pre><code class="js">import React, &#123; useState &#125; from &#39;react&#39;;
+
+function DownloadOutlined() &#123;
+  return &lt;span&gt;icon&lt;/span&gt;;
+&#125;
+
+const Button1 = React.memo((&#123; icon, children &#125;) =&gt; &#123;
+  console.log(&#39;button1 render&#39;);
+
+  return (
+    &lt;button&gt;
+      &#123;icon&#125;
+      &#123;children&#125;
+    &lt;/button&gt;
+  );
+&#125;);
+
+const Button2 = React.memo((&#123; icon: Icon, children &#125;) =&gt; &#123;
+  console.log(&#39;button2 render&#39;);
+
+  return (
+    &lt;button&gt;
+      &lt;Icon /&gt;
+      &#123;children&#125;
+    &lt;/button&gt;
+  );
+&#125;);
+
+const Button3 = React.memo((&#123; icon, children &#125;) =&gt; &#123;
+  console.log(&#39;button3 render&#39;);
+  return (
+    &lt;button&gt;
+      &#123;icon()&#125;
+      &#123;children&#125;
+    &lt;/button&gt;
+  );
+&#125;);
+
+export default function App() &#123;
+  const [count, setCount] = useState(0);
+  console.log(&#39;App render&#39;);
+
+  return (
+    &lt;&gt;
+      &lt;Button1 icon=&#123;&lt;DownloadOutlined /&gt;&#125;&gt;button1&lt;/Button1&gt;
+      &lt;Button2 icon=&#123;DownloadOutlined&#125;&gt;button2&lt;/Button2&gt;
+      &lt;Button3 icon=&#123;() =&gt; &lt;DownloadOutlined /&gt;&#125;&gt;button3&lt;/Button3&gt;
+      &lt;button onClick=&#123;() =&gt; setCount((pre) =&gt; pre + 1)&#125;&gt;render&lt;/button&gt;
+    &lt;/&gt;
+  );
+&#125;
+</code></pre>
+<p>在该示例中，点击 render button，此时，期望的最小渲染应该是仅仅渲染 app 组件即可，Button1 - Button3 由于并未依赖 count 的变化，同时 Button1 - Button3 都通过 React.memo 进行包裹，期望的是组件不进行渲染。</p>
+<p>实际输出如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h4a8l7sj5uj204g01zglf.jpg" alt="img" referrerpolicy="no-referrer"></p>
+<p>可以看出，Button1 和 Button3 均进行了渲染，这是由于这两种方案下，icon的参数发生了变化，对于 Button1, <code>&lt;DownloadOutlined /&gt;</code>, 本质是 <code>React.createElement(DownloadOutlined)</code>, 此时将会返回一个新的引用，就导致了 Button1 参数的改变，从而使得其会重新渲染。而对于 Button3，就更加明显，每次渲染后返回的箭头函数都是新的，自然也会引发渲染。而只有方案二，由于返回的始终是组件的引用，故不会重新渲染。</p>
+<p>要避免（虽然实际中，99%的场景都不需要避免，也不会有性能问题）这种情况，可以通过加 memo 解决。改动点如下：</p>
+<pre><code class="js">export default function App() &#123;
+  const [count, setCount] = useState(0);
+  console.log(&#39;App render&#39;);
+
+  const button1Icon = useMemo(() =&gt; &#123;
+      return &lt;DownloadOutlined /&gt;;
+  &#125;, []);
+
+  const button3Icon = useCallback(() =&gt; &#123;
+      return () =&gt; &lt;DownloadOutlined /&gt;;
+  &#125;, []);
+
+  return (
+    &lt;&gt;
+      &lt;Button1 icon=&#123;butto1Icon&#125;&gt;button1&lt;/Button1&gt;
+      &lt;Button2 icon=&#123;DownloadOutlined&#125;&gt;button2&lt;/Button2&gt;
+      &lt;Button3 icon=&#123;button3Icon&#125;&gt;button3&lt;/Button3&gt;
+      &lt;button onClick=&#123;() =&gt; setCount((pre) =&gt; pre + 1)&#125;&gt;render&lt;/button&gt;
+    &lt;/&gt;
+  );
+&#125;
+</code></pre>
+<p>通过 useMemo, useCallback包裹后，即可实现 Button1, Button3 组件参数的不变，从而避免了多余的渲染。相比之下，目前看，直接传递组件本身的方案写法似乎更为简单。</p>
+<p>实际的场景中，Icon 组件往往不会如此简单，往往会有一些参数来控制其比如颜色、点击行为以及大小等等，此时，要将这些参数传递给 Icon 组件，这也是笔者想要讨论的：</p>
+<p>情况二：需要传递来自父组件(App)的参数的情况。</p>
+<p>在现有的基础上, 以传递 size 到 Icon 组件为例，改造如下：</p>
+<pre><code class="js">import React, &#123; useState, useMemo, useCallback &#125; from &#39;react&#39;;
+
+// 增加 size 参数, 控制 icon 大小
+function DownloadOutlined(&#123; size &#125;) &#123;
+  return &lt;span style=&#123;&#123; fontSize: `$&#123;size&#125;px` &#125;&#125;&gt;icon&lt;/span&gt;;
+&#125;
+
+// 无需修改
+const Button1 = React.memo((&#123; icon, children &#125;) =&gt; &#123;
+  console.log(&#39;button1 render&#39;);
+
+  return (
+    &lt;button&gt;
+      &#123;icon&#125;
+      &#123;children&#125;
+    &lt;/button&gt;
+  );
+&#125;);
+
+// 增加 iconProps，来传递给 Icon 组件
+const Button2 = React.memo((&#123; icon: Icon, children, iconProps = &#123;&#125; &#125;) =&gt; &#123;
+  console.log(&#39;button2 render&#39;);
+
+  return (
+    &lt;button&gt;
+      &lt;Icon &#123;...iconProps&#125; /&gt;
+      &#123;children&#125;
+    &lt;/button&gt;
+  );
+&#125;);
+
+// 无需修改
+const Button3 = React.memo((&#123; icon, children &#125;) =&gt; &#123;
+  console.log(&#39;button3 render&#39;);
+  return (
+    &lt;button&gt;
+      &#123;icon()&#125;
+      &#123;children&#125;
+    &lt;/button&gt;
+  );
+&#125;);
+
+export default function App() &#123;
+  const [count, setCount] = useState(0);
+  const [size, setSize] = useState(12);
+  console.log(&#39;App render&#39;);
+  
+  // 增加size依赖
+  const button1Icon = useMemo(() =&gt; &#123;
+    return &lt;DownloadOutlined size=&#123;size&#125; /&gt;;
+  &#125;, [size]);
+  
+  // 增加size依赖
+  const button3Icon = useCallback(() =&gt; &#123;
+    return &lt;DownloadOutlined size=&#123;size&#125; /&gt;;
+  &#125;, [size]);
+
+  return (
+    &lt;&gt;
+      &lt;Button1 icon=&#123;button1Icon&#125;&gt;button1&lt;/Button1&gt;
+      &lt;Button2 icon=&#123;DownloadOutlined&#125; iconProps=&#123;&#123; size &#125;&#125;&gt;
+        button2
+      &lt;/Button2&gt;
+      &lt;Button3 icon=&#123;button3Icon&#125;&gt;button3&lt;/Button3&gt;
+      &lt;button onClick=&#123;() =&gt; setCount((pre) =&gt; pre + 1)&#125;&gt;render&lt;/button&gt;
+      &lt;button onClick=&#123;() =&gt; setSize((pre) =&gt; pre + 1)&#125;&gt;addSize&lt;/button&gt;
+    &lt;/&gt;
+  );
+&#125;
+</code></pre>
+<p>通过上述改动，可以发现，当需要从 App 组件中，向 Icon 传递参数时，Button1 和 Button3 组件本身不需要做任何改动，仅仅需要修改 Icon jsx创建时的参数即可，而 Button2 的 Icon 由于渲染发生在内部，故需要额外传递 iconProps 作为参数传递给 Icon。与此同时，render按钮点击时，由于 iconProps 是个引用类型，导致触发了 Button2 的额外渲染，当然可以通过 useMemo 来控制，此处不再赘述。</p>
+<p>接下来看情况三，当子组件(Button1 - button3)需要传递它自身内部的状态到 Icon 组件中时，需要做什么改动。</p>
+<p>设想一个虚构的需求， Button1 - Button3 组件内部维护了一个状态，count，也就是每个组件点击的次数，而 <code>DownloadOutlined</code> 也接收一个参数，count, 随着 count 的变化，他的颜色会从 <code>rbg(0, 0, 0)</code> 变化为 <code>rgb(count, 0, 0)</code>。</p>
+<p>DownloadOutlined 改动如下:</p>
+<pre><code class="js">// 增加 count 参数，控制 icon 颜色
+function DownloadOutlined(&#123; size = 12, count = 0 &#125;) &#123;
+  console.log(count);
+  return (
+    &lt;span style=&#123;&#123; fontSize: `$&#123;size&#125;px`, color: `rgb($&#123;count&#125;, 0, 0)` &#125;&#125;&gt;
+      icon
+    &lt;/span&gt;
+  );
+&#125;
+</code></pre>
+<p>Button2 的改造(Button1放在最后)如下:</p>
+<pre><code class="js">const Button2 = React.memo((&#123; icon: Icon, children, iconProps = &#123;&#125; &#125;) =&gt; &#123;
+  console.log(&#39;button2 render&#39;);
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;button onClick=&#123;() =&gt; setCount(pre =&gt; pre + 40)&#125;&gt;
+      &#123;/* 将count参数注入即可 */&#125;
+      &lt;Icon &#123;...iconProps&#125; count=&#123;count&#125; /&gt;
+      &#123;children&#125;
+    &lt;/button&gt;
+  );
+&#125;);
+</code></pre>
+<p>Button3的改造如下：</p>
+<pre><code class="js">const Button3 = React.memo((&#123; icon, children &#125;) =&gt; &#123;
+  console.log(&#39;button3 render&#39;);
+  const [count, setCount] = useState(0);
+
+  return (
+    // 此处为了放大颜色的改变，点击一次加 40
+    &lt;button onClick=&#123;() =&gt; setCount(pre =&gt; pre + 40)&#125;&gt;
+      &#123;/* 将 count 作为参数传递给 icon 函数 */&#125;
+      &#123;icon(&#123;count&#125;)&#125;
+      &#123;children&#125;
+    &lt;/button&gt;
+  );
+&#125;);
+</code></pre>
+<p>相应的，App 组件传入也需要做改动</p>
+<pre><code class="js">export default function App() &#123;
+  /* 省略 */
+  
+  const button3Icon = useCallback((props) =&gt; &#123;
+    // 接收参数并将其传递给icon组件
+    return &lt;DownloadOutlined size=&#123;size&#125; &#123;...props&#125; /&gt;;
+  &#125;, [size]);
+
+  /* 省略 */
+&#125;
+</code></pre>
+<p>而对于 button1, 由于 icon 渲染的时机，是在 App 组件中，而在 App 组件中，获取 Button1 组件内部的状态并不方便(可以通过 ref， 但是略显麻烦)。此时可以借助 <code>React.cloneElement</code> api来新建一个 Icon 组件并将子组件参数注入，改造如下：</p>
+<pre><code class="js">const Button1 = React.memo((&#123; icon, children &#125;) =&gt; &#123;
+  console.log(&#39;button1 render&#39;);
+  const [count, setCount] = useState(0);
+  // 借助 cloneElement 向icon 注入参数
+  const newIcon = React.cloneElement(icon, &#123;
+    count,
+  &#125;);
+
+  return (
+    &lt;button onClick=&#123;() =&gt; setCount((pre) =&gt; pre + 40)&#125;&gt;
+      &#123;newIcon&#125;
+      &#123;children&#125;
+    &lt;/button&gt;
+  );
+&#125;);
+</code></pre>
+<p>从这个例子可以看出，如果传入的组件(icon)，需要获取即将传入组件(Button1, Button2, Button3)内部的组件，那么直接传递 jsx 创建好的元素，并不方便，因为在父组件(App)中获取子组件(Button1)内部的状态并不方便，而直接传递组件本身，和传递返回 jsx 创建元素的函数，前者由于元素真正的创建，就是发生在子组件内部，故可以方便的获取子组件状态，而后者由于是函数式的创建，通过简单的参数传递，即可将内部参数传入 icon 中，从而方便的实现响应的需求。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本文先简单介绍了三种将组件作为参数传递的方案：</p>
+<ol>
+<li>传递 jsx 创建好的元素: <code>icon = &#123;&lt;Icon /&gt;&#125;</code></li>
+<li>传递组件本身: <code>icon=&#123;Icon&#125;</code></li>
+<li>传递返回 jsx 创建好的元素的函数: <code>icon=&#123;() =&gt; &lt;Icon /&gt;&#125;</code></li>
+</ol>
+<p>接下来，从三个角度对其进行分析：</p>
+<ol>
+<li>是否存在不必要的渲染</li>
+<li>Icon 组件需要接收来自父组件的参数</li>
+<li>Icon 组件需要接收来自子组件的参数</li>
+</ol>
+<p>其中，三种方案，在不做 useMemo, useCallback 这样的缓存情况下，直接传递组件本身，由于引用不变，可以直接避免非必要渲染，但是当需要接收来自父组件的参数时，需要开辟额外的字段 iconProps 来接收父组件的参数，在不做缓存的情况下，由于参数的对象引用每次都会更新从而也存在不必要渲染的情况。当然，这种不必要的渲染，在绝大部分场景下，并不会存在性能问题。</p>
+<p>考虑了来自父组件的传参后，除了方案二直接传递组件本身的方案需要对子组件增加 iconProps 之外，其余两个方案由于 jsx 创建组件元素的写法本身就在父组件中，只需稍作改动即可将参数携带入 Icon 组件中。</p>
+<p>而当需要接收来自子组件的参数场景下，方案一显得略有不足，jsx 的创建在父组件已经创建好，子组件中需要注入额外的参数相对麻烦(使用 cloneElement 实现参数注入)。而方案三由于函数的执行时机是在子组件内部，可以很方便的将参数通过函数传参带入 Icon 组件，可以很方便的满足需求。</p>
+<p>从实际开发组件的场景来看，被作为参数传递的组件需要使用子组件内部参数的，一般通过方案三传递函数的方案来设计，而不需要子组件内部参数的，方案一二三均可，实际的开销几乎没有差异，只能说方案一写法较为简单，也是 antd 的 api 中最常见的用法。而方案三，多见于需要子组件内部状态的情况，比如 antd 的面包屑 <a target="_blank" rel="noopener" href="https://ant.design/components/breadcrumb-cn/#Breadcrumb">itemRender</a>，Form.list的 <a target="_blank" rel="noopener" href="https://ant.design/components/form-cn/#Form.List">children</a> 的渲染，通过函数注入参数给被作为参数传递的组件方便灵活的进行渲染。</p>
+<p>最后，由于笔者之前写过一段时间vue，不免还是想到了 vue 中 slot 的写法，说实话，还是回去翻了下文档，其实就是方案一和方案三的合集，由于slot本身是在父组件渲染的，所以直接具备父组件的作用域，能够访问父组件的状态，需要注入父组件参数的，直接在插槽的组件中使用即可，而作用域插槽便是提供子组件的作用域，使插槽中的组件可以获取到子组件的参数。</p>
+<p>最后的最后，觉得有帮助的，还请不要吝啬你的赞哈，也欢迎交流。毕竟笔者绝大部分的时间都在写业务。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2022/05/27/React%20Hooks%20%E5%BF%83%E6%99%BA%E8%B4%9F%E6%8B%85%EF%BC%9A%E6%B6%88%E4%B8%AA%E6%8A%96%E9%83%BD%E6%B6%88%E4%B8%8D%E5%88%A9%E7%B4%A2%E4%BA%86/">React Hooks 心智负担：消个抖都消不利索了</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2022/07/31/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AintersectionObserver%20%E5%AE%9E%E6%88%98%E7%BB%8F%E9%AA%8C/">可视化埋点（二）：intersectionObserver 实战经验</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>React 将组件作为参数进行传递的三种方法</h4>
+<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E5%BC%8F%E4%B8%80%EF%BC%9A%E7%9B%B4%E6%8E%A5%E4%BC%A0%E9%80%92-jsx-%E5%88%9B%E5%BB%BA%E5%A5%BD%E7%9A%84%E5%85%83%E7%B4%A0"><span class="toc-text">方式一：直接传递 jsx 创建好的元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E5%BC%8F%E4%BA%8C%EF%BC%9A%E7%9B%B4%E6%8E%A5%E4%BC%A0%E9%80%92%E7%BB%84%E4%BB%B6%E6%9C%AC%E8%BA%AB"><span class="toc-text">方式二：直接传递组件本身</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E5%BC%8F%E4%B8%89%EF%BC%9A%E4%BC%A0%E9%80%92%E4%B8%80%E4%B8%AA%E8%BF%94%E5%9B%9E%E7%BB%84%E4%BB%B6%E7%9A%84%E5%87%BD%E6%95%B0"><span class="toc-text">方式三：传递一个返回组件的函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E6%96%B9%E6%A1%88%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-text">三种方案的对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

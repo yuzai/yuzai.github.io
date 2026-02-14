@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</span>
+        </h2>
+        <section class="post-content">
+            <p>距离 Qwen3 发布 (2025.4.29) 已经过去一周多。</p>
+<p>很多追热点的文章也早也发布完成。</p>
+<p>所谓内行看门道，外行看热闹。</p>
+<p>我们透过新闻看到的，多数也就只是热闹：今天这个模型发布，杀疯了；明天那个模型发布，秒天秒地秒空气。</p>
+<p>这一次，作为一名外行但又不那么外行的程序员，我决定静下心来：</p>
+<p>从最初的源头：Qwen3 的评测跑分数据入手。</p>
+<p>结合评测官方最新的排行榜，对 Qwen3 真实的性能做一次完整的复盘。</p>
+<p>试试窥一窥内行的门道，看看 Qwen3 是否真如传闻的那般沸腾?</p>
+<span id="more"></span>
+
+<h2 id="溯源"><a href="#溯源" class="headerlink" title="溯源"></a>溯源</h2><p>在如今这个时代，小某书也好，某音也罢，声音太多了。</p>
+<p>一早上起来，就是 deepseek-r2 准备发布了，而事实是截止本文写作之时，deepseek-r2 都没有发布。</p>
+<p>所以在接下来处理 Qwen3 发布的消息时，对于这些声音，我会直接忽略。</p>
+<p>直接直捣黄龙：<a target="_blank" rel="noopener" href="https://qwenlm.github.io/blog/qwen3/">https://qwenlm.github.io/blog/qwen3/</a></p>
+<p>也就是 Qwen3 的官网的博客页面。</p>
+<p>从这个博客页面上，也能看到，当下比较火的一些大模型平台：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/20250507112755.png" referrerpolicy="no-referrer"></p>
+<p>比如 hugging face, modelscope, kaggle 等。</p>
+<p>好，废话不多说，找到了源头，接下来才算进入正文。</p>
+<h2 id="跑分评测有没有水分"><a href="#跑分评测有没有水分" class="headerlink" title="跑分评测有没有水分"></a>跑分评测有没有水分</h2><p>以下是官方文档的第一段话和官方的评测图：</p>
+<blockquote>
+<p>今天，我们宣布推出 Qwen3，这是 Qwen 系列大型语言模型的最新成员。我们的旗舰模型 Qwen3-235B-A22B 在代码、数学、通用能力等基准测试中，与 DeepSeek-R1、o1、o3-mini、Grok-3 和 Gemini-2.5-Pro 等顶级模型相比，表现出极具竞争力的结果。此外，小型 MoE 模型 Qwen3-30B-A3B 的激活参数数量是 QwQ-32B 的 10%，表现更胜一筹，甚至像 Qwen3-4B 这样的小模型也能匹敌 Qwen2.5-72B-Instruct 的性能。</p>
+</blockquote>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505071521964.png" referrerpolicy="no-referrer"></p>
+<p>我相信很多人看到这张官方的图，会觉得哇塞，几乎秒杀了其他模型啊。</p>
+<p>仔细看也确实如此，各项指标，甚至 32B 的模型，都可以和 deepseek-R1，openai-o1 一较高下。</p>
+<p>而 Qwen3 官方也是把最优秀的数字放在了开头：ArenaHard (构建复杂的提示词让模型回答后，由 AI 评判打分)。</p>
+<p>95+ 的成绩基本上处于绝对一流的水准。</p>
+<h3 id="ArenaHard"><a href="#ArenaHard" class="headerlink" title="ArenaHard"></a>ArenaHard</h3><p>但是问题是，真的是这样吗？</p>
+<p>对，也不对。</p>
+<p>我们看到的是 Qwen3 放出了一个非常亮眼的数字，95.6。</p>
+<p>对于 ArenaHard v0.1 (官方排名在 2024.11.14 停止更新)，应该确实是这样的。</p>
+<p>从 ArenaHard v0.1 的官方数据来看(如下图)，顶尖模型的得分基本就在 86 ~ 92 分，略有饱和的趋势，95.6 绝对第一名。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505071538348.png" referrerpolicy="no-referrer"></p>
+<p>但是 Qwen3 官方没有提及的，就是 ArenaHard v2.0 的数据。</p>
+<p>v0.1 排名在 2024 年停止更新后，就开始了 v2.0 的预览版。</p>
+<p>Qwen3 并没有放出来 v2.0 的跑分，不过这也确实和 v2.0 正式发布时间太短有关 (2025.4.23 正式推出)。</p>
+<p>在 v2.0 的评测问题上，划分的更细：</p>
+<p>一方面增加了多语言的评测，另一方面类型上也增加了创意写作类型。</p>
+<p>而在 v2.0 的结果上，Qwen3 就显得离第一梯队还有距离了(来自 ArenaHard 官方数据)：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505071551564.png" referrerpolicy="no-referrer"></p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505071552240.png" referrerpolicy="no-referrer"></p>
+<p>当然，这个排名也可能有所偏差，毕竟对于这个评测系统来言，由于是 AI 评判的，而官方裁判就是 gemini-2.5 和 gpt-4.1，不好说是否存在偏见。</p>
+<p>从数据上看，Qwen3 在复杂提示词和风格控制的处理上，基本和 deepseek-r1 打平，但是 32B 是决计没办法与之匹敌的。</p>
+<p>再往前还有 claude-3.7 和 openai 的 o1, o4 以及 gemini 模型。</p>
+<p>而创意写作的跑分上，也是基本处于同样的地位。</p>
+<p>还不错，但是秒杀一众模型，32B 模型匹敌 deepseek-r1，还是略微有点言过其实了。</p>
+<h3 id="AIME"><a href="#AIME" class="headerlink" title="AIME"></a>AIME</h3><p>接下来是 AIME’24 和 AIME’25 了(24，25 就是 2024 年和 2025 年)。</p>
+<p>英文全称是： American Invitational Mathematics Examination</p>
+<p>直接翻译过来就是美国邀请数学考试，一共 30 道题，答案都是 0~999 内的整数。</p>
+<p>而邀请，指只有在 AMC12 考试中表现前 5% 的高中生可以参加。</p>
+<p>对此，以我看短视频的经验，对美国高中生的数学水平表示怀疑，这题目，应该也不难吧。</p>
+<p>可以浅浅看几道：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505071709158.png" referrerpolicy="no-referrer"></p>
+<p>感觉应该是不太难，但是要我来做的话，看懂题目都略微有点费劲。</p>
+<p>但是这一个测试集的结果可能并不靠谱，因为题目和答案都是公开的。</p>
+<p>这些信息可能会包含在训练集中，可能会直接命中，从分数来看，AIME 2024 的得分，明显高于 AIME 2025，不能排除训练集命中的影响。</p>
+<p>这是 AIME 在 vals.ai 上的排名，Qwen3 确实表现优异：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505080911512.png" referrerpolicy="no-referrer"></p>
+<p>而且，最亮眼的是在成本上，花费仅 1 美金，是一些模型的十分之一都不止。</p>
+<p>这个排名中，也有之前爆火的 deepseek-03-24：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505080912695.png" referrerpolicy="no-referrer"></p>
+<p>得分并不高，这应该和没有 深度思考 功能有关，毕竟这些数学题，不分析一下，直接回答，真的很难做出来。</p>
+<h3 id="liveCodeBench"><a href="#liveCodeBench" class="headerlink" title="liveCodeBench"></a>liveCodeBench</h3><p>Qwen3 官方评测图标注了 v5, 2024.10~2025.2。</p>
+<p>v5 对于这个测试集来讲，属于比较老的一个版本了，在 2024.10 ～ 2025.2 这个时间里，包含了 166 个算法题，liveCodeBench 官方的排行只更新到 2025.2。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505080937912.png" referrerpolicy="no-referrer"></p>
+<p>Qwen3 的评分 70 确实可以跻身第一梯队。</p>
+<p>在最新版本的排行中纳入了 Qwen3，如下图：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505080941591.png" referrerpolicy="no-referrer"></p>
+<p>确实还是很能打的，基本处于第一梯队。</p>
+<h3 id="codeForces"><a href="#codeForces" class="headerlink" title="codeForces"></a>codeForces</h3><p>这个评测也是算法题，包含一些动态规划，图论这些面试常见的内容。</p>
+<p>但是这个评测原本是给人类提供的比赛，没有官方的对于大模型的评分。</p>
+<p>人类参赛选手前 1000 名都在 2200+，第一名更是 3800+。</p>
+<p>Qwen3 是 2000 分，已经是非常优异的成绩了，而 32B 模型的 1900 分也非常出色。</p>
+<p>在做算法题这一项上，应该是超越绝大部分程序员了。</p>
+<h3 id="Aider"><a href="#Aider" class="headerlink" title="Aider"></a>Aider</h3><p>Aider 是一个类似于 cline, cursor 的代码生成和修改的工具，只是相比于 Cursor 等范畴更小，并没有提供 IDE 而是只提供了命令行的能力。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505081024650.png" referrerpolicy="no-referrer"></p>
+<p>不过可能也正是因为只提供了命令行操作的方式，反而被用来做大模型修改代码的评测。</p>
+<p>以下是官方的排名(还未更新 Qwen3)：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505081026845.png" referrerpolicy="no-referrer"></p>
+<p>Qwen3 的评分是 61.8，基本处于 5-8 名的位置。花费估计也不高，毕竟 Qwen3 特地标注，没有开启思考模式，从而降低开销。</p>
+<p>这里面比较有趣的就是 deepseek 了，r1 和 deepseek-0324 花费可谓是断崖式的下降，这样的评分 + 如此低的花费，也不难怪之前红极一时了。</p>
+<p>可以看出来，Qwen3 在代码生成和编辑的能力上，排行还是不错的。</p>
+<h3 id="LiveBench"><a href="#LiveBench" class="headerlink" title="LiveBench"></a>LiveBench</h3><p>LiveBench 这个评测是专为大模型设计的，特点如下：</p>
+<ol>
+<li>LiveBench 通过定期发布新问题来限制潜在的污染。</li>
+<li>每个问题都有可验证的、客观的基本事实答案，无需 LLM 法官。</li>
+<li>LiveBench 目前包含一组 18 种不同的任务，涵盖 6 个类别，随着时间的推移，我们将发布新的、更难的任务。</li>
+</ol>
+<p>看起来比 ArenaHard 请 AI 来做裁判更为靠谱一些。</p>
+<p>Qwen3 的得分是 77.1，官方当时还没有收录，2024-11-25 的排行如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505081036020.png" referrerpolicy="no-referrer"></p>
+<p>可以排到第二，如果统计范围扩大到 2025-04-25，这个分值排名会稍微靠后一些：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505081037861.png" referrerpolicy="no-referrer"></p>
+<p>略高于 deepseek-r1，与 Claude 3.7 非常接近。</p>
+<h3 id="BFCL"><a href="#BFCL" class="headerlink" title="BFCL"></a>BFCL</h3><p>全称： Berkeley Function Calling Leaderboard</p>
+<p>翻译过来就是 伯克利工具调用排行榜，从名字上也能看出来，核心在于评估模型的函数调用能力。</p>
+<p>而 V3 版本，就是这个评测集的最新版本，包含了多轮交互的工具调用。</p>
+<p>Qwen3 的评分为 70.8，可谓妥妥的第一梯队了，这一项上，远超 deepseek-r1。</p>
+<p>官方数据如下（2025-04-25）:</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505081052096.png" referrerpolicy="no-referrer"></p>
+<p>Qwen3 235B 基本排行在第六的位置，而 32B 的模型，也能跻身前 6。</p>
+<p>deepseek-r1 56.9 的成绩，排行 47。</p>
+<p>不得不说，Qwen3，这个数据还是很能打的。</p>
+<h3 id="MultiIF"><a href="#MultiIF" class="headerlink" title="MultiIF"></a>MultiIF</h3><p>这个评测，是 facebook 开源的一个用于评估多语言能力的，该基准旨在评估 LLM 模型在多语言环境中多轮指令跟随能力的性能。</p>
+<p>但是并没有官方的排行，从数据集里面看，主要就是考察模型的多语言能力。</p>
+<p>Qwen3 本身支持 100+ 语言，在多语言这条路上，我觉得应该是非常可以的。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>单纯看 Qwen3 官方发布的评测结果来看，确实是非常能打的一个模型。</p>
+<p>而深入去看每一个评测的官方排名时，更能看出 Qwen3 如今的地位：235B 模型基本排名前 10，32B 模型基本处于前 20。</p>
+<p>对于 Qwen3 官方的评测图，存在水分但是差不太多，点评如下：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505081412402.png" referrerpolicy="no-referrer"></p>
+<p>ArenaHard v2.0 (AI 做裁判的评测):</p>
+<p>在复杂提示词和语调控制上，得分 58.4，暂居第 9 (32B 模型排名 16)，略逊色于 claude3.7，gemini-2.5 以及 o3, o1 等。略高于 deepseek-r1 (58.0)。</p>
+<p>在创意写作上，得分 73.5，暂居第 5 (32B 模型排名)，略逊色于 o3, gemini-2.5 和 deepseek-r1 (77)。</p>
+<p>AIME (做数学题)：暂居第五(84)，但是开销最小，强于 deepseek-r1 (74)。略逊色于 o3, gemini 和 grok。</p>
+<p>LiveCodeBench (做算法题)：最新版排名第 7。</p>
+<p>Aider (改代码，生成代码)：排名第 7，花费也预计不会太高。</p>
+<p>LiveBench (六大维度)：最新排名第 8，deepseek-r1 第 9，而 32B 模型，可以排名第 10，非常能打。</p>
+<p>BFCL v3 （函数调用）：排名第 6，32B 模型排名第 7。</p>
+<p>从评测结果来看，Qwen3 确实是一个值得沸腾的产品，作为一款国产的开源大模型，能够在诸多评测中脱颖而出，可谓是非常难得了。</p>
+<p>并别提其独有的混合思考能力和 119 种多语言的支持。</p>
+<p>在大模型这条路上，可以看出，Qwen 是下了大功夫的。</p>
+<p>至于官方发布文章中提到的混合思考能力，独有的 mcp 支持，原本是打算放在一篇文章中的。</p>
+<p>但是不曾想一个评测的篇幅就已经很长了，这些内容将会放在下一篇文章。</p>
+<p>可以点个关注再看追更哦。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BA%AF%E6%BA%90"><span class="toc-text">溯源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%91%E5%88%86%E8%AF%84%E6%B5%8B%E6%9C%89%E6%B2%A1%E6%9C%89%E6%B0%B4%E5%88%86"><span class="toc-text">跑分评测有没有水分</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ArenaHard"><span class="toc-text">ArenaHard</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AIME"><span class="toc-text">AIME</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#liveCodeBench"><span class="toc-text">liveCodeBench</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#codeForces"><span class="toc-text">codeForces</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Aider"><span class="toc-text">Aider</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LiveBench"><span class="toc-text">LiveBench</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BFCL"><span class="toc-text">BFCL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MultiIF"><span class="toc-text">MultiIF</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

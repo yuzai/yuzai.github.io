@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>前端路由的实现方式</span>
+        </h2>
+        <section class="post-content">
+            <p>最近一直在研究前后端分离，ajax可以很好的解决前后端分离的问题，但是又存在着浏览器无法前进后退，这个问题比较尴尬。但是采用前端路由的方式可以很好的解决这个问题。</p>
+<span id="more"></span>
+<h3 id="前端路由与单页页面"><a href="#前端路由与单页页面" class="headerlink" title="前端路由与单页页面"></a>前端路由与单页页面</h3><p>路由就是指随着浏览器地址栏的变化，展示给用户的页面也不相同。<br>传统的网页根据用户访问的不同的地址，浏览器从服务器获取对应页面的内容展示给用户。这样造成服务器压力比较大，而且用户访问速度也比较慢。在这种场景下，出现了单页应用。<br>单页应用，就是只有一个页面，用户访问一个网址，服务器返回的页面始终只有一个，不管用户改变了浏览器地址栏的内容或者在页面内发生了跳转，服务器不会重新返回新的页面，而是通过相应的js操作来实现页面的更改。而地址栏内容的改变，显示不同的页面，实现的手段就是前端路由。</p>
+<h3 id="前端路由的实现方式"><a href="#前端路由的实现方式" class="headerlink" title="前端路由的实现方式"></a>前端路由的实现方式</h3><p>前端路由主要由两种方式实现：</p>
+<ol>
+<li>location.hash+hashchange事件</li>
+<li>history.pushState()+popState事件</li>
+</ol>
+<h4 id="hash-hashchange实现"><a href="#hash-hashchange实现" class="headerlink" title="hash+hashchange实现"></a>hash+hashchange实现</h4><p>这种方法的好处在于支持IE浏览器。对早期的一些浏览器的支持比较好。<br>实现原理：<br>location.hash始终指向页面url 中#之后的内容<br>当当前页面的url &#x3D;’<a target="_blank" rel="noopener" href="http://www.baidu.com',可以在浏览器的控制台输入location.hash为空,当页面指向url/">www.baidu.com&#39;,可以在浏览器的控制台输入location.hash为空，当页面指向url</a> &#x3D;’<a target="_blank" rel="noopener" href="http://www.baidu.com/#/hello'%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8Clocation.hash">www.baidu.com/#/hello&#39;的时候，location.hash</a> &#x3D; ‘#&#x2F;hello’。通过读取location.hash可以知道当前页面所处的位置。通过hashchange事件可以监听location.hash的变化，从而进行相应的处理即可。<br>那么如何触发hash的改变呢？这里主要由两种方法：</p>
+<ol>
+<li>设置a标签，href &#x3D; ‘#&#x2F;blue’，当点击标签的时候，可以在当前url的后面增加上’#&#x2F;blue’，同时触发hashchange,再回调函数中进行处理。</li>
+<li>直接在js中对location.hash &#x3D; ‘#&#x2F;blue’即可，此时url会改变，也会触发hashchange事件。<br>下面给出一个通用的hash前端路由的实现方案：</li>
+</ol>
+<pre><code class="js">function Router()&#123;
+  this.currentUrl=&#39;&#39;;
+  this.routes=&#123;&#125;;
+&#125;
+Router.prototype.route = function(path,callback)&#123;
+  this.routes[path] = callback || function()&#123;&#125;
+&#125;
+Router.prototype.refresh = function()&#123;
+  this.currentUrl = location.hash.slice(1) || &#39;/&#39;;
+  this.routes[this.currentUrl]();
+&#125;
+Router.prototype.init = function()&#123;
+  window.addEventListener(&#39;load&#39;,this.refresh.bind(this),false);
+  window.addEventListener(&#39;hashchange&#39;,this.refresh.bind(this),false);
+  // console.log(location.hash)
+  // if(location.hash.slice(1)!==&#39;/&#39;)
+  //     location.hash = &#39;#/&#39;;
+&#125;
+</code></pre>
+<p>上述定义了一个Router对象，在实例中可以这么使用：</p>
+<pre><code class="js">var route = new Router();
+route.init();
+function changecolor(color)&#123;
+  var body = document.getElementsByTagName(&#39;body&#39;)[0];
+  body.style[&#39;background-color&#39;] = color;
+&#125;
+route.route(&#39;/&#39;,changecolor.bind(null,&#39;skyblue&#39;));
+route.route(&#39;/blue&#39;,changecolor.bind(null,&#39;blue&#39;));
+route.route(&#39;/green&#39;,changecolor.bind(null,&#39;green&#39;));
+route.route(&#39;/color&#39;,function()&#123;
+  var p= document.getElementsByTagName(&#39;a&#39;);
+  [].forEach.call(p,function(item)&#123;item.style[&#39;color&#39;] = &#39;#&#39;+((~~(Math.random()*(1&lt;&lt;24))).toString(16));&#125;)
+&#125;);
+</code></pre>
+<p>新建一个Router的实例，进行初始化，然后进行url与callback的绑定，就可以在hash发生改变的时候出发触发相应的callback。这种方式支持浏览器的前进与后退。很好的解决了前后端分离之后的问题。这种方式有一个缺点就是#的存在，让一些人看了觉得不是很舒服，所以html给history新增了一些api，从而以一种更优雅的方式实现前端路由。</p>
+<h4 id="history-pushState-popstate"><a href="#history-pushState-popstate" class="headerlink" title="history.pushState()+popstate"></a>history.pushState()+popstate</h4><p>跟之前的方法一样,pushState()修改url的地址，popstate监听地址的改变，不同的是，手动的进行pushState()并不会触发popstate事件。<br>可以这样理解：</p>
+<ol>
+<li>用户点击了某个链接，触发ajax获取新的页面或者触发js中的某些操作，改变了dom结构。</li>
+<li>我们希望保存上一个页面，这时候我们就使用pushState(data,null,url)来将上一个页面的信息保存下来。</li>
+<li>当用户点击浏览器的前进或者后退的时候，触发popstate事件，可以读取到数据，然后进行该页面的操作或者ajax获取该页面的数据，也可以通过pushState()中的data来进行还原、更新。</li>
+</ol>
+<p>自己写了一个demo,便于理解。其中url的链接均采用了#&#x2F;打头，主要是如果是相对路径，服务器端会直接跳转到对应的网页，如果想要实现不用#,?等，需要在服务器端进行处理，不论用户访问的相对url是什么，都会返回最初的那个页面。</p>
+<p>1.24更新：此处url直接采用相对路径，可以实现前进后退，问题出在刷新上，当用户刷新，此时，如果服务器端不做处理，会显示没有页面，服务器端只需要输出原本的那个页面就可以完美解决问题。</p>
+<pre><code class="js">;(function()&#123;
+    var div1 = document.getElementById(&#39;div1&#39;);
+    var a1 = document.getElementById(&#39;a1&#39;);
+    var a2 = document.getElementById(&#39;a2&#39;);
+    var count1 = 0;
+  var count2 = 0;
+  history.replaceState(&#123;count1:count1,count2:count2&#125;,null,&#39;&#39;);//最开始的状态，采用replace直接替换
+    a1.addEventListener(&#39;click&#39;,function()&#123;
+    count1++;
+        history.pushState(&#123;count1:count1,count2:count2&#125;,null,&#39;#/s&#39;+count1);//之后的状态，需要进行保存
+        a1.innerHTML = &#39;s&#39;+count1;
+    &#125;)
+    a2.addEventListener(&#39;click&#39;,function()&#123;
+    count2++;
+        history.pushState(&#123;count1:count1,count2:count2&#125;,null,&#39;#/k&#39;+count2);//之后的状态，需要进行保存
+        a2.innerHTML = &#39;k&#39;+count2;
+    &#125;)
+    window.addEventListener(&#39;popstate&#39;,function(e)&#123;
+    console.log(e.state);
+    a1.innerHTML = &#39;s&#39;+e.state.count1;//监听popstate事件，对状态进行还原
+      a2.innerHTML = &#39;k&#39;+e.state.count2;
+    &#125;)
+&#125;)()
+</code></pre>
+<p>采用了立即执行函数来避免污染全局变量，其中点击一下a1,a2元素，均会进行pushState操作，在进行前进后退的时候，就会触发popstate事件，通过在该事件中对元素进行还原，优雅的解决了单页应用前进后退问题。</p>
+<p>完整的代码见:<a target="_blank" rel="noopener" href="https://github.com/yuzai/router-history">code</a></p>
+<p>演示页面见：<a target="_blank" rel="noopener" href="http://blog.xiaoboma.com/router-history">demo</a></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>当用户的操作修改了dom结构，而我们希望用户可以通过浏览器的前进后进行返回上一步的操作，就需要用到前端路由。</p>
+<p>hash可以很好的进行保存，同时还能够自动对当前页面的dom结构进行保存。支持IE，就是页面的url必须#开头。代码相对复杂一点。</p>
+<p>而history也是一种方法，思路简单，更符合前端路由的目的，代码简单，url可以随意指定，如果是纯相对路径需要在服务器端进行处理。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2017/01/21/%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F%E5%B0%8F%E7%BB%93/">事件处理函数的作用域小结</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2017/01/24/%E5%8E%9F%E7%94%9Fjs%E5%B0%81%E8%A3%85ajax/">原生javascript封装ajax</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>前端路由的实现方式</h4>
+<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1%E4%B8%8E%E5%8D%95%E9%A1%B5%E9%A1%B5%E9%9D%A2"><span class="toc-text">前端路由与单页页面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-text">前端路由的实现方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#hash-hashchange%E5%AE%9E%E7%8E%B0"><span class="toc-text">hash+hashchange实现</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#history-pushState-popstate"><span class="toc-text">history.pushState()+popstate</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/">深入聊聊Qwen3的混合推理：全球唯三，开源唯一</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/05/08/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%EF%BC%9A%E6%88%91%E4%BB%AC%E5%A4%96%E8%A1%8C%E4%BA%BA%E9%99%A4%E4%BA%86%E9%AB%98%E5%91%BC%E6%B2%B8%E8%85%BE%E4%BA%86%EF%BC%8C%E8%BF%98%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88/">深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/29/%E8%BF%98%E6%98%AF%E8%81%8A%E8%81%8A%E5%90%A7%EF%BC%9A%22%E5%A4%A7%E9%BE%84%22%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A4%B1%E4%B8%9A%E7%9A%84%E4%B8%80%E5%B9%B4/">还是聊聊吧："大龄"程序员失业的一年</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/04/13/Cursor%E4%B8%8E%E7%A8%8B%E5%BA%8F%E5%91%98%EF%BC%8C%E4%BB%8E%E6%9D%A5%E9%83%BD%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%AD%BB%E6%88%91%E6%B4%BB/">Cursor与程序员，从来都不是你死我活</a></li><li class="post-list-item"><a class="post-list-link" href="/2025/03/25/%E5%9C%A8Cursor%E4%B8%AD%E7%94%A8%E4%B8%8A%E6%9C%80%E6%96%B0%E7%9A%84deepseek0324%E4%BA%86%EF%BC%81/">在Cursor中用上最新的deepseek0324了！</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
