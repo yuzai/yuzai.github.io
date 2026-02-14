@@ -526,7 +526,7 @@ width: 100%
 
 .sideslide_control{
 	position:fixed;
-	top: 56px;
+	top: 50px;
 	height:100%;
 	left:0;
 	z-index:5;
