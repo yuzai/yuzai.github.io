@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>代码不用自己写了，我退订了 Cursor</span>
+        </h2>
+        <section class="post-content">
+            <p>用了一个月的 Claude Code 之后，最终还是取消了 Cursor 的订阅。</p>
+<p>我是很早就开始用 Cursor 来辅助编程的，最爱的就是 Tab 补全的能力。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/20260323194732137.png" referrerpolicy="no-referrer"></p>
+<p>一开始其实是想要保留 Cursor 的，毕竟，Tab 补全实在太好用了。</p>
+<p>但是对于 AI 直接修改我的代码，一直都还是不太放心的，毕竟 bug 是 AI 写的，但是锅 AI 是背不了的。</p>
+<p>其实起初这些 AI 命令行工具的出现，并没有带给我太多的惊艳，毕竟只是个终端工具，怎么可能比得上编辑器的强大呢？</p>
+<p>但是后来机缘巧合之下，我开始重度使用 Claude Code，到现在大概刚好一个月，这期间，其实对于这种终端工具的改观，可谓是非常之大。</p>
+<p>首先，它是终端工具，但是这类工具也有非常多的其他形态：</p>
+<ol>
+<li>vscode&#x2F;cursor 扩展</li>
+<li>Claude Code 电脑客户端</li>
+<li>Claude Code Web 端，pc &amp; mobile</li>
+<li>Claude Mobile App</li>
+</ol>
+<p>其中，仅仅是编辑器的扩展，就基本上能够替代 Cursor 除了 Tab 补全的所有能力了。</p>
+<p>而 Tab 补全，正是我一直没有退订 Cursor 的原因。</p>
+<p>但是，如果一行代码都不需要写了呢？那还需要 Tab 补全吗？</p>
+<p>答案显而易见，不写代码，Tab 补全自然就没有什么吸引力了。</p>
+<p>但是说实话，真能放心把 coding 全部交给 AI 吗？</p>
+<p>我的转折发生在一次技术需求上：给现有的平台做一个问答机器人。</p>
+<p>这涉及到：</p>
+<ol>
+<li>历史对话的管理：CRUD + 前端展示</li>
+<li>token 消耗的统计：CRUD + 前端展示</li>
+<li>平台知识库的构建和更新：RAG or 提示词注入？</li>
+</ol>
+<p>可以说是一个小全栈项目了。</p>
+<p>在 Plan Mode 和 AI Battle 多轮之后，鉴于知识库内容不多，最终确定了方案：</p>
+<p>不走 RAG 知识库，而是借鉴 Claude Code 中 Skills（按需加载知识）的方案，渐进式的加载我们的知识文档。</p>
+<p>也就是首先在系统提示词中注入文档描述和名称，并告知 AI 如果发现问的是某一块的知识，就用工具去读取对应的文档，再注入上下文。</p>
+<p>从而完成所谓 Skills 的渐进式披露，也避免所谓的系统提示词爆炸的问题。</p>
+<p>在做好计划之后的那一刻，我犹豫了，因为涉及到数据库，前端样式，知识库文档的提取脚本和工具调用的实现。</p>
+<p>按照以往的经验，接下来我会一个小步骤一个小步骤的让 AI 来帮我实现。</p>
+<p>但是那天，我想了想，干脆切个分支，交给 AI 全部实现吧，反正如果改的太脏了，就抛弃分支重写呗。</p>
+<p>索性按下了回车，喝个茶的功夫，代码就生成好了，不能说完全没有 bug，但是基本能用，剩下的都是一些小细节优化。</p>
+<p>这是我着实没想到的。</p>
+<p>分分钟就完成了，换我自己搞，拖拖拉拉得干好几天，更别提还得一步一步 debug。</p>
+<p>也就是这一刻开始，我退订了 Cursor，因为确实没必要写代码了。</p>
+<p>沟通方案 -&gt; AI 执行 -&gt; 我验收提出修改意见 -&gt; AI 执行 -&gt; 我验收提出修改意见 -&gt; …..</p>
+<p>依次循环。</p>
+<p>如果方案不确定，那么 AI 输出确实是不稳定的。</p>
+<p>但是在方案明确，只剩执行这个 Action 的时候，AI 绝对是扛把子，效率是人工的百倍都不止。</p>
+<p>后来，我又和 AI Battle，讨论了 v0（Vercel 出品的 AI 前端生成工具）的原理，并得到了实现一个 v0 的方案。</p>
+<p>这一次，我又选择了让 AI 来实现，只能说，分分钟，一个自己版本的 v0 就有了。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/20260325095340989.png" referrerpolicy="no-referrer"></p>
+<p>这里面，coding 这个环节，反而成了最轻松的环节。</p>
+<p>Battle 方案陆陆续续花了我三天的时间，但是 demo 的产出，就是一杯咖啡的时间。</p>
+<p>可以看到，这个工作量，手写的话有多少就不说了。单单只是看相关技术的文档，都要琢磨个几天，更别提实现了。</p>
+<p>有一说一，AI 的出现确实极大的提高了程序员的生产力，以前几天才能实现的功能，AI 几下就搞定了。</p>
+<p>但是生产力提升的背后，其实也是一种角色转变。</p>
+<p>以前写代码，是程序员的核心工作。现在写代码，反而成了最不重要的一环。</p>
+<p>真正花时间的，是想清楚要做什么、怎么做、做出来对不对。</p>
+<p>也许这才是这一波 AI 浪潮真正在重塑的东西——不是用 AI 替代程序员，而是把程序员从”实现者”变成”决策者”。</p>
+<p>作为一个写了好几年代码的人，说实话心情挺复杂的。曾经引以为傲的手速和调试技巧，突然就不那么重要了。但换个角度想，能把精力放在更有价值的思考上，也未尝不是一件好事。</p>
+<p>这个趋势，不以任何人的意志为转移，顺势而为，可能才是正确的打开方式。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2026/03/21/%E5%90%8C%E4%BA%8B%E7%94%A8AI%E5%81%9A%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%9C%80%E6%B1%82%EF%BC%8CCR%E9%83%BD%E8%A2%AB%E6%89%93%E5%9B%9E%E9%87%8D%E5%81%9A%E4%BA%86/">同事用 AI 做的两个需求，Code Review 都被打回重做了</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2026/03/26/AI%E5%86%99%E7%9A%84%E4%BB%A3%E7%A0%81%E7%BF%BB%E8%BD%A6%E4%BA%86%EF%BC%9A%E4%B8%80%E4%B8%AA%E5%85%BC%E5%AE%B9%E9%80%BB%E8%BE%91%E5%BC%95%E5%8F%91%E7%9A%84%E7%BA%BF%E4%B8%8A%E4%BA%8B%E6%95%85/">AI写的代码翻车了：一个兼容逻辑引发的线上事故</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>代码不用自己写了，我退订了 Cursor</h4>
+
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/04/">四月 2026</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/03/">三月 2026</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/04/02/%E7%94%A8claudecode%E6%92%B8%E4%BA%86%E4%B8%80%E4%B8%AAv0%E5%87%BA%E6%9D%A5/">一天时间，用 Claude Code 蹬了一个 v0 出来（附源码）</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/04/01/%E8%BF%99%E4%B8%AA%E4%B8%96%E7%95%8C%E4%B8%8D%E8%83%BD%E6%B2%A1%E6%9C%89%E5%A5%B3%E7%A8%8B%E5%BA%8F%E5%91%98/">这个世界不能没有女程序员</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/03/27/%E5%89%8D%E7%AB%AF%E5%85%B6%E5%AE%9E%E5%BE%88%E5%A5%BD%E8%BD%AC%E5%85%A8%E6%A0%88%E7%9A%84/">前端其实很好转全栈的</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/03/26/AI%E5%86%99%E7%9A%84%E4%BB%A3%E7%A0%81%E7%BF%BB%E8%BD%A6%E4%BA%86%EF%BC%9A%E4%B8%80%E4%B8%AA%E5%85%BC%E5%AE%B9%E9%80%BB%E8%BE%91%E5%BC%95%E5%8F%91%E7%9A%84%E7%BA%BF%E4%B8%8A%E4%BA%8B%E6%95%85/">AI写的代码翻车了：一个兼容逻辑引发的线上事故</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/03/23/%E4%BB%A3%E7%A0%81%E4%B8%8D%E7%94%A8%E8%87%AA%E5%B7%B1%E5%86%99%E4%BA%86%EF%BC%8C%E6%88%91%E9%80%80%E8%AE%A2%E4%BA%86Cursor/">代码不用自己写了，我退订了 Cursor</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/03/21/%E5%90%8C%E4%BA%8B%E7%94%A8AI%E5%81%9A%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%9C%80%E6%B1%82%EF%BC%8CCR%E9%83%BD%E8%A2%AB%E6%89%93%E5%9B%9E%E9%87%8D%E5%81%9A%E4%BA%86/">同事用 AI 做的两个需求，Code Review 都被打回重做了</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">68</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

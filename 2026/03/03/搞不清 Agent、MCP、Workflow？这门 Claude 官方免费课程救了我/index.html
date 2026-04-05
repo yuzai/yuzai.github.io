@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>搞不清 Agent、MCP、Workflow？这门 Claude 官方免费课程救了我</span>
+        </h2>
+        <section class="post-content">
+            <p>最近一直在做 AI 相关的功能，写着写着突然有点懵——我这个东西，到底算不算 Agent？MCP 和 Tool Use 是一回事吗？Workflow 和 Agent 的区别又在哪？</p>
+<p>网上的文章和视频也是越看越乱，概念繁多，颇有种大模型黑话的感觉。</p>
+<p>直到看到了 Claude 官方的课程：Building with the Claude API，我才算把这些概念捋清楚了。</p>
+<p>网址在这里：</p>
+<pre><code>https://anthropic.skilljar.com/claude-with-the-anthropic-api
+</code></pre>
+<p>发现这个课程其实是来自于知乎的一个问题：<strong>如何成为一名 AI Agent 工程师？</strong>。</p>
+<p>有从 LangChain, LangGraph 入手的，也有说从 Workflow 入手的。</p>
+<p>有一个高赞答案吸引了我：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/20260302140105089.png" referrerpolicy="no-referrer"></p>
+<p>相比于其他的回答，确实可谓是四两拨千斤了，真正学习这个课程后，确实收获颇多。</p>
+<h2 id="关键亮点"><a href="#关键亮点" class="headerlink" title="关键亮点"></a>关键亮点</h2><p>对于我这种看事情喜欢看原理的人来说，这门课程简直是大福利。</p>
+<p>就比如一开始的多轮对话，其实在看之前，就会好奇，多轮对话，上下文到底是谁在维护？</p>
+<p>实际上确实不是大模型服务测在提供，每次对话都需要携带完整的历史上下文，token 消耗会随对话轮数线性增长——这也是为什么长对话会越来越贵，context window 的大小如此重要。</p>
+<p>这个课程一个流程图就说清楚了，因为大模型服务提供者，不做存储：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/20260302195552468.png" referrerpolicy="no-referrer"></p>
+<p>当然，这个点应该绝大部分同学都知道了。</p>
+<p>接下来解答我困惑的就是 Tool Use 的原理。本质上就是请求大模型的时候多传递了一个 tools 列表，模型自行选择，同时将需要使用的 tool name 和入参传递给客户端，客户端内部再调用工具将结果返回，之后大模型再返回回答。一般而言这时候我们界面上就能看到模型的回答了。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/20260302200116988.png" referrerpolicy="no-referrer"></p>
+<p>另一个就是 MCP 了，它本质就是定义了其他人如何将 tool 的定义和实现传递给我们的客户端。</p>
+<p>一般这个 tools 是由 app 或者说 client 自己实现，但是借由 MCP 这个协议，client 可以直接获取到其他人写好的 tool 并且让对方来完成 tool 的执行。</p>
+<p>所以两者其实是互补的： MCP 重点在于客户端和工具提供方如何传递和执行 tool，而 Tool Use 讲的是客户端和大模型服务如何交互实现工具的调用和结果的返回。</p>
+<p>而最后就是 Agent 和 Workflow 了。相比大家应该都看过类似的文章 or 视频：Agent Workflow 已死什么的。</p>
+<p>刚巧我最近就在做一些和大模型对话的功能，有多轮对话，拿到结果后自己写代码做结果校验。就很迷惑，我做的工作算 Agent 吗？啥是 workflow，这两者有区别吗？</p>
+<p>答案也很简单，有区别：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/20260302201334068.png" referrerpolicy="no-referrer"></p>
+<p>最后发现，其实是 Workflow。而这个课程，最终给的结论，何时使用 Agent，何时使用 Workflow，也讲的很清楚。</p>
+<p>简单来说：<strong>流程固定、步骤可预期</strong>，用 Workflow，比如自动生成热点文章；<strong>任务路径不固定、需要模型自主规划和决策</strong>，用 Agent，比如 Claude Code，或者豆包、元宝这类对话产品。</p>
+<h2 id="一些课程中遇到的问题"><a href="#一些课程中遇到的问题" class="headerlink" title="一些课程中遇到的问题"></a>一些课程中遇到的问题</h2><ol>
+<li>账号问题</li>
+</ol>
+<p>可能很多人一直没有使用 Claude，就是因为要输入其他国家手机号以及充值等问题。</p>
+<p>不过这里课程站是独立出来的，并不需要手机号验证或者充值验证这样的操作。所以打破网络问题之后，直接用邮箱注册之后即可学习这个课程。</p>
+<ol start="2">
+<li>API Key 的问题</li>
+</ol>
+<p>教程中需要使用 API Key，这一点是必须付费购买，也需要手机号验证，比较麻烦。</p>
+<p>一方面，可以直接去第三方 API 代理平台购买，本身课程完整走下来花费不了太多的 token。</p>
+<p>另一方面，可以使用一些平台免费赠送的额度。</p>
+<p>这里我直接用的是 Vercel AI Gateway 赠送的 5 美金额度，访问 <code>https://vercel.com/ai</code> 注册即可领取，不需要绑卡。</p>
+<p>领取后在控制台生成一个 API Token，然后把代码中的 base_url 和 model 替换成以下内容：</p>
+<pre><code class="py">client = Anthropic(
+    base_url=&quot;https://ai-gateway.vercel.sh&quot;,
+)
+model = &quot;anthropic/claude-haiku-4.5&quot;
+</code></pre>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>如果你也处于”看了很多文章但依然一头雾水”的阶段，强烈推荐从这门课入手。相比各种二手解读文章，官方课程在概念准确性上确实要高出不少。</p>
+<p>需要注意的是，课程内容稍微有些滞后，一些新概念（比如 Skill, Computer Use、Extended Thinking）还没有覆盖，可以学完后再去看 Claude 官方文档补充。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2026/03/21/%E5%90%8C%E4%BA%8B%E7%94%A8AI%E5%81%9A%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%9C%80%E6%B1%82%EF%BC%8CCR%E9%83%BD%E8%A2%AB%E6%89%93%E5%9B%9E%E9%87%8D%E5%81%9A%E4%BA%86/">同事用 AI 做的两个需求，Code Review 都被打回重做了</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>搞不清 Agent、MCP、Workflow？这门 Claude 官方免费课程救了我</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E4%BA%AE%E7%82%B9"><span class="toc-text">关键亮点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E8%AF%BE%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">一些课程中遇到的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/04/">四月 2026</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/03/">三月 2026</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/04/02/%E7%94%A8claudecode%E6%92%B8%E4%BA%86%E4%B8%80%E4%B8%AAv0%E5%87%BA%E6%9D%A5/">一天时间，用 Claude Code 蹬了一个 v0 出来（附源码）</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/04/01/%E8%BF%99%E4%B8%AA%E4%B8%96%E7%95%8C%E4%B8%8D%E8%83%BD%E6%B2%A1%E6%9C%89%E5%A5%B3%E7%A8%8B%E5%BA%8F%E5%91%98/">这个世界不能没有女程序员</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/03/27/%E5%89%8D%E7%AB%AF%E5%85%B6%E5%AE%9E%E5%BE%88%E5%A5%BD%E8%BD%AC%E5%85%A8%E6%A0%88%E7%9A%84/">前端其实很好转全栈的</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/03/26/AI%E5%86%99%E7%9A%84%E4%BB%A3%E7%A0%81%E7%BF%BB%E8%BD%A6%E4%BA%86%EF%BC%9A%E4%B8%80%E4%B8%AA%E5%85%BC%E5%AE%B9%E9%80%BB%E8%BE%91%E5%BC%95%E5%8F%91%E7%9A%84%E7%BA%BF%E4%B8%8A%E4%BA%8B%E6%95%85/">AI写的代码翻车了：一个兼容逻辑引发的线上事故</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/03/23/%E4%BB%A3%E7%A0%81%E4%B8%8D%E7%94%A8%E8%87%AA%E5%B7%B1%E5%86%99%E4%BA%86%EF%BC%8C%E6%88%91%E9%80%80%E8%AE%A2%E4%BA%86Cursor/">代码不用自己写了，我退订了 Cursor</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/03/21/%E5%90%8C%E4%BA%8B%E7%94%A8AI%E5%81%9A%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%9C%80%E6%B1%82%EF%BC%8CCR%E9%83%BD%E8%A2%AB%E6%89%93%E5%9B%9E%E9%87%8D%E5%81%9A%E4%BA%86/">同事用 AI 做的两个需求，Code Review 都被打回重做了</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">68</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
