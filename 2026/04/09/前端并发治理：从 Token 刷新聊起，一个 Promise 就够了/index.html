@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    <link rel="stylesheet"
+      href="/css/atom-one-dark.min.css">
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/fontdiao.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>前端并发治理：从 Token 刷新聊起，一个 Promise 就够了</span>
+        </h2>
+        <section class="post-content">
+            <p>前端没有多线程，按理说不该有并发问题。但只要你写过稍微复杂一点的项目，就一定踩过这些坑：用户连点按钮提交了两次订单、搜索框的旧结果覆盖了新结果、五个请求同时 401 触发了五次 Token 刷新……</p>
+<p>这些问题看着各不相同，但背后其实是同一件事——<strong>多个异步流程在抢同一个资源</strong>。而解决它们的核心思路，往往只需要一个 Promise。</p>
+<p>本文从最常见的 Token 刷新场景出发，一步步拆解前端并发问题的本质和通用解法。</p>
+<h2 id="前端鉴权那些事"><a href="#前端鉴权那些事" class="headerlink" title="前端鉴权那些事"></a>前端鉴权那些事</h2><p>前端处理登录态，方案其实挺多的，不同项目的选择差异很大。</p>
+<p>最传统的是 <strong>Cookie + Session</strong>：登录后服务端种一个 Cookie，之后浏览器每次请求自动带上，前端几乎不用操心。很多项目至今还在用，简单可靠。</p>
+<p>前后端分离流行之后，<strong>JWT Token</strong> 成了主流：后端返回一个 Token，前端存在 localStorage 里，请求时塞进 Header。至于 Token 过期怎么办，不同团队的处理方式五花八门——</p>
+<p>最简单的是 <strong>401 直接跳登录页</strong>，干脆利落，很多内部系统就是这么干的，够用了。</p>
+<p>稍微讲究一点的会做<strong>滑动续期</strong>：后端在每次请求时检查 Token 是否快过期，快过期就在响应头里塞一个新 Token，前端替换掉旧的，类似 Session 的自动续期。还有一种是前端自己算过期时间，<strong>快到期时主动刷新</strong>，不等 401 再处理。</p>
+<p>再往上就是<strong>双 Token 机制</strong>：一个短期的 access token 用于日常请求（比如 15 分钟过期），一个长期的 refresh token 用于续期（比如 7 天过期）。access token 过期时，前端用 refresh token 静默换一个新的，用户无感知。</p>
+<p>说实话，双 Token 是不是”最佳实践”，社区一直有争论——有人觉得在自家系统里是过度设计，滑动续期就够了；也有人觉得职责分离确实更安全。这个争论不是本文的重点，但双 Token 的前端实现确实是<strong>最能体现并发问题的场景</strong>——因为它涉及”Token 过期后静默刷新并重发请求”，而这个过程很容易在并发时出 bug。</p>
+<p>所以我们就用它作为切入点。双 Token 的前端实现几乎形成了一个固定范式——<strong>请求前统一注入 Token，响应后统一拦截刷新</strong>。</p>
+<p>请求发出前，从存储中取出 access token，塞进请求头：</p>
+<pre><code class="js">axios.interceptors.request.use(config =&gt; &#123;
+  const token = localStorage.getItem(&#39;access_token&#39;);
+  if (token) &#123;
+    config.headers.Authorization = `Bearer $&#123;token&#125;`;
+  &#125;
+  return config;
+&#125;);
+</code></pre>
+<p>收到 401 响应时，不直接报错，而是悄悄用 refresh token 换一个新的 access token，然后把刚才失败的请求重新发一遍，用户甚至感知不到：</p>
+<pre><code class="js">axios.interceptors.response.use(
+  response =&gt; response,
+  async error =&gt; &#123;
+    const originalRequest = error.config;
+    if (error.response?.status === 401 &amp;&amp; !originalRequest._retry) &#123;
+      originalRequest._retry = true;
+      const newToken = await refreshToken();
+      originalRequest.headers.Authorization = `Bearer $&#123;newToken&#125;`;
+      return axios(originalRequest);
+    &#125;
+    return Promise.reject(error);
+  &#125;
+);
+</code></pre>
+<p>如果 refresh token 也过期了呢？那就退化回最简单的方案——清除登录态，跳回登录页。双 Token 机制不是消灭了”跳登录”，只是把它推迟到了最后一刻：</p>
+<pre><code class="js">async function refreshToken() &#123;
+  try &#123;
+    const &#123; data &#125; = await axios.post(&#39;/auth/refresh&#39;, &#123;
+      refresh_token: localStorage.getItem(&#39;refresh_token&#39;)
+    &#125;);
+    localStorage.setItem(&#39;access_token&#39;, data.access_token);
+    return data.access_token;
+  &#125; catch &#123;
+    localStorage.clear();
+    window.location.href = &#39;/login&#39;;
+    return Promise.reject();
+  &#125;
+&#125;
+</code></pre>
+<p>打个比方：请求拦截器负责”带上门禁卡”，响应拦截器负责”门禁卡过期时自动换卡再刷一次”，换卡也失败就”回前台重新办卡”。</p>
+<p>到这里一切看起来很完美。但有一个问题被我们忽略了——如果页面上同时有 5 个请求，它们几乎在同一瞬间都收到了 401，会发生什么？</p>
+<p>答案是：5 个请求各自触发一次 <code>refreshToken()</code>，连发 5 次刷新请求。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/20260410095224070.png" referrerpolicy="no-referrer"></p>
+<p>这显然不对。</p>
+<h2 id="并发难题：5-个-401-只该刷新一次"><a href="#并发难题：5-个-401-只该刷新一次" class="headerlink" title="并发难题：5 个 401 只该刷新一次"></a>并发难题：5 个 401 只该刷新一次</h2><p>这是前端 Token 鉴权最经典的并发问题。传统方案是维护一个 <code>isRefreshing</code> 标志位加一个等待队列：第一个请求负责刷新，后续请求排队等结果。这种方案能用，但代码比较啰嗦。</p>
+<p>其实有一个更简洁的思路：<strong>不用队列，直接缓存那个 refresh 的 Promise。</strong> 多个请求发现 Token 过期时，如果已经有一个 refresh 在进行中，就直接 <code>await</code> 同一个 Promise——大家等的是同一件事，拿到的是同一个结果：</p>
+<pre><code class="js">let refreshPromise = null;
+
+function getNewToken() &#123;
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = axios
+    .post(&#39;/auth/refresh&#39;, &#123;
+      refresh_token: localStorage.getItem(&#39;refresh_token&#39;),
+    &#125;)
+    .then((&#123; data &#125;) =&gt; &#123;
+      localStorage.setItem(&#39;access_token&#39;, data.access_token);
+      return data.access_token;
+    &#125;)
+    .catch(err =&gt; &#123;
+      localStorage.clear();
+      window.location.href = &#39;/login&#39;;
+      return Promise.reject(err);
+    &#125;)
+    .finally(() =&gt; &#123;
+      refreshPromise = null;
+    &#125;);
+
+  return refreshPromise;
+&#125;
+</code></pre>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/20260410095329096.png" referrerpolicy="no-referrer"></p>
+<p>整个逻辑就靠一个变量 <code>refreshPromise</code>：有值说明刷新正在进行，所有人直接 await 它；没值就发起刷新并把 Promise 存起来。<code>finally</code> 里清空，这样下一轮过期时又能重新触发。</p>
+<p>这个模式就叫 <strong>Promise Cache</strong> 吧。</p>
+<h2 id="等一下，标志位不就够了吗？"><a href="#等一下，标志位不就够了吗？" class="headerlink" title="等一下，标志位不就够了吗？"></a>等一下，标志位不就够了吗？</h2><p>看到这里你可能会想：搞什么 Promise Cache，我用一个布尔标志位挡住重复调用不就行了？</p>
+<pre><code class="js">let isRefreshing = false;
+
+async function refreshToken() &#123;
+  if (isRefreshing) return;
+  isRefreshing = true;
+  try &#123;
+    const &#123; data &#125; = await axios.post(&#39;/auth/refresh&#39;);
+    localStorage.setItem(&#39;access_token&#39;, data.access_token);
+  &#125; finally &#123;
+    isRefreshing = false;
+  &#125;
+&#125;
+</code></pre>
+<p>对于某些场景确实够了——比如埋点上报、按钮防连点，你只需要”别重复执行”，不关心结果。但 Token 刷新不行。看看会发生什么：</p>
+<pre><code>请求 A 收到 401 → 发起 refresh，isRefreshing = true
+请求 B 收到 401 → 发现 isRefreshing → return → 拿到 undefined → 没有新 token → 重发失败
+请求 A 的 refresh 成功了 → 但 B 已经错过了
+</code></pre>
+<p>标志位把 B “挡回去”了，但 B 还需要结果啊。Promise Cache 不一样，B 不是被拒绝，而是”挂在同一个 Promise 上等”：</p>
+<pre><code>请求 A 收到 401 → 发起 refresh，缓存 Promise
+请求 B 收到 401 → await 同一个 Promise → 等着
+refresh 成功 → A 和 B 同时拿到新 token → 各自重发
+</code></pre>
+<p>所以判断标准很简单：调用者只需要”别重复执行”→ 标志位就够。调用者还需要”等到结果再继续”→ 必须用 Promise Cache。打个比方，前者是”门卫拦人”，后者是”拼车到终点”。</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/20260410095417498.png" referrerpolicy="no-referrer"></p>
+<h2 id="举一反三：前端并发问题的两大类"><a href="#举一反三：前端并发问题的两大类" class="headerlink" title="举一反三：前端并发问题的两大类"></a>举一反三：前端并发问题的两大类</h2><p>Token 刷新只是冰山一角。一旦你理解了 Promise Cache 的本质，就会发现前端到处都有类似的并发场景。它们大致分两类：</p>
+<h3 id="第一类：多次触发，只该执行一次"><a href="#第一类：多次触发，只该执行一次" class="headerlink" title="第一类：多次触发，只该执行一次"></a>第一类：多次触发，只该执行一次</h3><p>这正是 Promise Cache 的主场。除了 Token 刷新，还有——</p>
+<p><strong>多个组件同时请求同一个接口。</strong> 比如页面上三个组件都需要用户信息，几乎同时调 <code>GET /user</code>，没必要发三次：</p>
+<pre><code class="js">const pending = new Map();
+
+function dedupRequest(key, requestFn) &#123;
+  if (pending.has(key)) return pending.get(key);
+  const p = requestFn().finally(() =&gt; pending.delete(key));
+  pending.set(key, p);
+  return p;
+&#125;
+
+dedupRequest(&#39;user-info&#39;, () =&gt; axios.get(&#39;/user&#39;));
+</code></pre>
+<p><strong>按钮防重复提交。</strong> 用户手快连点了三次”下单”：</p>
+<pre><code class="js">let submitPromise = null;
+
+async function handleSubmit(data) &#123;
+  if (submitPromise) return submitPromise;
+  submitPromise = axios.post(&#39;/order&#39;, data).finally(() =&gt; &#123;
+    submitPromise = null;
+  &#125;);
+  return submitPromise;
+&#125;
+</code></pre>
+<p>模式完全一样：有在飞的 Promise 就复用，没有就新建一个。</p>
+<h3 id="第二类：多次触发，只保留最后一次"><a href="#第二类：多次触发，只保留最后一次" class="headerlink" title="第二类：多次触发，只保留最后一次"></a>第二类：多次触发，只保留最后一次</h3><p>搜索联想是最典型的例子。用户快速输入 a → ab → abc，三个请求飞出去，但 <code>a</code> 的请求可能最后才返回，把 <code>abc</code> 的正确结果覆盖掉。</p>
+<p>这里要做的不是合并，而是<strong>丢弃过期的结果</strong>。最简单的方案是用一个自增 ID：</p>
+<pre><code class="js">let currentRequestId = 0;
+
+async function search(keyword) &#123;
+  const id = ++currentRequestId;
+  const res = await axios.get(&#39;/search&#39;, &#123; params: &#123; q: keyword &#125; &#125;);
+  if (id !== currentRequestId) return; // 已经过时了，丢掉
+  setResults(res.data);
+&#125;
+</code></pre>
+<p>更彻底的做法是用 <code>AbortController</code> 直接取消上一次请求，连响应都不用判断：</p>
+<pre><code class="js">let controller = null;
+
+async function search(keyword) &#123;
+  controller?.abort();
+  controller = new AbortController();
+  const res = await axios.get(&#39;/search&#39;, &#123;
+    params: &#123; q: keyword &#125;,
+    signal: controller.signal,
+  &#125;);
+  setResults(res.data);
+&#125;
+</code></pre>
+<p>你可能会问：用时间戳代替自增 ID 行不行？能用，但有坑。浏览器里 <code>Date.now()</code> 精度通常只有 1ms，有些浏览器出于安全考虑（防 Spectre 攻击）甚至故意降到 5ms。用户快速输入时，两次调用完全可能拿到同一个时间戳，竞态又回来了。自增 ID 就没这个问题，每次 <code>++</code> 天然唯一、严格递增，不依赖任何平台特性。至于溢出？<code>Number.MAX_SAFE_INTEGER</code> 约 9 千万亿，每秒自增 1000 次也要 2.85 亿年才会用完，页面一刷新还归零。</p>
+<h2 id="异步单例：当-Promise-Cache-遇上设计模式"><a href="#异步单例：当-Promise-Cache-遇上设计模式" class="headerlink" title="异步单例：当 Promise Cache 遇上设计模式"></a>异步单例：当 Promise Cache 遇上设计模式</h2><p>聊完了接口层的并发，再看一个更”架构”的场景——SDK 初始化。</p>
+<p>单例模式大家都熟悉：</p>
+<pre><code class="js">class SDK &#123;
+  static instance = null;
+  static getInstance() &#123;
+    if (!this.instance) this.instance = new SDK();
+    return this.instance;
+  &#125;
+&#125;
+</code></pre>
+<p>同步实例化时没问题。但前端 SDK 的初始化往往是异步的——加载远程脚本、拉取配置、建立 WebSocket 连接。这时候单例就有一个微妙的 bug：</p>
+<pre><code>模块 A 调用 getInstance() → instance 为 null → new SDK() → 开始异步 init()...
+模块 B 调用 getInstance() → instance 已经存在！→ 直接返回 → 拿到一个还没初始化完的实例 → 💥
+</code></pre>
+<p>问题出在哪？单例只保证了”只 new 一次”，但没保证”等初始化完再给你”。这恰好是 Promise Cache 能解决的：</p>
+<pre><code class="js">class SDK &#123;
+  static initPromise = null;
+  static getInstance() &#123;
+    if (!this.initPromise) &#123;
+      const sdk = new SDK();
+      this.initPromise = sdk.init().then(() =&gt; sdk);
+    &#125;
+    return this.initPromise;
+  &#125;
+&#125;
+
+const sdk1 = await SDK.getInstance(); // 触发初始化
+const sdk2 = await SDK.getInstance(); // 挂在同一个 Promise 上等
+// sdk1 === sdk2，且都是初始化完成的
+</code></pre>
+<p><strong>单例保证”只创建一个实例”，Promise Cache 保证”只执行一次异步过程，且所有人都能等到结果”。</strong> 可以说，Promise Cache 就是异步世界的单例模式。</p>
+<h3 id="但这样有个代价：async-传染"><a href="#但这样有个代价：async-传染" class="headerlink" title="但这样有个代价：async 传染"></a>但这样有个代价：async 传染</h3><p>上面的方案解决了并发问题，却带来了一个新的烦恼——初始化只需要等一次，但之后每次调用 <code>getInstance()</code> 都要写 <code>await</code>，即使 Promise 早就 resolved 了。虽然性能上没问题（只是一个 microtask），但 async 像病毒一样”传染”，逼着所有调用方都变成异步函数。</p>
+<p>一种改进是两层缓存——初始化阶段缓存 Promise，完成后缓存实例：</p>
+<pre><code class="js">class SDK &#123;
+  static instance = null;
+  static initPromise = null;
+
+  static getInstance() &#123;
+    if (this.instance) return this.instance;           // 已完成，同步返回
+    if (this.initPromise) return this.initPromise;     // 进行中，返回 Promise
+    this.initPromise = new SDK().init().then(sdk =&gt; &#123;
+      this.instance = sdk;
+      this.initPromise = null;
+      return sdk;
+    &#125;);
+    return this.initPromise;
+  &#125;
+&#125;
+</code></pre>
+<p>但这带来了新的心智负担：<code>getInstance()</code> 有时返回实例，有时返回 Promise，调用方需要知道当前是哪个阶段。</p>
+<p>更干净的做法是<strong>把初始化和获取拆成两个方法</strong>，各司其职：</p>
+<pre><code class="js">class SDK &#123;
+  static instance = null;
+  static initPromise = null;
+
+  static init() &#123;
+    if (this.initPromise) return this.initPromise;
+    this.initPromise = new SDK().setup().then(sdk =&gt; &#123;
+      this.instance = sdk;
+      return sdk;
+    &#125;);
+    return this.initPromise;
+  &#125;
+
+  static getInstance() &#123;
+    if (!this.instance) throw new Error(&#39;SDK 未初始化，请先调用 SDK.init()&#39;);
+    return this.instance; // 永远同步
+  &#125;
+&#125;
+</code></pre>
+<p>使用起来职责清晰：</p>
+<pre><code class="js">// 应用入口，只调一次
+await SDK.init();
+
+// 之后所有地方，同步获取
+const sdk = SDK.getInstance();
+sdk.doSomething();
+</code></pre>
+<p>这也是大部分主流 SDK 的实际做法——在应用启动时 <code>await</code> 一次初始化，之后全同步访问。</p>
+<p>当然，这意味着<strong>调用方需要自己保证时序</strong>——<code>getInstance()</code> 必须在 <code>init()</code> 完成之后才能调。实践中一般把 <code>init()</code> 卡在应用挂载之前来解决这个问题：</p>
+<pre><code class="js">async function bootstrap() &#123;
+  await SDK.init();
+  app.mount(&#39;#root&#39;); // SDK 就绪后才启动应用
+&#125;
+bootstrap();
+</code></pre>
+<p>这也是为什么 Vue 的 <code>app.use()</code>、各种插件的 <code>install()</code> 都设计在 <code>mount()</code> 之前——用<strong>启动流程的顺序</strong>来隐式保证时序。</p>
+<p>归根结底是一个取舍：Promise Cache 让框架替你管时序，调用方无脑 await 就行，但 async 会传染；init&#x2F;getInstance 分离给了你同步访问的清爽，但得自己控制好初始化入口。SDK 是全局基础设施、入口明确的，分离方案更干净；初始化时机不确定、调用方散落各处的，Promise Cache 更安全。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>前端的”并发问题”大多不是真正的多线程竞争，而是多个异步流程在抢同一个资源。折腾到最后，核心解法就两个：</p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/20260410095444254.png" referrerpolicy="no-referrer"></p>
+<p>而 Promise Cache 的本质，就是<strong>异步世界的单例模式</strong>。一个变量，一个 <code>if</code> 判断，一个 <code>finally</code> 清理——三行逻辑，解决一大类问题。</p>
+<p>下次再遇到”多个地方同时调、但只该执行一次”的需求，别急着加锁、加队列、加标志位。先想想：能不能缓存那个 Promise？</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2026/04/02/%E7%94%A8claudecode%E6%92%B8%E4%BA%86%E4%B8%80%E4%B8%AAv0%E5%87%BA%E6%9D%A5/">一天时间，用 Claude Code 蹬了一个 v0 出来（附源码）</a></p>
+          
+          
+            <p class="post-neighbor-item is-empty">下一篇：<span>没有了</span></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>前端并发治理：从 Token 刷新聊起，一个 Promise 就够了</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E9%89%B4%E6%9D%83%E9%82%A3%E4%BA%9B%E4%BA%8B"><span class="toc-text">前端鉴权那些事</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E9%9A%BE%E9%A2%98%EF%BC%9A5-%E4%B8%AA-401-%E5%8F%AA%E8%AF%A5%E5%88%B7%E6%96%B0%E4%B8%80%E6%AC%A1"><span class="toc-text">并发难题：5 个 401 只该刷新一次</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%89%E4%B8%80%E4%B8%8B%EF%BC%8C%E6%A0%87%E5%BF%97%E4%BD%8D%E4%B8%8D%E5%B0%B1%E5%A4%9F%E4%BA%86%E5%90%97%EF%BC%9F"><span class="toc-text">等一下，标志位不就够了吗？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BE%E4%B8%80%E5%8F%8D%E4%B8%89%EF%BC%9A%E5%89%8D%E7%AB%AF%E5%B9%B6%E5%8F%91%E9%97%AE%E9%A2%98%E7%9A%84%E4%B8%A4%E5%A4%A7%E7%B1%BB"><span class="toc-text">举一反三：前端并发问题的两大类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E7%B1%BB%EF%BC%9A%E5%A4%9A%E6%AC%A1%E8%A7%A6%E5%8F%91%EF%BC%8C%E5%8F%AA%E8%AF%A5%E6%89%A7%E8%A1%8C%E4%B8%80%E6%AC%A1"><span class="toc-text">第一类：多次触发，只该执行一次</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%B1%BB%EF%BC%9A%E5%A4%9A%E6%AC%A1%E8%A7%A6%E5%8F%91%EF%BC%8C%E5%8F%AA%E4%BF%9D%E7%95%99%E6%9C%80%E5%90%8E%E4%B8%80%E6%AC%A1"><span class="toc-text">第二类：多次触发，只保留最后一次</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E5%8D%95%E4%BE%8B%EF%BC%9A%E5%BD%93-Promise-Cache-%E9%81%87%E4%B8%8A%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="toc-text">异步单例：当 Promise Cache 遇上设计模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%86%E8%BF%99%E6%A0%B7%E6%9C%89%E4%B8%AA%E4%BB%A3%E4%BB%B7%EF%BC%9Aasync-%E4%BC%A0%E6%9F%93"><span class="toc-text">但这样有个代价：async 传染</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/04/">四月 2026</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/03/">三月 2026</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/04/09/%E5%89%8D%E7%AB%AF%E5%B9%B6%E5%8F%91%E6%B2%BB%E7%90%86%EF%BC%9A%E4%BB%8E%20Token%20%E5%88%B7%E6%96%B0%E8%81%8A%E8%B5%B7%EF%BC%8C%E4%B8%80%E4%B8%AA%20Promise%20%E5%B0%B1%E5%A4%9F%E4%BA%86/">前端并发治理：从 Token 刷新聊起，一个 Promise 就够了</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/04/02/%E7%94%A8claudecode%E6%92%B8%E4%BA%86%E4%B8%80%E4%B8%AAv0%E5%87%BA%E6%9D%A5/">一天时间，用 Claude Code 蹬了一个 v0 出来（附源码）</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/04/01/%E8%BF%99%E4%B8%AA%E4%B8%96%E7%95%8C%E4%B8%8D%E8%83%BD%E6%B2%A1%E6%9C%89%E5%A5%B3%E7%A8%8B%E5%BA%8F%E5%91%98/">这个世界不能没有女程序员</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/03/27/%E5%89%8D%E7%AB%AF%E5%85%B6%E5%AE%9E%E5%BE%88%E5%A5%BD%E8%BD%AC%E5%85%A8%E6%A0%88%E7%9A%84/">前端其实很好转全栈的</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/03/26/AI%E5%86%99%E7%9A%84%E4%BB%A3%E7%A0%81%E7%BF%BB%E8%BD%A6%E4%BA%86%EF%BC%9A%E4%B8%80%E4%B8%AA%E5%85%BC%E5%AE%B9%E9%80%BB%E8%BE%91%E5%BC%95%E5%8F%91%E7%9A%84%E7%BA%BF%E4%B8%8A%E4%BA%8B%E6%95%85/">AI写的代码翻车了：一个兼容逻辑引发的线上事故</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/03/23/%E4%BB%A3%E7%A0%81%E4%B8%8D%E7%94%A8%E8%87%AA%E5%B7%B1%E5%86%99%E4%BA%86%EF%BC%8C%E6%88%91%E9%80%80%E8%AE%A2%E4%BA%86Cursor/">代码不用自己写了，我退订了 Cursor</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">69</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    
+<script src="/js/index.js"></script>
+
+    
+<script src="/js/jquery-1.12.3.min.js"></script>
+
+    
+<script src="/js/bootstrap.min.js"></script>
+
+    
+    
+<script src="/js/general.js"></script>
+
+    
+    
+<script src="/js/post.js"></script>
+
+    
+    
+<script src="/js/tag.js"></script>
+
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
