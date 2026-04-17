@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    <title>芋仔的个人博客</title>
+    
+    <link rel="stylesheet" href="/css/atom-one-dark.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1776393363798">
+    <link rel="stylesheet" href="/css/style.css?v=1776393363798">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="inner-page-shell">
+    <article>
+      <div class="container inner-content-container">
+      <div class="row inner-content-row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 category_col">
+          <div class="well post-shell">
+        <h2 class="post-title">
+            <span>把翻译交给 AI 之后，我重写了三版代码</span>
+        </h2>
+        <section class="post-content">
+            <p>国际化链路里，文案的提取、同步、回填通常都有工具链兜着，真正卡节奏的是<strong>人工翻译</strong>：一批文案翻成 30 种语言，交给翻译平台排期，快则几小时，慢则几天。业务方等不及，于是想到交给 AI——后台调 GPT，一次性出全部语种。</p>
+<p>听起来是个非常简单就能搞定的事。实际上前后改了三四版，每版上线都被生产环境顶出一类新问题。</p>
+<p>这篇文章就是介绍我的踩坑之路。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><ul>
+<li><strong>内容</strong>：每次翻译 30–50 条业务文案，短的是 “Sign in” 这种按钮文本，长的是 200 字的规则说明</li>
+<li><strong>语言</strong>：30+ 种，大语种（英中日韩）和一些相对冷门的语种（缅甸、马拉地、印地、孟加拉等）</li>
+<li><strong>链路</strong>：用户点”翻译”按钮 → 前端调接口 → 后端调 OpenAI → 返回结果</li>
+</ul>
+<h2 id="v1：一把梭"><a href="#v1：一把梭" class="headerlink" title="v1：一把梭"></a>v1：一把梭</h2><p>第一版最朴素——所有文案 + 所有语种塞进一个 prompt，丢给 GPT：</p>
+<pre><code class="js">const systemPrompt = `你是一个翻译助手。用户会给你一组 JSON 键值对，
+key 的格式是 &#123;语言代码&#125;_&#123;序号&#125;，value 是要翻译的英文原文。
+请将每个 value 翻译成 key 对应的语言，保持 JSON 格式原样返回。`
+
+// 把所有文案 × 所有语种拼成一个大 JSON 丢过去
+const payload = &#123;&#125;
+for (const lang of targetLangs) &#123;
+  entries.forEach((text, i) =&gt; &#123;
+    payload[`$&#123;lang&#125;_$&#123;i&#125;`] = text
+  &#125;)
+&#125;
+
+const response = await openai.chat.completions.create(&#123;
+  model: &#39;gpt-5.4-mini&#39;,
+  messages: [
+    &#123; role: &#39;system&#39;, content: systemPrompt &#125;,
+    &#123; role: &#39;user&#39;, content: JSON.stringify(payload, null, 2) &#125;,
+  ],
+&#125;)
+const result = JSON.parse(response.choices[0].message.content)
+</code></pre>
+<p>本地自测没问题——10 条文案、1 个语种，秒级返回。上线后直接翻车：生产环境一次 50 条文案 × 30+ 语言，网关 30s 超时把请求掐了。</p>
+<h2 id="v2：异步化"><a href="#v2：异步化" class="headerlink" title="v2：异步化"></a>v2：异步化</h2><p>超时好办，改异步：</p>
+<ol>
+<li>前端点翻译 → 后端创建任务，立刻返回 taskId</li>
+<li>后端异步跑翻译</li>
+<li>前端轮询 taskId 拿结果</li>
+</ol>
+<p>超时解决了，但新问题开始冒。上线后陆续收到四类反馈：</p>
+<ul>
+<li><strong>翻译成功了，但结果全是英文</strong></li>
+<li><strong>偶尔报 JSON 解析错误</strong></li>
+</ul>
+<p>看着毫无关联，其实归两类原因。</p>
+<p><strong>全返英文</strong>：26 个语种塞进同一个 prompt，上下文太多，AI 不见得表现更好——实践中它会直接把英文原样吐回来，而不是”尽力而为”。</p>
+<p><strong>JSON 解析错误</strong>当时查了一圈没完全定位，只确认和”某些语种”相关。后来在 v3 加了详细日志才真正搞清楚——根因是相对冷门的语言 + 输入里的换行制表符，下面会讲。</p>
+<p>到这一步已经能看出核心矛盾：<strong>一个请求塞太多东西，AI 扛不住</strong>。</p>
+<h2 id="v3：拆开来打"><a href="#v3：拆开来打" class="headerlink" title="v3：拆开来打"></a>v3：拆开来打</h2><p>v2 的问题归结起来就是一锅炖太多。v3 的思路是彻底拆散：</p>
+<ol>
+<li>语种太多 AI 会懵 → <strong>按语言拆开，每个语种独立请求</strong></li>
+<li>单次文案太多容易出错 → <strong>每 10 条一个批次</strong></li>
+<li>AI 偶尔抽风 → <strong>加重试</strong></li>
+<li>JSON 偶尔损坏 → <strong>加修复</strong></li>
+</ol>
+<p>整体结构变成两层并发：</p>
+<pre><code>translate(texts, targetLangs)
+│
+├─ 语言并行（Promise.all）──────────────────────
+│  │               │               │
+│  ▼               ▼               ▼
+│  ja              ko              vi
+│  ├─ batch 0 ─┐   ├─ batch 0 ─┐   ├─ batch 0 ─┐
+│  ├─ batch 1 ─┤   ├─ batch 1 ─┤   ├─ batch 1 ─┤
+│  └─ batch 2 ─┘   └─ batch 2 ─┘   └─ batch 2 ─┘
+│       │                │                │
+│       ▼                ▼                ▼
+│  批次并行         批次并行         批次并行
+│
+└─ 合并结果 → &#123; ja: [...], ko: [...], vi: [...] &#125;
+</code></pre>
+<p>30 种语言 × 5 个批次 &#x3D; 150 个请求几乎同时发出，总耗时回到 15–30 秒。</p>
+<p>单个批次内部的策略：</p>
+<pre><code>第 1-2 次尝试 → mini 模型（快、便宜）
+     ↓ 失败
+第 3 次尝试 → 好一点的模型（稳定、贵）+ JSON 修复
+     ↓ 失败
+抛异常，整个批次标记失败
+</code></pre>
+<p>每次尝试都做三件事：调模型、解析 JSON、<strong>校验数组长度</strong>。最后一条不能省——AI 偶尔会漏翻（输入 30 条返回 28 条），不校验长度就会导致译文和原文错位，比翻译不准更严重。</p>
+<p>代码大致长这样：</p>
+<pre><code class="ts">for (let attempt = 0; attempt &lt; 3; attempt++) &#123;
+  const isLastAttempt = attempt === 2
+
+  const response = await fetchWithRetry(url, &#123;
+    data: &#123;
+      model: isLastAttempt ? &#39;gpt-5.4&#39; : &#39;gpt-5.4-mini&#39;,
+      messages: [systemMsg, userMsg],
+    &#125;,
+  &#125;)
+
+  let arr
+  try &#123;
+    arr = JSON.parse(response.data.choices[0].message.content)
+  &#125; catch &#123;
+    if (isLastAttempt) arr = JSON.parse(cleanAndFixJson(text))
+    else continue
+  &#125;
+
+  if (!Array.isArray(arr) || arr.length !== expected) &#123;
+    if (isLastAttempt) throw new Error(&#39;length mismatch after 3 attempts&#39;)
+    continue
+  &#125;
+
+  return arr
+&#125;
+</code></pre>
+<p>v3 上线后头几天很稳，几乎没收到反馈。然后问题从一个意想不到的方向冒出来了。</p>
+<h3 id="相对冷门的语言集体翻车"><a href="#相对冷门的语言集体翻车" class="headerlink" title="相对冷门的语言集体翻车"></a>相对冷门的语言集体翻车</h3><p>上线大概一周，开始零星收到反馈说翻译结果有问题。一开始以为是随机的 AI 抽风，后来翻日志发现了规律：**出错的请求，语种几乎全集中在 <code>hi / bn / th / mr</code>**——印地、孟加拉、泰语、马拉地。英日韩法德西基本不出问题，这几个小语种却稳定翻车。</p>
+<p>症状也很一致：</p>
+<ol>
+<li>丢文案（输入 30，返回 28）</li>
+<li>缺逗号、引号不闭合，JSON 非法</li>
+<li>非法转义符 <code>\n</code> <code>\t</code> <code>\\x</code> <code>\\a</code></li>
+<li>极个别情况下输出被截断</li>
+</ol>
+<p>再进一步排查，发现了另一个规律：<strong>只有输入文案里带换行或制表符时，这几个语种才会出问题</strong>。纯文本句子翻得好好的。</p>
+<p>根因想通之后不复杂：JSON 字符串里 <code>\n</code> <code>\t</code> 必须以转义形式存在。模型在生成输出时，要决定这一位写”真实换行”还是”字面量 <code>\n</code>“——英中日韩这种训练语料里大量见过 JSON 的语种，几乎不会搞混；但印地、孟加拉、泰语这种训练占比低的语言，模型会在两种写法之间摇摆。一旦裸换行落在字符串中间，整个 JSON 就废了。</p>
+<p>本质是<strong>特殊字符 + 小语种训练覆盖不足</strong>的叠加效应。v2 里那些”空字符串”和”JSON 解析错误”也终于有了解释——当时多语种混在一起，这些小语种的问题被淹没在大量正常输出里，不容易看出规律。</p>
+<h3 id="逐条翻译兜底"><a href="#逐条翻译兜底" class="headerlink" title="逐条翻译兜底"></a>逐条翻译兜底</h3><p>到这里，”三次重试 + JSON 修复”已经不够——问题不是偶发的，而是结构性的。降级链得再往下延一级：<strong>扛不住的批次，不走 JSON，一条一条翻</strong>：</p>
+<pre><code class="ts">async function translateSingleEntry(text, lang) &#123;
+  const response = await fetchWithRetry(url, &#123;
+    data: &#123;
+      model: &#39;gpt-5.4-mini&#39;,
+      messages: [
+        &#123; role: &#39;system&#39;, content: `你是翻译助手，只返回翻译结果，不要其他内容。` &#125;,
+        &#123; role: &#39;user&#39;, content: `请将以下英文翻译成 $&#123;lang&#125;：\n$&#123;text&#125;` &#125;,
+      ],
+    &#125;,
+  &#125;)
+  return response.data.choices[0].message.content.trim()
+&#125;
+</code></pre>
+<p>这个 prompt 里一个字都没提 JSON，只让 AI 做一件事：翻译。</p>
+<p>这里有个值得单独拎出来的认知：<strong>JSON 结构本身就是一种噪声</strong>。输入一旦复杂（长句、特殊字符、相对冷门的语言），让 AI 同时兼顾”翻对”和”输出合法 JSON”，成功率会明显下降；把这两件事拆开，翻译成功率几乎 100%，代价只是多调几次接口。</p>
+<p>实测数据：31 条文案 × 27 种语言 &#x3D; 837 条翻译，拆成 108 个批次。一次任务里平均：</p>
+<ul>
+<li>4 次第一次 JSON 解析失败（重试救回）</li>
+<li>2 次数组长度不匹配（重试救回）</li>
+<li>1 次触发逐条翻译（兜底救回）</li>
+<li>0 次英文原文兜底</li>
+</ul>
+<p>英文兜底几乎没触发过，但必须留着——它保证的是”不管多极端，调用方拿到的数组长度一定对”。</p>
+<h2 id="Prompt-踩过的坑"><a href="#Prompt-踩过的坑" class="headerlink" title="Prompt 踩过的坑"></a>Prompt 踩过的坑</h2><p>v3 能稳下来，prompt 本身也改了不少。下面几条都是先反着试过、不行才改回来的。</p>
+<h3 id="自定义分隔符比-JSON-更差"><a href="#自定义分隔符比-JSON-更差" class="headerlink" title="自定义分隔符比 JSON 更差"></a>自定义分隔符比 JSON 更差</h3><p>发现转义符问题后，第一反应是不用 JSON 了，输入输出都用 <code>|||</code> 分隔，把转义问题整个绕过去。</p>
+<p>改完反而更差——要么全返英文，要么一半英文一半目标语种。回头想也说得通：<strong>JSON 的严格语法在某种程度上”逼” AI 认真对待每一个元素</strong>，结构约束一旦没了，AI 很容易半路开小差。</p>
+<h3 id="带-index-的-key-会让-AI-困惑"><a href="#带-index-的-key-会让-AI-困惑" class="headerlink" title="带 index 的 key 会让 AI 困惑"></a>带 index 的 key 会让 AI 困惑</h3><p>最初用过 <code>&#123;lang&#125;_&#123;index&#125;: value</code> 格式：</p>
+<pre><code class="json">&#123; &quot;ja_0&quot;: &quot;ログイン&quot;, &quot;ja_1&quot;: &quot;登録&quot;, &quot;ko_0&quot;: &quot;로그인&quot;, &quot;ko_1&quot;: &quot;가입&quot; &#125;
+</code></pre>
+<p>直觉上挺合理，但 AI 在这种 schema 下经常乱：漏 key、index 跳号、语言代码写错。后来换成最朴素的数组 <code>[&quot;翻译1&quot;, &quot;翻译2&quot;, &quot;翻译3&quot;]</code>，稳定性立刻上来了。AI 只需要维持一个维度（顺序），不用同时盯语言和序号。<strong>结构越简单，AI 越不容易出错</strong>。</p>
+<h3 id="语言代码要写全名"><a href="#语言代码要写全名" class="headerlink" title="语言代码要写全名"></a>语言代码要写全名</h3><p><code>my</code> <code>ms</code> <code>id</code> <code>fil</code> 这些短代码 AI 经常不认识：<code>my</code> 理解成”我的”，<code>ms</code> 理解成 Microsoft，<code>id</code> 理解成 identifier。</p>
+<p>解法是维护映射表，prompt 里用全名：</p>
+<pre><code class="ts">const LANG_NAME_MAP = &#123;
+  my: &#39;Burmese&#39;,
+  ms: &#39;Malay&#39;,
+  id: &#39;Indonesian&#39;,
+  fil: &#39;Filipino&#39;,
+  // ...
+&#125;
+</code></pre>
+<p>写”请翻译成 Burmese”而不是”请翻译成 my”。对容易混淆的语种（马来&#x2F;印尼、简体&#x2F;繁体），再加一对示例：</p>
+<pre><code>示例（英语翻译成 Burmese）：
+- [&quot;Sign in&quot;] =&gt; [&quot;ဝင်ရန်&quot;]
+- [&quot;Sign in&quot;, &quot;Sign up&quot;] =&gt; [&quot;ဝင်ရန်&quot;, &quot;ဆိုင်းအပ်&quot;]
+</code></pre>
+<h2 id="三版对比"><a href="#三版对比" class="headerlink" title="三版对比"></a>三版对比</h2><table>
+<thead>
+<tr>
+<th>版本</th>
+<th>核心方案</th>
+<th>暴露的问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v1</td>
+<td>所有文案 + 所有语种打包一次请求</td>
+<td>网关 30s 超时</td>
+</tr>
+<tr>
+<td>v2</td>
+<td>异步任务 + 前端轮询</td>
+<td>多语种混请 → AI 偷懒；输出不稳 → JSON 损坏 &#x2F; 空串</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>按语种并行 + 分批 + 重试 + JSON 修复</td>
+<td>相对冷门的语言 + 特殊字符 → 结构性 JSON 失败</td>
+</tr>
+<tr>
+<td>v3+</td>
+<td>逐条翻译兜底 + 英文原文终极兜底</td>
+<td>目前稳定运行</td>
+</tr>
+</tbody></table>
+<p>每版不是”方案有问题”才被换掉，而是<strong>上一层的坑填了，下一层的坑才露出来</strong>：v1 卡在 HTTP 层；v2 绕过 HTTP 后撞到 AI 输出层；v3 处理完输出层，又冒出语种维度的系统性差异。</p>
+<h2 id="几条可以迁移的经验"><a href="#几条可以迁移的经验" class="headerlink" title="几条可以迁移的经验"></a>几条可以迁移的经验</h2><ol>
+<li><p><strong>上下文越多，AI 不见得表现更好</strong>。同时让它做 N 件事，可能一件都做不好。拆任务往往比优化 prompt 更有效。</p>
+</li>
+<li><p><strong>结构化输出是双刃剑</strong>。JSON 的严格性正常情况下帮你校验，输入一复杂就容易反过来变成出错源。简单任务上结构化省心，难的任务上反而是包袱——该拆就拆。</p>
+</li>
+<li><p><strong>兜底链要延伸到”不会失败”的那一层</strong>。这个项目里这一层是英文原文——它就是输入本身，保证调用方拿到的数组长度一定对。</p>
+</li>
+</ol>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>完整代码不到 300 行 TypeScript，开源在 <a target="_blank" rel="noopener" href="https://github.com/yuzai/ai-batch-translate">ai-batch-translate</a>，<code>pnpm install &amp;&amp; pnpm tsx example.ts</code> 可以直接跑。目前线上跑了一个多月，累计翻了大概 5 万条文案，没再收到翻译相关的反馈。</p>
+<p>做这类”用 AI 干某件具体事情”的项目，比较实际的做法就是先最朴素地接进去，上线后根据生产环境的反馈一版一版迭代。设计阶段能想到的问题，往往不如线上暴露出来的具体。</p>
+
+        </section>
+        <hr class="post-divider">
+        <div class="post-neighbors">
+          
+            <p class="post-neighbor-item">上一篇：<a href="/2026/04/09/%E5%89%8D%E7%AB%AF%E5%B9%B6%E5%8F%91%E6%B2%BB%E7%90%86%EF%BC%9A%E4%BB%8E%20Token%20%E5%88%B7%E6%96%B0%E8%81%8A%E8%B5%B7%EF%BC%8C%E4%B8%80%E4%B8%AA%20Promise%20%E5%B0%B1%E5%A4%9F%E4%BA%86/">前端并发治理：从 Token 刷新聊起，一个 Promise 就够了</a></p>
+          
+          
+            <p class="post-neighbor-item">下一篇：<a href="/2026/04/17/%E6%88%91%E7%9A%84%E5%A4%A7%E8%84%91%E4%B8%8D%E4%B8%8B%E7%8F%AD%EF%BC%9A%E4%B8%80%E4%B8%AA%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%B8%88%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8F%8D%E5%88%8D%E8%87%AA%E6%95%91%E6%8C%87%E5%8D%97/">我的大脑不下班：一个前端工程师的工作反刍自救指南</a></p>
+          
+        </div>
+        
+          </div>
+       </div>
+       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+         <div style='overflow:auto' id='bfc'>
+<div class = 'well' id = 'ab_ca'>
+
+
+<h4>把翻译交给 AI 之后，我重写了三版代码</h4>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#v1%EF%BC%9A%E4%B8%80%E6%8A%8A%E6%A2%AD"><span class="toc-text">v1：一把梭</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#v2%EF%BC%9A%E5%BC%82%E6%AD%A5%E5%8C%96"><span class="toc-text">v2：异步化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#v3%EF%BC%9A%E6%8B%86%E5%BC%80%E6%9D%A5%E6%89%93"><span class="toc-text">v3：拆开来打</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%AF%B9%E5%86%B7%E9%97%A8%E7%9A%84%E8%AF%AD%E8%A8%80%E9%9B%86%E4%BD%93%E7%BF%BB%E8%BD%A6"><span class="toc-text">相对冷门的语言集体翻车</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%90%E6%9D%A1%E7%BF%BB%E8%AF%91%E5%85%9C%E5%BA%95"><span class="toc-text">逐条翻译兜底</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Prompt-%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91"><span class="toc-text">Prompt 踩过的坑</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%86%E9%9A%94%E7%AC%A6%E6%AF%94-JSON-%E6%9B%B4%E5%B7%AE"><span class="toc-text">自定义分隔符比 JSON 更差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%A6-index-%E7%9A%84-key-%E4%BC%9A%E8%AE%A9-AI-%E5%9B%B0%E6%83%91"><span class="toc-text">带 index 的 key 会让 AI 困惑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E8%A8%80%E4%BB%A3%E7%A0%81%E8%A6%81%E5%86%99%E5%85%A8%E5%90%8D"><span class="toc-text">语言代码要写全名</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%89%88%E5%AF%B9%E6%AF%94"><span class="toc-text">三版对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%A0%E6%9D%A1%E5%8F%AF%E4%BB%A5%E8%BF%81%E7%A7%BB%E7%9A%84%E7%BB%8F%E9%AA%8C"><span class="toc-text">几条可以迁移的经验</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
+<h4>归档</h4>
+<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/04/">四月 2026</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/03/">三月 2026</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">二月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/06/">六月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">一月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/12/">十二月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">十一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">十月 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/09/">九月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">八月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">2</span></li></ul>
+<h4>最新文章</h4>
+<ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2026/04/17/%E6%88%91%E7%9A%84%E5%A4%A7%E8%84%91%E4%B8%8D%E4%B8%8B%E7%8F%AD%EF%BC%9A%E4%B8%80%E4%B8%AA%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%B8%88%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8F%8D%E5%88%8D%E8%87%AA%E6%95%91%E6%8C%87%E5%8D%97/">我的大脑不下班：一个前端工程师的工作反刍自救指南</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/04/13/AI%20%E6%89%B9%E9%87%8F%E7%BF%BB%E8%AF%91%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95%EF%BC%9A%E4%B8%89%E7%89%88%E6%BC%94%E8%BF%9B%EF%BC%8C%E4%BB%8E%2030s%20%E8%B6%85%E6%97%B6%E5%88%B0%E7%A8%B3%E5%AE%9A%E7%BF%BB%E5%AE%8C%2030%20%E7%A7%8D%E8%AF%AD%E8%A8%80/">把翻译交给 AI 之后，我重写了三版代码</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/04/09/%E5%89%8D%E7%AB%AF%E5%B9%B6%E5%8F%91%E6%B2%BB%E7%90%86%EF%BC%9A%E4%BB%8E%20Token%20%E5%88%B7%E6%96%B0%E8%81%8A%E8%B5%B7%EF%BC%8C%E4%B8%80%E4%B8%AA%20Promise%20%E5%B0%B1%E5%A4%9F%E4%BA%86/">前端并发治理：从 Token 刷新聊起，一个 Promise 就够了</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/04/02/%E7%94%A8claudecode%E6%92%B8%E4%BA%86%E4%B8%80%E4%B8%AAv0%E5%87%BA%E6%9D%A5/">一天时间，用 Claude Code 蹬了一个 v0 出来（附源码）</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/04/01/%E8%BF%99%E4%B8%AA%E4%B8%96%E7%95%8C%E4%B8%8D%E8%83%BD%E6%B2%A1%E6%9C%89%E5%A5%B3%E7%A8%8B%E5%BA%8F%E5%91%98/">这个世界不能没有女程序员</a></li><li class="post-list-item"><a class="post-list-link" href="/2026/03/27/%E5%89%8D%E7%AB%AF%E5%85%B6%E5%AE%9E%E5%BE%88%E5%A5%BD%E8%BD%AC%E5%85%A8%E6%A0%88%E7%9A%84/">前端其实很好转全栈的</a></li></ul>
+
+<h4>分类</h4>
+<ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8E%9F%E5%88%9B/">原创</a><span class="category-list-count">71</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E5%BE%97/">心得</a><span class="category-list-count">6</span></li></ul>
+
+
+  <img id = 'my_picture' referrerpolicy="no-referrer">
+  <h1 style='text-align:center;font-size:30px'>芋仔</h1>
+  <ul id='aboutme'>
+    <li><a  style = 'color:#000000' title = 'github' href="https://github.com/yuzai" role="button" target="_blank"><i class= 'icon-github'></i></a></li>
+    <li><a  style = 'color:#62b900' title = 'wechat' href="/rs/wechat.jpg" role="button" target="_blank"><i class= 'icon-wechat'></i></a></li>
+    <li><a  style = 'color:#2672ae' title = 'my store'href="https://www.zhihu.com/people/yu-zi-61-84" role="button" target="_blank"><i class= 'icon-zhihu-square'></i></a></li>
+  </ul>
+
+<h4>标签</h4>
+<ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DOM/" rel="tag">DOM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ajax/" rel="tag">ajax</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome%E6%89%A9%E5%B1%95/" rel="tag">chrome扩展</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/" rel="tag">es6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C/" rel="tag">hexo主题制作</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/" rel="tag">js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">前端面试题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E6%80%9D/" rel="tag">反思</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9F%AF%E9%87%8C%E5%8C%96/" rel="tag">柯里化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%96%91%E9%97%AE/" rel="tag">疑问</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%A8%E5%9F%9F/" rel="tag">跨域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E5%BA%A6/" rel="tag">进度</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AE%E9%A2%98/" rel="tag">问题</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a><span class="tag-list-count">2</span></li></ul>
+
+
+
+
+</div>
+</div>
+
+      </div>
+      </div>
+
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/highlight.min.js"></script>
+    <script src="/js/index.js?v=1776393363798"></script>
+    <script src="/js/jquery-1.12.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    
+    <script src="/js/general.js?v=1776393363798"></script>
+    
+    <script src="/js/post.js?v=1776393363798"></script>
+    
+    <script src="/js/tag.js?v=1776393363798"></script>
+    
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
