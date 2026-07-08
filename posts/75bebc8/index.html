@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    
+    <title>跨域的解决方案（一）：jsonp及其实现 - 芋仔的个人博客</title>
+    <meta name="description" content="最近遇到了跨域问题，有很多种解决方案，本文主要对其中的jsonp进行演示，本文使用node编写服务器端代码进行测试。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跨域的解决方案（一）：jsonp及其实现">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/posts/75bebc8/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="最近遇到了跨域问题，有很多种解决方案，本文主要对其中的jsonp进行演示，本文使用node编写服务器端代码进行测试。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3967512-4a0c232f37c44707.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2017-01-31T13:32:26.000Z">
+<meta property="article:modified_time" content="2026-07-08T10:35:50.892Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3967512-4a0c232f37c44707.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+    
+    <link rel="canonical" href="https://blog.maxiaobo.com.cn/posts/75bebc8/">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "跨域的解决方案（一）：jsonp及其实现",
+      "datePublished": "2017-01-31T13:32:26.000Z",
+      "dateModified": "2026-07-08T10:35:50.892Z",
+      "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
+      "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/75bebc8/",
+      "description": "最近遇到了跨域问题，有很多种解决方案，本文主要对其中的jsonp进行演示，本文使用node编写服务器端代码进行测试。",
+      "inLanguage": "zh-CN"
+    }
+    </script>
+    
+    
+    <link rel="stylesheet" href="/css/atom-one-dark.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963755">
+    <link rel="stylesheet" href="/css/style.css?v=1783506963755">
+
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="site-search-overlay" id="site-search-overlay">
+  <div class="site-search-panel">
+    <input type="text" class="site-search-input" id="site-search-input" placeholder="搜索文章标题和内容…" autocomplete="off">
+    <ul class="site-search-results" id="site-search-results"></ul>
+  </div>
+</div>
+
+<div class="inner-page-shell">
+    <article class="post-reading">
+      
+      
+      <div id="post-toc-widget">
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <div class="post-toc-panel" id="post-toc-panel">
+          <div class="post-toc-head">本文目录</div>
+          <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#jsonp%E7%9A%84%E6%9D%A5%E5%8E%86"><span class="toc-text">jsonp的来历</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jsonp%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-text">jsonp的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li></ol>
+        </div>
+      </div>
+      
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-01-31</time><span class="post-eyebrow-sep">·</span>约 1964 字<span class="post-eyebrow-sep">·</span>读完约 5 分钟</p>
+          <h1 class="post-title">跨域的解决方案（一）：jsonp及其实现</h1>
+        </header>
+        <section class="post-content">
+            <p>最近遇到了跨域问题，有很多种解决方案，本文主要对其中的jsonp进行演示，本文使用node编写服务器端代码进行测试。</p>
+<span id="more"></span>
+
+<h3 id="jsonp的来历"><a href="#jsonp的来历" class="headerlink" title="jsonp的来历"></a>jsonp的来历</h3><p>ajax中的资源访问受到浏览器安全的<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html">‘同源’限制</a>,存在跨域问题。<br>但是script标签的引入并不具有’同源’限制,不存在跨域问题，利用这个特性进行数据的获取，就是jsonp。<br>JSONP(JSON with Padding)是一个非官方的协议，它允许在服务器端集成Script tags返回至客户端，通过javascript callback的形式实现跨域访问（这仅仅是JSONP简单的实现形式）。<br>简单的一句话：jsonp是一个协议，由于同源策略的限制，XmlHttpRequest只允许请求当前源（域名、协议、端口）的资源，为了实现跨域请求，可以通过script标签实现跨域请求，然后在服务端输出JSON数据并执行回调函数，从而解决了跨域的数据请求。</p>
+<h3 id="jsonp的实现"><a href="#jsonp的实现" class="headerlink" title="jsonp的实现"></a>jsonp的实现</h3><p>从上文可知，jsonp的实现需要客户端代码和服务器端代码共同努力。整体的思路如下图：<br><img src="http://upload-images.jianshu.io/upload_images/3967512-4a0c232f37c44707.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png" loading="lazy" referrerpolicy="no-referrer"></p>
+<p>script标签不受跨域资源请求的影响，可以通过增加callback参数将回调函数传递，与服务器端配合从而在资源加载之后执行该回调函数,客户端关键部分写法如下：</p>
+<pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>测试jsonp<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>用node搭建能够解析jsonp请求的服务器，前端通过script发送jsonp请求，通过回调处理服务器返回的数据<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span>
+<span class="language-javascript">        <span class="hljs-keyword">function</span> <span class="hljs-title function_">test</span>(<span class="hljs-params">data</span>)&#123;</span>
+<span class="language-javascript">            <span class="hljs-title function_">alert</span>(data.<span class="hljs-property">name</span>);</span>
+<span class="language-javascript">        &#125;;</span>
+<span class="language-javascript">    </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+    <span class="hljs-comment">&lt;!-- 将test作为callback参数传递 --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;http://localhost:3000/jsonp?callback=test&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span></code></pre>
+
+<p>在服务器端，需要对script的src进行url解析，将data作为参数放入回调函数中，最后通过res.end(callback(data))中将要执行的函数放入客户端的script中，在客户端对该函数进行执行。<br>服务器端的关键代码如下：</p>
+<pre><code class="hljs js"><span class="hljs-comment">//解析url</span>
+<span class="hljs-keyword">var</span> urlPath = url.<span class="hljs-title function_">parse</span>(req.<span class="hljs-property">url</span>).<span class="hljs-property">pathname</span>;
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(urlPath);
+<span class="hljs-comment">//获取从客户端传递的参数</span>
+<span class="hljs-keyword">var</span> qs = querystring.<span class="hljs-title function_">parse</span>(req.<span class="hljs-property">url</span>.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27;?&#x27;</span>)[<span class="hljs-number">1</span>]);
+<span class="hljs-comment">//约定的url的名称为jsonp</span>
+<span class="hljs-keyword">if</span>(urlPath === <span class="hljs-string">&#x27;/jsonp&#x27;</span> &amp;&amp; qs.<span class="hljs-property">callback</span>)&#123;
+    res.<span class="hljs-title function_">writeHead</span>(<span class="hljs-number">200</span>,&#123;<span class="hljs-string">&#x27;Content-Type&#x27;</span>:<span class="hljs-string">&#x27;application/json;charset=utf-8&#x27;</span>&#125;);
+    <span class="hljs-keyword">var</span> data = &#123;
+        <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Monkey&quot;</span>
+    &#125;;
+    data = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(data);
+    <span class="hljs-keyword">var</span> callback = qs.<span class="hljs-property">callback</span>+<span class="hljs-string">&#x27;(&#x27;</span>+data+<span class="hljs-string">&#x27;);&#x27;</span>;
+    <span class="hljs-comment">//在end中返回callback(data)，写入script中，进而客户端进行该函数的执行</span>
+    res.<span class="hljs-title function_">end</span>(callback);
+&#125;</code></pre>
+
+<p>仓库在<a target="_blank" rel="noopener" href="https://github.com/yuzai/-/tree/master/js_cors/jsonp">这里</a>(仓库中的代码相对复杂一点，不过更加便于演示，具体看仓库中的说明)这里要说明的一点就是，url中”?callback&#x3D;test”的形式其实是不必要的，只需要客户端和服务器端协商一致即可。（这里我在写的时候，其实有一点疑惑：就是为什么把callback(data)传递回去就会在客户端执行？其实是因为客户端是通过script请求的，获取的内容会放在<script></script>中，而res.end(data)中的data就会放到script中，浏览器会自动调用其内部代码执行，从而完成回调函数的执行）。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>jsonp需要服务器端和客户端配合使用，以script标签无’同源’限制的便利来实现跨域资源的共享。<br>优点：解决了跨域资源共享<br>缺点：代码麻烦，需要服务器端和客户端约定好，同时客户端传递数据只能通过url的形式，有长度，安全等限制。<br>jsonp原理其实很简单，学习难度主要在于与服务器端的配合，这篇文章是我学习了node之后的一些想法，如有问题，还请各位指点！</p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ol>
+<li><a target="_blank" rel="noopener" href="http://www.cnblogs.com/giggle/p/5496596.html">借助node实战JSONP跨域</a></li>
+<li><a target="_blank" rel="noopener" href="https://gold.xitu.io/post/5815f4abbf22ec006893b431">前端跨域整理
+</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html">浏览器同源政策及其规避方法</a></li>
+</ol>
+
+        </section>
+        <nav class="post-neighbors">
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/posts/207330c7/">es6实用技巧</a></p>
+          
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/posts/c32510fb/">跨域的解决方案(二)：CORS策略的介绍及实现</a></p>
+          
+        </nav>
+        
+        <section class="post-comments">
+          <script src="https://giscus.app/client.js"
+            data-repo="yuzai/blog-comments"
+            data-repo-id="R_kgDOTReJTg"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOTReJTs4DAwJG"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="light"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous" async></script>
+        </section>
+        
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/index.js?v=1783506963755"></script>
+    <script src="/js/jquery-1.12.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/search.js?v=1783506963755"></script>
+    
+    <script src="/js/general.js?v=1783506963755"></script>
+    
+    <script src="/js/post.js?v=1783506963755"></script>
+    
+    <script src="/js/tag.js?v=1783506963755"></script>
+    
+</body>
+</html>

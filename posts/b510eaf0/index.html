@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    
+    <title>做了一个 Swagger MCP：一些设计取舍 - 芋仔的个人博客</title>
+    <meta name="description" content="我们想试一件事：能不能让 AI 直接通过 Swagger 调用后端接口，按需做数据分析。 理论上是通的——Swagger 里有完整的接口定义，AI 看得懂；拉数据、交叉计算、给出结论这种事 AI 也不缺能力；两边接起来，产品&#x2F;运营想看某个数据、临时排查一次异常、想跨几个接口交叉算一下，直接跟 AI 对话就行，不用提需求等开发拉数。能跑通的话，「临时性数据问题」这种长尾就有机会从开发的工作">
+<meta property="og:type" content="article">
+<meta property="og:title" content="做了一个 Swagger MCP：一些设计取舍">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/posts/b510eaf0/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="我们想试一件事：能不能让 AI 直接通过 Swagger 调用后端接口，按需做数据分析。 理论上是通的——Swagger 里有完整的接口定义，AI 看得懂；拉数据、交叉计算、给出结论这种事 AI 也不缺能力；两边接起来，产品&#x2F;运营想看某个数据、临时排查一次异常、想跨几个接口交叉算一下，直接跟 AI 对话就行，不用提需求等开发拉数。能跑通的话，「临时性数据问题」这种长尾就有机会从开发的工作">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-22T14:04:00.000Z">
+<meta property="article:modified_time" content="2026-07-08T10:35:50.888Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
+    
+    <link rel="canonical" href="https://blog.maxiaobo.com.cn/posts/b510eaf0/">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "做了一个 Swagger MCP：一些设计取舍",
+      "datePublished": "2026-05-22T14:04:00.000Z",
+      "dateModified": "2026-07-08T10:35:50.888Z",
+      "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
+      "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/b510eaf0/",
+      "description": "我们想试一件事：能不能让 AI 直接通过 Swagger 调用后端接口，按需做数据分析。 理论上是通的——Swagger 里有完整的接口定义，AI 看得懂；拉数据、交叉计算、给出结论这种事 AI 也不缺能力；两边接起来，产品&#x2F;运营想看某个数据、临时排查一次异常、想跨几个接口交叉算一下，直接",
+      "inLanguage": "zh-CN"
+    }
+    </script>
+    
+    
+    <link rel="stylesheet" href="/css/atom-one-dark.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963735">
+    <link rel="stylesheet" href="/css/style.css?v=1783506963735">
+
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="site-search-overlay" id="site-search-overlay">
+  <div class="site-search-panel">
+    <input type="text" class="site-search-input" id="site-search-input" placeholder="搜索文章标题和内容…" autocomplete="off">
+    <ul class="site-search-results" id="site-search-results"></ul>
+  </div>
+</div>
+
+<div class="inner-page-shell">
+    <article class="post-reading">
+      
+      
+      <div id="post-toc-widget">
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <div class="post-toc-panel" id="post-toc-panel">
+          <div class="post-toc-head">本文目录</div>
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E9%9B%86%EF%BC%9A%E6%8C%89%E9%9C%80%E6%9F%A5%E8%AF%A2%EF%BC%8C%E4%B8%8D%E5%81%9A%E5%85%A8%E9%87%8F%E6%B3%A8%E5%85%A5"><span class="toc-text">工具集：按需查询，不做全量注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%89%B4%E6%9D%83%EF%BC%9A%E4%BB%8E%E6%89%8B%E5%A1%AB%E5%AF%86%E7%A0%81%E5%88%B0%E5%80%9F%E7%94%A8%E6%88%B7%E7%9A%84%E6%B5%8F%E8%A7%88%E5%99%A8"><span class="toc-text">鉴权：从手填密码到借用户的浏览器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E6%96%87%E6%90%9C%E7%B4%A2%EF%BC%9A2-gram-%E6%BB%91%E7%AA%97-%E5%90%8C%E4%B9%89%E8%AF%8D%E8%BD%AF%E6%89%93%E5%88%86"><span class="toc-text">中文搜索：2-gram 滑窗 + 同义词软打分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%98%E6%B2%A1%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9A%E5%88%86%E5%8F%91"><span class="toc-text">还没解决的问题：分发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%A0%E6%9D%A1%E8%B4%AF%E7%A9%BF%E6%80%A7%E7%9A%84%E5%8E%9F%E5%88%99"><span class="toc-text">几条贯穿性的原则</span></a></li></ol>
+        </div>
+      </div>
+      
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2026-05-22</time><span class="post-eyebrow-sep">·</span>约 3392 字<span class="post-eyebrow-sep">·</span>读完约 8 分钟</p>
+          <h1 class="post-title">做了一个 Swagger MCP：一些设计取舍</h1>
+        </header>
+        <section class="post-content">
+            <p>我们想试一件事：<strong>能不能让 AI 直接通过 Swagger 调用后端接口，按需做数据分析</strong>。</p>
+<p>理论上是通的——Swagger 里有完整的接口定义，AI 看得懂；拉数据、交叉计算、给出结论这种事 AI 也不缺能力；两边接起来，产品&#x2F;运营想看某个数据、临时排查一次异常、想跨几个接口交叉算一下，直接跟 AI 对话就行，不用提需求等开发拉数。能跑通的话，「临时性数据问题」这种长尾就有机会从开发的工作量里剥离出去。</p>
+<p>这是个<strong>探索性实验</strong>，不一定真会落到团队日常用——但要试，就得有个能跑的基础。AI 直接拿 Swagger 调用接口有个前置问题：我们后端两份 Swagger，加起来接口数接近两千，全量 schema 展开有几十万 tokens，全塞进 context 不现实。</p>
+<p>所以先做了一个本地 MCP 服务，把接口检索 + 调用能力封装出来，让 AI 按需取数据。下面记一下这个 MCP 在开发过程中的关键设计取舍。</p>
+<hr>
+<h2 id="工具集：按需查询，不做全量注入"><a href="#工具集：按需查询，不做全量注入" class="headerlink" title="工具集：按需查询，不做全量注入"></a>工具集：按需查询，不做全量注入</h2><p>最初的诱惑是”反正都是 swagger，干脆把所有接口列表塞进 system prompt 里，AI 就能直接看到全貌”。我量化了一下成本：</p>
+<ul>
+<li>全部接口的<strong>目录信息</strong>（method&#x2F;path&#x2F;summary&#x2F;tag 等几个字段）大概是十万 tokens 级别</li>
+<li>全部接口的<strong>完整 schema</strong>（$ref 展开）大概是几十万 tokens 级别</li>
+<li>单个接口平均几百 tokens，长尾的能到几千</li>
+</ul>
+<p>十万 tokens 是个尴尬的数字——主流模型的预算就二十万左右，光接口列表就吃掉一半，剩下的要装调用结果、中间计算、对话历史、思考过程，很快爆掉。</p>
+<p>最后做成了 4 个独立工具，<strong>把每一步显式暴露给模型</strong>，让 AI 自己决定走几步、走哪一步：</p>
+<pre><code class="hljs plaintext">list_services()                  列出有哪些服务
+  ↓
+search_api(&#123; query &#125;)            按关键词检索接口
+  ↓
+get_api(&#123; service, name &#125;)       拿完整 schema
+  ↓
+call_api(&#123; service, name, ... &#125;) 实际调用</code></pre>
+
+<p>不藏在一个万能函数里，是为了让 AI 在每个节点都有判断权：search 出来五六个候选，AI 自己看 summary 和 tag 挑一个；schema 长什么样，AI 自己看；要不要发起调用，AI 自己定。哪一步出错，AI 也能定位是哪一步的问题再重试。</p>
+<p>这样设计下来 AI 每次只为真正要用的那一两个接口付 token 成本，目录从不进 context。</p>
+<p><strong>要强调一下：这不是省钱，是可行性问题</strong>——10 万级别的目录、几十万级别的全量 schema 直接进 context，模型干活的空间就被挤没了。怎么装下接口返回的数据？怎么思考多接口的调用顺序？怎么读用户聊到一半的追问？所以”全量注入”不是更贵的方案，是根本走不通的方案，按需查询是唯一能跑的形态。</p>
+<hr>
+<h2 id="鉴权：从手填密码到借用户的浏览器"><a href="#鉴权：从手填密码到借用户的浏览器" class="headerlink" title="鉴权：从手填密码到借用户的浏览器"></a>鉴权：从手填密码到借用户的浏览器</h2><p>鉴权方案改了三次。</p>
+<p><strong>v0</strong> 是最朴素的：让用户把登录后的 cookie 字符串粘到配置文件。两小时就放弃了——cookie 一过期就要重粘，没有人会忍。</p>
+<p><strong>v1</strong> 想做”MCP 自己登录”：把账号、密码、2FA secret 写进配置，启动时调登录接口拿 cookie。两个问题：</p>
+<ul>
+<li>2FA secret（TOTP 种子）落盘是严重的安全降级</li>
+<li>配置项一多，使用门槛就高，团队推广不动</li>
+</ul>
+<p><strong>v2</strong> 是现在的方案：用 Playwright + 真 Chrome 持久化 profile。</p>
+<pre><code class="hljs ts"><span class="hljs-keyword">const</span> ctx = <span class="hljs-keyword">await</span> chromium.<span class="hljs-title function_">launchPersistentContext</span>(<span class="hljs-variable constant_">USER_DATA_DIR</span>, &#123;
+  <span class="hljs-attr">channel</span>: <span class="hljs-string">&#x27;chrome&#x27;</span>, <span class="hljs-comment">// 用系统装的 Chrome，不下载 Chromium</span>
+  <span class="hljs-attr">headless</span>: <span class="hljs-literal">false</span>, <span class="hljs-comment">// 第一次需要让用户看到弹窗登录</span>
+&#125;)</code></pre>
+
+<p>第一次调接口时弹一个 Chrome 窗口，指向登录页，用户该输密码输密码，该过 2FA 过 2FA。登录完成后 cookie 落到 <code>mcp/.session/</code>，之后所有调用都从这里读 cookie，对 AI 完全无感。</p>
+<p>这个方案的核心是：<strong>把鉴权的复杂性还给用户的浏览器</strong>。我们自己不存任何密钥，不感知 2FA 算法，不写 SSO 客户端。用户的浏览器已经会处理这些事，凭什么我们要重做一遍？</p>
+<hr>
+<h2 id="中文搜索：2-gram-滑窗-同义词软打分"><a href="#中文搜索：2-gram-滑窗-同义词软打分" class="headerlink" title="中文搜索：2-gram 滑窗 + 同义词软打分"></a>中文搜索：2-gram 滑窗 + 同义词软打分</h2><p>搜索是另一个反复迭代的地方。</p>
+<p>第一版用空格&#x2F;标点分词，按 token AND 匹配。然后用户搜某个中文双词组合零结果，搜其中单个词又有一堆。根因很简单：中文没有空格，整串中文被当成一个 token，而 swagger summary 里用的是另一种近义表达，词面对不上。</p>
+<p>加了 <strong>滑窗分词</strong>：四字查询拆成连续的二字片段（比如 <code>AB</code>&#x2F;<code>BC</code>&#x2F;<code>CD</code>），任一命中都加分。打分从硬 AND 改为软加权，召回上来了。</p>
+<p>第二个问题更隐蔽：用户用概念性中文表达查询时命中率低。比如查询动词是中文（”修改”、”查询”），swagger 里用的是英文（<code>update</code>、<code>query</code>），词面没有交集。</p>
+<p>解法是加一份<strong>同义词表</strong>（<code>synonyms.ts</code>），手工维护 CN↔EN 高频映射：</p>
+<pre><code class="hljs ts">&#123;
+  <span class="hljs-string">&#x27;修改&#x27;</span>: [<span class="hljs-string">&#x27;update&#x27;</span>, <span class="hljs-string">&#x27;edit&#x27;</span>, <span class="hljs-string">&#x27;modify&#x27;</span>],
+  <span class="hljs-string">&#x27;查询&#x27;</span>: [<span class="hljs-string">&#x27;query&#x27;</span>, <span class="hljs-string">&#x27;list&#x27;</span>, <span class="hljs-string">&#x27;get&#x27;</span>],
+  <span class="hljs-comment">// ... 业务名词同样维护一份对照</span>
+&#125;</code></pre>
+
+<p>匹配时把查询词通过同义词表扩展，扩展项以 0.6 权重（低于原词）加入 token 池，中文查询就能对上英文。</p>
+<p>中间认真考虑过上 embedding 做向量检索，最后没做。原因是：</p>
+<ul>
+<li>词法 RAG 在我们这个场景已经够用（验证集召回率挺高）</li>
+<li>embedding 引入运行时依赖、向量库、索引重建——维护成本陡增</li>
+<li>同义词表小但覆盖了大多数高频概念</li>
+</ul>
+<hr>
+<h2 id="还没解决的问题：分发"><a href="#还没解决的问题：分发" class="headerlink" title="还没解决的问题：分发"></a>还没解决的问题：分发</h2><p>技术做完了，怎么让别人用上是另一个问题。</p>
+<p>我们的 swagger JSON 是内部接口文档，不想随便外泄。发 npm 包是最丝滑的方式，但 npm 包公开就是公开，包内 JSON 是明文。发私有 npm registry 又要让每个用户配 token，也不是省心的事。</p>
+<p>目前的方案是**保留私有仓库 + 写一个 <code>install.sh</code>**：</p>
+<ol>
+<li>用户 clone 仓库</li>
+<li>跑 <code>./install.sh</code>，脚本检查 bun&#x2F;Chrome，跑 <code>bun install</code>，自动 merge 一份配置到 <code>~/Library/Application Support/Claude/claude_desktop_config.json</code></li>
+<li>重启 Claude Desktop</li>
+</ol>
+<p>私有性靠 GitHub 仓库权限，便捷性靠脚本化弥补。这是个<strong>安全和便捷的妥协</strong>，不优雅但够用。</p>
+<p>如果团队规模再大、需要支持的 IDE 再多，下一步会考虑用 <code>bun build --compile</code> 编译成单文件二进制，swagger JSON embed 进去。这只是”提高泄露门槛”而非真的加密保护，但对内部工具来说够了。</p>
+<p>远程 HTTP MCP 这个选项被早早排除了——我们的鉴权模型是 per-user 弹用户自己的 Chrome 登自己的账号，搬到远程要服务端重新配合，支持 token 的模式，显然是不太好推动的，且在这个试验阶段，折腾的人越少迭代速度越快。</p>
+<hr>
+<h2 id="几条贯穿性的原则"><a href="#几条贯穿性的原则" class="headerlink" title="几条贯穿性的原则"></a>几条贯穿性的原则</h2><p>回头看，决策之间有几条隐式的共同倾向：</p>
+<ol>
+<li><strong>可行性优先</strong>：上下文是硬约束，不是花多花少的问题。按需查询是为了模型还有空间干活——全量注入不是更贵的方案，是走不通的方案。</li>
+<li><strong>成本敏感（在可行性之上）</strong>：可行性满足后，token、启动时间、维护负担都倾向最低方案（词法搜索 &#x2F; 缓存优先 &#x2F; 不上 embedding）。</li>
+<li><strong>不沾敏感数据</strong>：能让用户的浏览器处理鉴权，就不自己存密钥；能用私有仓库分发，就不发公开 npm。少存东西就少出事。</li>
+<li><strong>预计算 &gt; 运行时</strong>：能在加载期算完的（searchFields、同义词扩展），运行时只做匹配。</li>
+</ol>
+<p>最后想说的是：<strong>做探索性工具最容易犯的错是过度工程化</strong>。同义词表手工维护一份不优雅，但跑得起来；脚本化分发不优雅，但用户接受。这些”不优雅”加起来，是一个能稳定跑下来不出故障的实验底座。</p>
+<p>至于”AI 直接调后端做数据分析”这个原始命题成不成立，要看后面真的跑场景才知道。但即便最后不走这条路，这一路上对鉴权、搜索、token 经济的取舍是攒下来了的——探索本身就有这个价值。</p>
+
+        </section>
+        <nav class="post-neighbors">
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/posts/928ad934/">我的大脑不下班：一个前端工程师的工作反刍自救指南</a></p>
+          
+          
+            <p class="post-neighbor-item is-empty"><span class="post-neighbor-label">下一篇</span><span>没有了</span></p>
+          
+        </nav>
+        
+        <section class="post-comments">
+          <script src="https://giscus.app/client.js"
+            data-repo="yuzai/blog-comments"
+            data-repo-id="R_kgDOTReJTg"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOTReJTs4DAwJG"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="light"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous" async></script>
+        </section>
+        
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/index.js?v=1783506963735"></script>
+    <script src="/js/jquery-1.12.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/search.js?v=1783506963735"></script>
+    
+    <script src="/js/general.js?v=1783506963735"></script>
+    
+    <script src="/js/post.js?v=1783506963735"></script>
+    
+    <script src="/js/tag.js?v=1783506963735"></script>
+    
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    
+    <title>最简Rxjs入门教程--别再被Rxjs的概念淹没了 - 芋仔的个人博客</title>
+    <meta name="description" content="最近一直在学习Rxjs，在学习过程中，踩了不少坑，也发现网上的文章都或多或少存在些问题，要么是内容过时了（现在已经Rxjs6），要么就是上来就讲原理（让我一脸懵逼），要么就是讲的不清楚，感觉踩了非常多的坑，学习曲线相对比较陡峭。理解基本概念之后再回头来看，其实并不难理解，但是确实走了很多弯路，所以整理下，同为打工人，能少踩点坑就少踩点坑把。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最简Rxjs入门教程--别再被Rxjs的概念淹没了">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/posts/852cd279/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="最近一直在学习Rxjs，在学习过程中，踩了不少坑，也发现网上的文章都或多或少存在些问题，要么是内容过时了（现在已经Rxjs6），要么就是上来就讲原理（让我一脸懵逼），要么就是讲的不清楚，感觉踩了非常多的坑，学习曲线相对比较陡峭。理解基本概念之后再回头来看，其实并不难理解，但是确实走了很多弯路，所以整理下，同为打工人，能少踩点坑就少踩点坑把。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gu2lwnx6sij30yg07xt95.jpg">
+<meta property="article:published_time" content="2020-11-05T15:20:00.000Z">
+<meta property="article:modified_time" content="2026-07-08T10:35:50.890Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gu2lwnx6sij30yg07xt95.jpg">
+    
+    <link rel="canonical" href="https://blog.maxiaobo.com.cn/posts/852cd279/">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "最简Rxjs入门教程--别再被Rxjs的概念淹没了",
+      "datePublished": "2020-11-05T15:20:00.000Z",
+      "dateModified": "2026-07-08T10:35:50.890Z",
+      "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
+      "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/852cd279/",
+      "description": "最近一直在学习Rxjs，在学习过程中，踩了不少坑，也发现网上的文章都或多或少存在些问题，要么是内容过时了（现在已经Rxjs6），要么就是上来就讲原理（让我一脸懵逼），要么就是讲的不清楚，感觉踩了非常多的坑，学习曲线相对比较陡峭。理解基本概念之后再回头来看，其实并不难理解，但是确实走了很多弯路，所以整",
+      "inLanguage": "zh-CN"
+    }
+    </script>
+    
+    
+    <link rel="stylesheet" href="/css/atom-one-dark.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963752">
+    <link rel="stylesheet" href="/css/style.css?v=1783506963752">
+
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="site-search-overlay" id="site-search-overlay">
+  <div class="site-search-panel">
+    <input type="text" class="site-search-input" id="site-search-input" placeholder="搜索文章标题和内容…" autocomplete="off">
+    <ul class="site-search-results" id="site-search-results"></ul>
+  </div>
+</div>
+
+<div class="inner-page-shell">
+    <article class="post-reading">
+      
+      
+      <div id="post-toc-widget">
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <div class="post-toc-panel" id="post-toc-panel">
+          <div class="post-toc-head">本文目录</div>
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%A6%E4%B9%A0%E5%A7%BF%E5%8A%BF"><span class="toc-text">学习姿势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9D%91%E7%82%B9%E9%A2%84%E8%AD%A6"><span class="toc-text">坑点预警</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Rxjs%E4%BB%8B%E7%BB%8D"><span class="toc-text">Rxjs介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%90%86%E8%A7%A3%E5%9F%BA%E6%9C%AC%E5%AE%9A%E4%B9%89-observable-observer-subscription"><span class="toc-text">理解基本定义: observable, observer, subscription</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Subject"><span class="toc-text">Subject</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li></ol>
+        </div>
+      </div>
+      
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2020-11-05</time><span class="post-eyebrow-sep">·</span>约 6713 字<span class="post-eyebrow-sep">·</span>读完约 17 分钟</p>
+          <h1 class="post-title">最简Rxjs入门教程--别再被Rxjs的概念淹没了</h1>
+        </header>
+        <section class="post-content">
+            <p>最近一直在学习Rxjs，在学习过程中，踩了不少坑，也发现网上的文章都或多或少存在些问题，要么是内容过时了（现在已经Rxjs6），要么就是上来就讲原理（让我一脸懵逼），要么就是讲的不清楚，感觉踩了非常多的坑，学习曲线相对比较陡峭。理解基本概念之后再回头来看，其实并不难理解，但是确实走了很多弯路，所以整理下，同为打工人，能少踩点坑就少踩点坑把。</p>
+<span id="more"></span>
+
+<h2 id="学习姿势"><a href="#学习姿势" class="headerlink" title="学习姿势"></a>学习姿势</h2><p>在我学习的时候，主要就是看官方文档，对一些含糊的地方，没来得及及时验证，导致半懂不懂，遇到实际文档需要反复查看。</p>
+<p>最好的方法，就是边看边写，强烈推荐通过 <a target="_blank" rel="noopener" href="https://stackblitz.com/">https://stackblitz.com/</a> 中的Rxjs模版创建一个基础的版本，非常方便。下文的实例均是在此环境中运行。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gu2lwnx6sij30yg07xt95.jpg" alt="Rxjs模版构建.png" loading="lazy" referrerpolicy="no-referrer"></p>
+<h2 id="坑点预警"><a href="#坑点预警" class="headerlink" title="坑点预警"></a>坑点预警</h2><ol>
+<li><p>很多文章，会一上来就扯发布订阅、观察者模式，迭代器模式，增加学习成本也罢，关键是在实际学习中，总是想着这两个模式，反而会带来更高的理解成本。一个新玩意，你可能都还不会用，就开始尝试理解原理了，这怎么都讲不通。</p>
+</li>
+<li><p>一个更常见的误解是认为 Rxjs 就是 addEventListener 那样的订阅者模式，subscribe 这个方法名也很有误导性。碰到subscribe，抛开脑子里的发布订阅，看实例，理解其本质即可，不要纠结于叫法。这一点让我久久不能入门，其实这时候，抛开已有知识，直接去学习新知识，才是最佳的方法。</p>
+</li>
+<li><p>官网文档中提到了非常多的难以理解的概念，会着重将设计思路，什么pull， push，相信我，这些等你真正用了之后，再回过头来看，一目了然，但是一开始要是陷进去了，那就难过了</p>
+</li>
+<li><p>纠结在操作符上，Rxjs可以看作是流的lodash库，总不能一开始就看懂lodash里面的所有方法吧，所以不要纠结在操作符上，遇到了，查一下，看一看理解了就好</p>
+</li>
+</ol>
+<p>以上就是比较坑的点，在后续的学习中把避免这些坑，能少走很多弯路。</p>
+<h2 id="Rxjs介绍"><a href="#Rxjs介绍" class="headerlink" title="Rxjs介绍"></a>Rxjs介绍</h2><p>Rxjs官方是这样说的: Think of RxJS as Lodash for events. 把Rxjs想像成针对events的lodash，也就是说，Rxjs本质是个工具库，处理的是事件。这里的events，可以称之为流。</p>
+<p>那么流是指什么呢？举个例子，代码中每1s输出一个数字，用户每一次对元素的点击，就像是在时间这个维度上，产生了一个数据集。这个数据集不像数组那样，它不是一开始都存在的，而是随着时间的流逝，一个一个数据被输出出来。这种异步行为产生的数据，就可以被称之为一个流，在Rxjs中，称之为ovservalbe（抛开英文，本质其实就是一个数据的集合，只是这些数据不一定是一开始就设定好的，而是随着时间而不断产生的）。而Rxjs，就是为了处理这种流而产生的工具，比如流与流的合并，流的截断，延迟，消抖等等操作。</p>
+<h3 id="理解基本定义-observable-observer-subscription"><a href="#理解基本定义-observable-observer-subscription" class="headerlink" title="理解基本定义: observable, observer, subscription"></a>理解基本定义: observable, observer, subscription</h3><p>可以通过如下的方式构建一个最基础的流，500ms时输出一个数组[1,2,3]，1s时输出一个对象{a: 1000}， 3s时，输出’end’， 然后在第4s终止该流。</p>
+<pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Observable</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;rxjs&quot;</span>;
+
+<span class="hljs-comment">// stream$尾部的$是表示当前这个变量是个ovservable</span>
+<span class="hljs-keyword">const</span> stream$ = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Observable</span>(<span class="hljs-function"><span class="hljs-params">subscriber</span> =&gt;</span> &#123;
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">next</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]);
+  &#125;, <span class="hljs-number">500</span>);
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">next</span>(&#123; <span class="hljs-attr">a</span>: <span class="hljs-number">1000</span> &#125;);
+  &#125;, <span class="hljs-number">1000</span>);
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">next</span>(<span class="hljs-string">&quot;end&quot;</span>);
+  &#125;, <span class="hljs-number">3000</span>);
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">complete</span>();
+  &#125;, <span class="hljs-number">4000</span>);
+&#125;);
+
+<span class="hljs-comment">// 启动流</span>
+<span class="hljs-keyword">const</span> subscription = stream$.<span class="hljs-title function_">subscribe</span>(&#123;
+  <span class="hljs-attr">complete</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;done&quot;</span>),
+  <span class="hljs-attr">next</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(v),
+  <span class="hljs-attr">error</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;error&quot;</span>)
+&#125;);
+<span class="hljs-comment">// output</span>
+<span class="hljs-comment">// [1,2,3]  // 500ms时</span>
+<span class="hljs-comment">// &#123;a:1000&#125; // 1000ms时</span>
+<span class="hljs-comment">// end // 3000ms时</span>
+<span class="hljs-comment">// done // 4000ms时</span></code></pre>
+
+<p>在上述的代码中，通过<code>new Observalbe(fn)</code>定义了一个流，又通过<code>stream$.subscribe(obj)</code>启动了这个流，当500ms后，执行了&#96;&#96;&#96;&#96;subsciber.next([1,2,3])<code>，此时，通过传入的</code>obj.next&#96;&#96;&#96;方法输出了该值。</p>
+<p>这里有几个点：</p>
+<ol>
+<li>subscribe不是订阅，而是启动这个流，可以看到，subscribe后，才会执行next方法</li>
+<li>构建observable的时候，会有一个subscriber.next，这里就是控制这个流中数据的输出。</li>
+</ol>
+<p>这里还有几个问题：</p>
+<ol>
+<li>能不能多次启动流，如果可以，那么多次启动时，相互之间的输出会不会干扰？</li>
+<li>既然有了启动流，那么能不能关闭流？</li>
+</ol>
+<p>对于第一个问题，先上答案，可以多次启动，多次启动的流之间是相互独立的。可以通过下面这个例子验证：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Observable</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;rxjs&quot;</span>;
+<span class="hljs-comment">// 记录时间</span>
+<span class="hljs-keyword">const</span> now = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>();
+
+<span class="hljs-comment">// 创建流</span>
+<span class="hljs-keyword">const</span> stream$ = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Observable</span>(<span class="hljs-function"><span class="hljs-params">subscriber</span> =&gt;</span> &#123;
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">next</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]);
+  &#125;, <span class="hljs-number">500</span>);
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">next</span>(&#123; <span class="hljs-attr">a</span>: <span class="hljs-number">1000</span> &#125;);
+  &#125;, <span class="hljs-number">1000</span>);
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">next</span>(<span class="hljs-string">&quot;end&quot;</span>);
+  &#125;, <span class="hljs-number">3000</span>);
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">complete</span>();
+  &#125;, <span class="hljs-number">4000</span>);
+&#125;);
+
+<span class="hljs-comment">// 启动流</span>
+<span class="hljs-keyword">const</span> subscription1 = stream$.<span class="hljs-title function_">subscribe</span>(&#123;
+  <span class="hljs-attr">complete</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;done&quot;</span>),
+  <span class="hljs-attr">next</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>() - now, <span class="hljs-string">&quot;ms stream1&quot;</span>, v),
+  <span class="hljs-attr">error</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;error&quot;</span>)
+&#125;);
+
+<span class="hljs-comment">//  延时1s后，启动流</span>
+<span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+  <span class="hljs-keyword">const</span> subscription2 = stream$.<span class="hljs-title function_">subscribe</span>(&#123;
+    <span class="hljs-attr">next</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>() - now, <span class="hljs-string">&quot;ms stream2&quot;</span>, v)
+  &#125;);
+&#125;, <span class="hljs-number">1000</span>);
+
+<span class="hljs-comment">// output</span>
+<span class="hljs-comment">// 506ms stream1 [1, 2, 3]</span>
+<span class="hljs-comment">// 1002ms stream1 &#123;a: 1000&#125;</span>
+<span class="hljs-comment">// 1505ms stream2 [1, 2, 3]</span>
+<span class="hljs-comment">// 2009ms stream2 &#123;a: 1000&#125;</span>
+<span class="hljs-comment">// 3002ms stream1 end</span>
+<span class="hljs-comment">// done</span>
+<span class="hljs-comment">// 4006ms stream 2 end</span></code></pre>
+
+<p>上面这个例子在最初启动了流1，延时1s后启动了流2，可以从输出看到，两个流的输出其实是相互独立的，而实际上也是这样设计的，流与流相互独立，互不干扰。</p>
+<p>对于问题2，看到上述的写法应该能猜到，stream$.subscribe()的返回值subscription上存在一个方法unsubscribe，可以将流停止。演示代码如下：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Observable</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;rxjs&quot;</span>;
+
+<span class="hljs-keyword">const</span> now = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>();
+
+<span class="hljs-keyword">const</span> stream$ = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Observable</span>(<span class="hljs-function"><span class="hljs-params">subscriber</span> =&gt;</span> &#123;
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">next</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]);
+  &#125;, <span class="hljs-number">500</span>);
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">next</span>(&#123; <span class="hljs-attr">a</span>: <span class="hljs-number">1000</span> &#125;);
+  &#125;, <span class="hljs-number">1000</span>);
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">next</span>(<span class="hljs-string">&quot;end&quot;</span>);
+  &#125;, <span class="hljs-number">3000</span>);
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">complete</span>();
+  &#125;, <span class="hljs-number">4000</span>);
+&#125;);
+
+<span class="hljs-comment">// 启动流</span>
+<span class="hljs-keyword">const</span> subscription = stream$.<span class="hljs-title function_">subscribe</span>(&#123;
+  <span class="hljs-attr">complete</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;done&quot;</span>),
+  <span class="hljs-attr">next</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(v),
+  <span class="hljs-attr">error</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;error&quot;</span>)
+&#125;);
+
+<span class="hljs-comment">// 1s后，关闭流</span>
+<span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+  subscription.<span class="hljs-title function_">unsubscribe</span>();
+&#125;, <span class="hljs-number">1000</span>);
+<span class="hljs-comment">// output </span>
+<span class="hljs-comment">// [1,2,3]  // 500ms时</span>
+<span class="hljs-comment">// &#123;a: 1000&#125; // 1000ms时</span></code></pre>
+
+<p>上述代码在1000ms时，执行了<code>subscription.unsubscribe()</code>，从而终止了该启动中的流，后续的输出都不会触发next函数，但是这并不意味着后续3000ms定时器，和4000ms定时器的解除，该定时器的回调依旧会执行，只是因为流已经关闭，不会执行next的回调。</p>
+<p>以上，就是一个流的创建，启动和停止。在这里面，有好几个变量，重新整理下代码，如下：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Observable</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;rxjs&quot;</span>;
+
+<span class="hljs-comment">// 流的创建</span>
+<span class="hljs-keyword">const</span> stream$ = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Observable</span>(<span class="hljs-function"><span class="hljs-params">subscriber</span> =&gt;</span> &#123;
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    subscriber.<span class="hljs-title function_">next</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]);
+  &#125;, <span class="hljs-number">500</span>);
+&#125;);
+
+<span class="hljs-comment">// 如何消费流产生的数据，observer</span>
+<span class="hljs-keyword">const</span> observer = &#123;
+  <span class="hljs-attr">complete</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;done&quot;</span>),
+  <span class="hljs-attr">next</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(v),
+  <span class="hljs-attr">error</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;error&quot;</span>)
+&#125;;
+
+<span class="hljs-comment">// 启动流</span>
+<span class="hljs-keyword">const</span> subscription = stream$.<span class="hljs-title function_">subscribe</span>(observer);
+
+<span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+  <span class="hljs-comment">// 停止流</span>
+  subscription.<span class="hljs-title function_">unsubscribe</span>();
+&#125;, <span class="hljs-number">1000</span>);</code></pre>
+
+<p>上述过程中，涉及到了3个变量</p>
+<ol>
+<li><code>stream$</code>, 对应到Rxjs中，就是一个observable，单纯从英文翻译到中文的含义来看，基本很难理解。但是它的本质其实就是一个随时间不断产生数据的一个集合，称之为流更容易理解。而其对象存在一个subscribe方法，调用该方法后，才会启动这个流（也就是数据才会开始产生），这里需要注意的是多次启动的每一个流都是独立的，互不干扰。</li>
+<li><code>observer</code>，代码中是<code>stream$.subscribe(observer)</code>，对应到Rxjs中，也是称之为observer，从英文翻译到中文的含义来看，也很难理解。从行为上来看，无非就是定义了如何处理上述流产生的数据，称之为流的处理方法，更容易理解</li>
+<li><code>subscription</code>，也就是<code>const subscription = stream$.subscribe(observer);</code>，这里对应到Rxjs，英文也是称之为subscription，翻译过来是订阅，也是比较难以理解，其实它的本质就是暂存了一个启动后的流，之前提到，每一个启动后的流都是相互独立的，而这个启动后的流，就存储在subscription中，提供了unsubscribe，来停止这个流。</li>
+</ol>
+<p>简单理解了这三个名词<code>observable, observer, subscription</code>后，从数据的角度来思考：observable定义了要生成一个什么样的数据，其subscribe方法，接收一个observer（定义了接收到数据如何处理），并开始产生数据，该方法的返回值，subscription, 存储了这个已经开启的流（暂时没想到啥好的中文名），同事具有unscbscribe方法，可以将这个流停止。整理成下面这个公式：</p>
+<blockquote>
+<p>Subscription &#x3D; Observable.subscribe(observer)<br>observable: 随着时间产生的数据集合，可以理解为流，其subscribe方法可以启动该流<br>observer: 决定如何处理数据<br>subscription: 存储已经启动过的流，其unsubscribe方法可以停止该流</p>
+</blockquote>
+<h3 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h3><p>操作符对于Rxjs可以说是非常重要，但是对于初学者，可以先不沉浸于理解一个一个的操作符，先理解上文的概念更为重要，故这里不做详细的介绍，在实战中遇到了去官网查即可。</p>
+<h3 id="Subject"><a href="#Subject" class="headerlink" title="Subject"></a>Subject</h3><p>Subject也是Rxjs中比较重要的概念，从英文上不太好理解，直接上代码：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Subject</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;rxjs&quot;</span>;
+
+<span class="hljs-comment">// 创建subject</span>
+<span class="hljs-keyword">const</span> subject = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Subject</span>();
+
+<span class="hljs-comment">// 订阅一个observer</span>
+subject.<span class="hljs-title function_">subscribe</span>(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;stream 1&quot;</span>, v));
+<span class="hljs-comment">// 再订阅一个observer</span>
+subject.<span class="hljs-title function_">subscribe</span>(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;stream 2&quot;</span>, v));
+<span class="hljs-comment">// 延时1s再订阅一个observer</span>
+<span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+  subject.<span class="hljs-title function_">subscribe</span>(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;stream 3&quot;</span>, v));
+&#125;, <span class="hljs-number">1000</span>);
+<span class="hljs-comment">// 产生数据1</span>
+subject.<span class="hljs-title function_">next</span>(<span class="hljs-number">1</span>);
+<span class="hljs-comment">// 产生数据2</span>
+subject.<span class="hljs-title function_">next</span>(<span class="hljs-number">2</span>);
+<span class="hljs-comment">// 延时3s产生数据3</span>
+<span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+  subject.<span class="hljs-title function_">next</span>(<span class="hljs-number">3</span>);
+&#125;, <span class="hljs-number">3000</span>);
+<span class="hljs-comment">// output</span>
+<span class="hljs-comment">// stream 1 1 //立即输出</span>
+<span class="hljs-comment">// stream 2 1 //立即输出</span>
+<span class="hljs-comment">// stream 1 2 //立即输出</span>
+<span class="hljs-comment">// stream 2 2 //立即输出</span>
+<span class="hljs-comment">// stream 1 3 //3s后输出</span>
+<span class="hljs-comment">// stream 2 3 //3s后输出</span>
+<span class="hljs-comment">// stream 3 3 //3s后输出</span></code></pre>
+
+<p>可以看到，Subject的行为和发布订阅模式非常接近，subscribe去订阅，next触发。事件的订阅通过subscribe，事件的触发使用next，从而实现一个发布订阅的模式。可以说，笔者本人是看到这个Subject，终于和已有的知识体系打通，之后才重新阅读官方文档，才算是弄懂了点皮毛。当然，subject还有别的用法，此处不再详细介绍</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>讲了这么多，其实整个Rxjs的内容还非常多，本文的初衷只是坑点记录，帮助未入门的同学更快把握到精髓，在看官网的文档前读一读，比起上来就理解几个英文概念，能少走不少弯路。流启动、流的停止等都是笔者个人的理解，并非统一的叫法，仅仅是方便理解而起的，不要太过在意。</p>
+<p>本人也还在学习中，共勉。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.crimx.com/2018/02/16/understanding-rxjs/">https://blog.crimx.com/2018/02/16/understanding-rxjs/</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.jerry-hong.com/series/rxjs/">https://blog.jerry-hong.com/series/rxjs/</a></li>
+</ol>
+
+        </section>
+        <nav class="post-neighbors">
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/posts/831a775/">vscode是如何找到xxx.jsx的：vscode点击无法跳转jsx定义</a></p>
+          
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/posts/53270427/">极简webpack插件：彻底解决vscode点击无法跳转问题</a></p>
+          
+        </nav>
+        
+        <section class="post-comments">
+          <script src="https://giscus.app/client.js"
+            data-repo="yuzai/blog-comments"
+            data-repo-id="R_kgDOTReJTg"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOTReJTs4DAwJG"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="light"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous" async></script>
+        </section>
+        
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/index.js?v=1783506963752"></script>
+    <script src="/js/jquery-1.12.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/search.js?v=1783506963752"></script>
+    
+    <script src="/js/general.js?v=1783506963752"></script>
+    
+    <script src="/js/post.js?v=1783506963752"></script>
+    
+    <script src="/js/tag.js?v=1783506963752"></script>
+    
+</body>
+</html>

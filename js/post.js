@@ -53,6 +53,60 @@ $('#post-toc-panel .toc-link').click(function(){
 $(document).click(function(){
   closeTocPanel();
 });
+
+// 代码块复制按钮
+$('.post-content pre').each(function(){
+  $(this).append('<button type="button" class="code-copy-btn">复制</button>');
+});
+$(document).on('click', '.code-copy-btn', function(){
+  var btn = $(this);
+  var text = btn.parent().find('code').text();
+  function done(){
+    btn.text('已复制');
+    setTimeout(function(){ btn.text('复制'); }, 1500);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done);
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    done();
+  }
+});
+
+// 阅读进度条
+var progressBar = $('<div class="reading-progress"></div>').appendTo('body');
+function updateProgress(){
+  var docH = document.documentElement.scrollHeight - window.innerHeight;
+  var pct = docH > 0 ? (window.pageYOffset / docH) * 100 : 0;
+  progressBar.css('width', pct + '%');
+}
+$(window).on('scroll resize', updateProgress);
+updateProgress();
+
+// 目录高亮当前章节
+var tocLinks = $('.post-toc-panel .toc-link');
+var tocHeadings = $('.post-content').find('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+function updateActiveToc(){
+  if(!tocLinks.length || !tocHeadings.length) return;
+  var line = $(window).scrollTop() + 120;
+  var currentId = null;
+  tocHeadings.each(function(){
+    if($(this).offset().top <= line) currentId = this.id;
+  });
+  tocLinks.removeClass('is-active');
+  if(currentId){
+    tocLinks.filter(function(){
+      return decodeURIComponent(this.hash || '').slice(1) === currentId;
+    }).addClass('is-active');
+  }
+}
+$(window).on('scroll', updateActiveToc);
+updateActiveToc();
 // <div class="pagination">
 //   <p><%- paginator({ total: Math.ceil(site.posts.length / config.per_page)}) %></p>
 // </div>

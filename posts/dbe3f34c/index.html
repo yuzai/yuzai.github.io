@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    
+    <title>面试官：用过 redux 是吧？要不手写一个？ - 芋仔的个人博客</title>
+    <meta name="description" content="前一段时间一直在面试，因为做过状态管理相关的事情，所以在聊到 redux 时，提到了一行代码实现 redux，所以就有了后续的问题： 能一行代码实现下 redux 吗？能再实现下 redux 的中间件吗？能说说怎么支持异步吗？能让普通函数也享受下中间件吗？ 由于 redux 也确实是比较久远但是经典的库了，事后我趁此机会也算是好好回顾了一下 redux，也发现了其中的一些优秀设计，故有了本篇文章。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面试官：用过 redux 是吧？要不手写一个？">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/posts/dbe3f34c/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="前一段时间一直在面试，因为做过状态管理相关的事情，所以在聊到 redux 时，提到了一行代码实现 redux，所以就有了后续的问题： 能一行代码实现下 redux 吗？能再实现下 redux 的中间件吗？能说说怎么支持异步吗？能让普通函数也享受下中间件吗？ 由于 redux 也确实是比较久远但是经典的库了，事后我趁此机会也算是好好回顾了一下 redux，也发现了其中的一些优秀设计，故有了本篇文章。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-06-06T18:40:00.000Z">
+<meta property="article:modified_time" content="2026-07-08T10:35:50.892Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
+    
+    <link rel="canonical" href="https://blog.maxiaobo.com.cn/posts/dbe3f34c/">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "面试官：用过 redux 是吧？要不手写一个？",
+      "datePublished": "2023-06-06T18:40:00.000Z",
+      "dateModified": "2026-07-08T10:35:50.892Z",
+      "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
+      "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/dbe3f34c/",
+      "description": "前一段时间一直在面试，因为做过状态管理相关的事情，所以在聊到 redux 时，提到了一行代码实现 redux，所以就有了后续的问题： 能一行代码实现下 redux 吗？能再实现下 redux 的中间件吗？能说说怎么支持异步吗？能让普通函数也享受下中间件吗？ 由于 redux 也确实是比较久远但是经典",
+      "inLanguage": "zh-CN"
+    }
+    </script>
+    
+    
+    <link rel="stylesheet" href="/css/atom-one-dark.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963749">
+    <link rel="stylesheet" href="/css/style.css?v=1783506963749">
+
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="site-search-overlay" id="site-search-overlay">
+  <div class="site-search-panel">
+    <input type="text" class="site-search-input" id="site-search-input" placeholder="搜索文章标题和内容…" autocomplete="off">
+    <ul class="site-search-results" id="site-search-results"></ul>
+  </div>
+</div>
+
+<div class="inner-page-shell">
+    <article class="post-reading">
+      
+      
+      <div id="post-toc-widget">
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <div class="post-toc-panel" id="post-toc-panel">
+          <div class="post-toc-head">本文目录</div>
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E4%B8%8B-redux"><span class="toc-text">一行代码实现下 redux</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%8D%E5%AE%9E%E7%8E%B0%E4%B8%8B%E4%B8%AD%E9%97%B4%E4%BB%B6%EF%BC%9F"><span class="toc-text">再实现下中间件？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%84%E5%86%99%E6%B3%95%EF%BC%8C%E5%A4%8D%E5%86%99-store-dispatch"><span class="toc-text">常规写法，复写 store.dispatch</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%BB%E9%99%A4%E5%A4%8D%E5%86%99%E7%9A%84%E4%B8%8D%E7%BA%AF"><span class="toc-text">去除复写的不纯</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9C%9F%E6%AD%A3-redux-%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-text">真正 redux 的实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%BD%E5%86%8D%E6%94%AF%E6%8C%81%E4%B8%8B%E5%BC%82%E6%AD%A5%E5%90%97%EF%BC%9F"><span class="toc-text">能再支持下异步吗？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%BD%E8%AE%A9%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E4%B9%9F%E7%94%A8%E4%B8%8A%E4%B8%AD%E9%97%B4%E4%BB%B6%E5%90%97%EF%BC%9F"><span class="toc-text">能让普通函数也用上中间件吗？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9D%9F"><span class="toc-text">结束</span></a></li></ol>
+        </div>
+      </div>
+      
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2023-06-06</time><span class="post-eyebrow-sep">·</span>约 10197 字<span class="post-eyebrow-sep">·</span>读完约 25 分钟</p>
+          <h1 class="post-title">面试官：用过 redux 是吧？要不手写一个？</h1>
+        </header>
+        <section class="post-content">
+            <p>前一段时间一直在面试，因为做过状态管理相关的事情，所以在聊到 redux 时，提到了一行代码实现 redux，所以就有了后续的问题：</p>
+<p>能一行代码实现下 redux 吗？<br>能再实现下 redux 的中间件吗？<br>能说说怎么支持异步吗？<br>能让普通函数也享受下中间件吗？</p>
+<p>由于 redux 也确实是比较久远但是经典的库了，事后我趁此机会也算是好好回顾了一下 redux，也发现了其中的一些优秀设计，故有了本篇文章。</p>
+<span id="more"></span>
+
+<p>注：本文不会过多介绍 redux 的使用和 api，而是围绕这次面试的问题，一步步进行完善给出 redux实现, 中间件的实现。并在此基础上进行扩展，用 redux 的中间件思路对普通函数包装，使其洋葱模型也可用在普通函数中。</p>
+<h2 id="一行代码实现下-redux"><a href="#一行代码实现下-redux" class="headerlink" title="一行代码实现下 redux"></a>一行代码实现下 redux</h2><p>关于 redux，现代的论调更多的是：一行代码就能实现的库，redux 却写出了非常玄学的文档。</p>
+<p>抛开论调不讨论，真的能一行代码实现吗？</p>
+<p>能，但是功能不全。</p>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">createStore</span> = (<span class="hljs-params">reducer, state</span>) =&gt; (&#123;
+    <span class="hljs-attr">getState</span>: <span class="hljs-function">() =&gt;</span> state,
+    <span class="hljs-attr">dispatch</span>: <span class="hljs-function">(<span class="hljs-params">action</span>) =&gt;</span> state = <span class="hljs-title function_">reducer</span>(state, action),
+&#125;)</code></pre>
+
+<p>上述就是网上流传的一行代码加入了换行之后的样子。</p>
+<p>本质上提供了一个获取 state 的方法，getState，以及修改 state 的方法，dispatch。并在 dispatch 中，调用 reducer 并使用返回值更新 state。</p>
+<p>可以说，麻雀虽小，但是确实五脏俱全了。</p>
+<p>但是从功能上讲，欠缺了订阅这一必不可少的环节，毕竟要触发 react 或者其他框架更新的话，订阅是必要环节。</p>
+<p>不过实现一个订阅也是非常简单的，只是一行代码的话，确实不行，加入了订阅之后的代码如下：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">createStore</span> = (<span class="hljs-params">reducer, state</span>) =&gt; &#123;
+    <span class="hljs-keyword">const</span> listeners = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Set</span>();
+    <span class="hljs-keyword">return</span> &#123;
+        <span class="hljs-attr">getState</span>: <span class="hljs-function">() =&gt;</span> state,
+        <span class="hljs-attr">dispatch</span>: <span class="hljs-function">(<span class="hljs-params">action</span>) =&gt;</span> &#123;
+            <span class="hljs-keyword">const</span> preState = state;
+            state = <span class="hljs-title function_">reducer</span>(state, action);
+            listeners.<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">listener</span>) =&gt;</span> <span class="hljs-title function_">listener</span>(preState, state));
+        &#125;,
+        <span class="hljs-attr">subscribe</span>: <span class="hljs-function">(<span class="hljs-params">listener</span>) =&gt;</span> &#123;
+            listeners.<span class="hljs-title function_">add</span>(listener);
+            <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> listeners.<span class="hljs-title function_">delete</span>(listener);
+        &#125;
+    &#125;
+&#125;;</code></pre>
+
+<p>这里借助了 set 非常轻便的实现了订阅。</p>
+<h2 id="再实现下中间件？"><a href="#再实现下中间件？" class="headerlink" title="再实现下中间件？"></a>再实现下中间件？</h2><p>中间件的思想还是很优秀的，洋葱模型的加入，使得用户可以非常方便的在调用 dispatch 函数前后插入很多的通用代码，这在状态管理中是非常实在的，比如 打日志，持久化缓存等功能上。</p>
+<h3 id="常规写法，复写-store-dispatch"><a href="#常规写法，复写-store-dispatch" class="headerlink" title="常规写法，复写 store.dispatch"></a>常规写法，复写 store.dispatch</h3><p>如果抛开 redux 的实现，其实很多库包括我们日常的代码，都会有类似的实现，就是函数的复写。</p>
+<p>比如 vconsole，就会对 全局的 console 进行复写，伪代码如下：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">vConsole</span>(<span class="hljs-params"></span>) &#123;
+    <span class="hljs-keyword">const</span> originConsoleLog = <span class="hljs-variable language_">window</span>.<span class="hljs-property">console</span>.<span class="hljs-property">log</span>;
+    <span class="hljs-variable language_">window</span>.<span class="hljs-property">console</span>.<span class="hljs-property">log</span> = <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span> &#123;
+        <span class="hljs-comment">/* 执行前的钩子 */</span>
+        <span class="hljs-comment">// do something</span>
+        <span class="hljs-comment">// 执行原本 console 的逻辑</span>
+        <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">originConsoleLog</span>(...args);
+        <span class="hljs-comment">/* 结束后的钩子 */</span>
+        <span class="hljs-comment">// do something</span>
+        
+        <span class="hljs-comment">// 原封不动返回原函数的返回值</span>
+        <span class="hljs-keyword">return</span> res;
+    &#125;
+&#125;</code></pre>
+
+<p>一个非常常见的方法，参考这个方法，想要在 dispatch 前后打印日志，可以非常简单的写出如下代码：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">loggerMiddware</span> = (<span class="hljs-params">store</span>) =&gt; &#123;
+    <span class="hljs-keyword">const</span> originDispatch = store.<span class="hljs-property">dispatch</span>;
+    store.<span class="hljs-property">dispatch</span> = <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span> &#123;
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;before dispatch&#x27;</span>, store.<span class="hljs-title function_">getState</span>());
+        <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">originDispatch</span>(...args);
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;after dispatch&#x27;</span>, store.<span class="hljs-title function_">getState</span>());
+        <span class="hljs-keyword">return</span> res;
+    &#125;
+&#125;
+
+<span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(<span class="hljs-function">() =&gt;</span> (&#123; <span class="hljs-attr">a</span>: <span class="hljs-number">2</span> &#125;), &#123; <span class="hljs-attr">a</span>: <span class="hljs-number">1</span> &#125;);
+
+<span class="hljs-title function_">loggerMiddware</span>(store);
+
+store.<span class="hljs-title function_">dispatch</span>(<span class="hljs-string">&#x27;test&#x27;</span>);
+
+<span class="hljs-comment">// 输出如下：</span>
+<span class="hljs-comment">// before dispatch: &#123; a: 1 &#125;</span>
+<span class="hljs-comment">// after dispatch: &#123; a: 2 &#125;</span></code></pre>
+
+<p>与此同时可以再多个打印时间的中间件：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">timeMiddware</span> = (<span class="hljs-params">store</span>) =&gt; &#123;
+    <span class="hljs-keyword">const</span> originDispatch = store.<span class="hljs-property">dispatch</span>;
+    store.<span class="hljs-property">dispatch</span> = <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span> &#123;
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;before dispatch&#x27;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>());
+        <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">originDispatch</span>(...args);
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;after dispatch&#x27;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>());
+        <span class="hljs-keyword">return</span> res;
+    &#125;
+&#125;
+
+<span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(<span class="hljs-function">() =&gt;</span> (&#123; <span class="hljs-attr">a</span>: <span class="hljs-number">2</span> &#125;), &#123; <span class="hljs-attr">a</span>: <span class="hljs-number">1</span> &#125;);
+
+<span class="hljs-title function_">loggerMiddware</span>(store);
+
+<span class="hljs-title function_">timeMiddware</span>(store);
+
+store.<span class="hljs-title function_">dispatch</span>(<span class="hljs-string">&#x27;test&#x27;</span>);
+
+<span class="hljs-comment">// 输出如下：</span>
+<span class="hljs-comment">// before dispatch: 时间戳</span>
+<span class="hljs-comment">// before dispatch: &#123; a: 1 &#125;</span>
+<span class="hljs-comment">// after dispatch: &#123; a: 2 &#125;</span>
+<span class="hljs-comment">// after dispatch: 时间戳</span></code></pre>
+
+<p>此时就能达到洋葱模型的表现。依次从外(后调用的中间件)至内(先调用的中间件)执行，执行到原始的 store.dispatch，再从内(先调用的中间件)至外(后调用的中间件)执行。</p>
+<p>这里由于复写的存在，先被调用的中间件，会后执行。可以整一个 applyMiddware 的方法来隐藏这一顺序问题，如下：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">applyMiddware</span> = (<span class="hljs-params">store, middwares</span>) =&gt; &#123;
+    <span class="hljs-comment">// 逆序执行，从而隐藏执行顺序的问题</span>
+    middwares.<span class="hljs-title function_">slice</span>().<span class="hljs-title function_">reverse</span>().<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">middware</span>) =&gt;</span> <span class="hljs-title function_">middware</span>(store));
+&#125;
+
+<span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(<span class="hljs-function">() =&gt;</span> (&#123; <span class="hljs-attr">a</span>: <span class="hljs-number">2</span> &#125;), &#123; <span class="hljs-attr">a</span>: <span class="hljs-number">1</span> &#125;);
+
+<span class="hljs-comment">// 先传入的中间件，先执行</span>
+<span class="hljs-title function_">applyMiddware</span>(store, [timeMiddware, loggerMiddware])</code></pre>
+
+<p>再优化一点，可以把 applyMiddware 这个过程放在 createStore 中去，不过这里不是核心，不再展开。</p>
+<h2 id="去除复写的不纯"><a href="#去除复写的不纯" class="headerlink" title="去除复写的不纯"></a>去除复写的不纯</h2><p>上一部分的实现，其实基本和 <a target="_blank" rel="noopener" href="https://github.com/pmndrs/zustand/tree/main">zustand</a> 的中间件系统一样了，都是通过复写 api 来实现中间件的效果。</p>
+<p>这样写没什么问题，但是就是不符合纯函数的优雅，loggerMiddware、timeMiddware，都不是纯函数，因为他们修改了入参中的 dispatch 属性，在 redux 的哲学中，这里很不纯。</p>
+<p>想要去除 store.dispatch 的显式复写，只能将这个过程对用户隐藏，因为最终都是要修改的。</p>
+<p>可以在 applyMiddware 中进行复写的操作：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">applyMiddware</span> = (<span class="hljs-params">store, middwares</span>) =&gt; &#123;
+    <span class="hljs-comment">// 逆序执行，从而隐藏执行顺序的问题</span>
+    <span class="hljs-keyword">const</span> mids = middwares.<span class="hljs-title function_">slice</span>().<span class="hljs-title function_">reverse</span>();
+    <span class="hljs-keyword">let</span> dispatch = store.<span class="hljs-property">dispatch</span>;
+    <span class="hljs-comment">// 关键</span>
+    mids.<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">middware</span>) =&gt;</span> dispatch = <span class="hljs-title function_">middware</span>(store)(dispatch));
+  
+    store.<span class="hljs-property">dispatch</span> = dispatch;
+&#125;</code></pre>
+
+<p>本质就是将 dispatch 的赋值过程，不暴露在中间件的定义，而是写在了 applyMiddware 函数中，如此写来，就需要对原来中间件的写法做出修改：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">loggerMiddware</span> = (<span class="hljs-params">store</span>) =&gt; <span class="hljs-function">(<span class="hljs-params">dispatch</span>) =&gt;</span> <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span> &#123;
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;before dispatch&#x27;</span>, store.<span class="hljs-title function_">getState</span>());
+    <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">dispatch</span>(...args);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;after dispatch&#x27;</span>, store.<span class="hljs-title function_">getState</span>());
+    <span class="hljs-keyword">return</span> res;
+&#125;
+
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">timeMiddware</span> = (<span class="hljs-params">store</span>) =&gt; <span class="hljs-function">(<span class="hljs-params">dispatch</span>) =&gt;</span> <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span> &#123;
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;before dispatch&#x27;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>());
+    <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">dispatch</span>(...args);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;after dispatch&#x27;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>());
+    <span class="hljs-keyword">return</span> res;
+&#125;
+
+<span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(<span class="hljs-function">() =&gt;</span> (&#123; <span class="hljs-attr">a</span>: <span class="hljs-number">2</span> &#125;), &#123; <span class="hljs-attr">a</span>: <span class="hljs-number">1</span> &#125;);
+
+<span class="hljs-comment">// 先传入的中间件，先执行</span>
+<span class="hljs-title function_">applyMiddware</span>(store, [timeMiddware, loggerMiddware])</code></pre>
+
+<p>这里中间件的写法其实和 redux 的写法就一致了，只是内部实现还不完全相同，留作下一小结讲解。这里要说的是，不知道看到这么连续几次的箭头函数的定义，有没有把一些同学转晕，我第一次看的时候还是很头疼的，怎么这么多次箭头函数的连续定义。</p>
+<p>在没有消除 dispatch 的复写时，我们的中间件写起来还是非常简单，而为了消除复写，突然多了几层箭头函数的连续定义，不免觉得头大。这里写在一起对比一下：</p>
+<pre><code class="hljs js"><span class="hljs-comment">// 复写模式下中间件的写法</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">loggerMiddware</span> = (<span class="hljs-params">store</span>) =&gt; &#123;
+    <span class="hljs-keyword">const</span> originDispatch = store.<span class="hljs-property">dispatch</span>;
+    <span class="hljs-comment">// 关键注释1: 第二个箭头函数</span>
+    store.<span class="hljs-property">dispatch</span> = <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span> &#123;
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;before dispatch&#x27;</span>, store.<span class="hljs-title function_">getState</span>());
+        <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">originDispatch</span>(...args);
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;after dispatch&#x27;</span>, store.<span class="hljs-title function_">getState</span>());
+        <span class="hljs-keyword">return</span> res;
+    &#125;
+&#125;
+
+<span class="hljs-comment">// 剥离了复写逻辑的写法</span>
+<span class="hljs-comment">// 关键注释2: 三个箭头函数连续定义，但是实质上只比上述多了一层</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">loggerMiddware2</span> = (<span class="hljs-params">store</span>) =&gt; <span class="hljs-function">(<span class="hljs-params">dispatch</span>) =&gt;</span> <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span> &#123;
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;before dispatch&#x27;</span>, store.<span class="hljs-title function_">getState</span>());
+    <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">dispatch</span>(...args);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;after dispatch&#x27;</span>, store.<span class="hljs-title function_">getState</span>());
+    <span class="hljs-keyword">return</span> res;
+&#125;</code></pre>
+
+<p>仔细分析下后者的写法，其实比原来的模式，看起来多了两层箭头函数，第一层是 <code>(dispatch) =&gt; xxx</code>，这一层对应 appplyMiddware 中的 <code>middware(store)(dispatch)</code>，下一层是 <code>(...args) =&gt; xxx</code>，对应 appplyMiddware 中的 <code>dispatch = middware(store)(dispatch)</code>。但是说到底，这两个箭头函数，是把原本的 dispatch 作为入参，复写的结果作为返回值，在外部通过 <code>dispatch = middware(store)(dispatch)</code>，隐藏了原本的复写逻辑。本质上其实只是多了一层箭头函数。第二层的箭头函数，在原本的复写模式下也有，只是看起来没有那么明显罢了。</p>
+<p>而之所以看起来难懂，还有一点就是这里巧妙的借助了箭头函数返回值的特性，所以看起来非常简单，实际上，抛除这一特性后，代码和复写模式下差不太多：</p>
+<pre><code class="hljs js"><span class="hljs-comment">// 抛开箭头函数的写法，可能看起来跟复写版本类似一些。</span>
+<span class="hljs-keyword">const</span> loggerMiddware2 = <span class="hljs-keyword">function</span> (<span class="hljs-params">store</span>) &#123;
+    <span class="hljs-keyword">function</span> <span class="hljs-title function_">rewrite</span>(<span class="hljs-params">dispatch</span>) &#123;
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span> (<span class="hljs-params">...args</span>) &#123;
+            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;before dispatch&#x27;</span>, store.<span class="hljs-title function_">getState</span>());
+            <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">dispatch</span>(...args);
+            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;after dispatch&#x27;</span>, store.<span class="hljs-title function_">getState</span>());
+            <span class="hljs-keyword">return</span> res;
+        &#125;
+    &#125;
+    <span class="hljs-keyword">return</span> rewrite;
+&#125;</code></pre>
+
+<p>这里不得不说，思路还是比较巧妙的，借助 applyMiddware 隐藏了复写的过程，又通过箭头函数的联写，简化了代码的实现，站在使用侧的角度来说，看起来确实神清气爽一些。</p>
+<h3 id="真正-redux-的实现"><a href="#真正-redux-的实现" class="headerlink" title="真正 redux 的实现"></a>真正 redux 的实现</h3><p>上述写法上已经和 redux 中间件一致了，但是在 applyMiddware 的实现上，还存在一些偏差，虽然结果一样，但是 redux 的实现更为巧妙。代码如下：</p>
+<pre><code class="hljs js"><span class="hljs-comment">// 借助 reduce 实现 fn1, fn2, fn3 =&gt; (...args) =&gt; fn1(fn2(fn3(...args))) 的效果</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">compose</span> = (<span class="hljs-params">fns</span>) =&gt; fns.<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> <span class="hljs-function">(<span class="hljs-params">args</span>) =&gt;</span> <span class="hljs-title function_">a</span>(<span class="hljs-title function_">b</span>(args)));
+
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">applyMiddware</span> = (<span class="hljs-params">store, middwares</span>) =&gt; &#123;
+    <span class="hljs-comment">//  执行一次注入 store</span>
+    <span class="hljs-keyword">const</span> fns = middwares.<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">middware</span>) =&gt;</span> <span class="hljs-title function_">middware</span>(store));
+    
+    <span class="hljs-comment">// 使用 compose 组合后，赋值修改真正的 dispatch</span>
+    store.<span class="hljs-property">dispatch</span> = <span class="hljs-title function_">compose</span>(fns)(store.<span class="hljs-property">dispatch</span>);
+&#125;;</code></pre>
+
+<p>核心就是 compose 函数，这里确实不好理解，这里面的一个关键点就是 reduce 的返回值是个函数，这个函数本身并不会执行，只有当 <code>compose(fns)(store.dispatch)</code> 时，才会真正执行。</p>
+<p>而 compose 的功能，就是将入参中的一系列函数: <code>fn1, fn2, fn3, fn4</code> 转为 <code>(...args) =&gt; fn1(fn2(fn3(fn4(...args))))</code>。</p>
+<p>如此，当执行这个函数时，就会是从 fn4 开始执行，其入参就是 store.dispatch, 返回值就是修改后的 dispatch，接下来依次执行 fn3, fn2, fn1，从而生成了最终的 store.dispatch，当调用 store.dispatch 时，就会形成 fn1 -&gt; fn2 -&gt; fn3 -&gt; fn4 -&gt; store.dispatch -&gt; fn4 -&gt; fn3 -&gt; fn2 -&gt; fn1 的洋葱效果。</p>
+<p>虽说结果和前一节的效果一样，但是这一节的 compose 函数可谓是精华中的精华，相比之下省去了前一节需要的 reverse 操作。</p>
+<p>至此，基本上就是整个 redux 的精华实现了。</p>
+<h2 id="能再支持下异步吗？"><a href="#能再支持下异步吗？" class="headerlink" title="能再支持下异步吗？"></a>能再支持下异步吗？</h2><p>redux 最初让人迷惑比较多的地方就是异步(最初)，因为 dispatch 是同步的，而往往业务中往往是发起请求前，dispatch loading态，请求结束后 dispatch 结束态&#x2F;错误态。</p>
+<p>不过想要支持异步其实也很简单，因为本身异步其实和 redux 是无关的，只需要用户自己写函数，然后在不同的时机去触发同步的 dispatch 即可。</p>
+<pre><code class="hljs js"><span class="hljs-comment">// 省略 store 的创建</span>
+<span class="hljs-comment">// const store = createStore();</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">asyncAction</span> = (<span class="hljs-params"></span>) =&gt; &#123;
+    store.<span class="hljs-title function_">dispatch</span>(&#123; <span class="hljs-attr">action</span>: <span class="hljs-string">&#x27;startAcyns&#x27;</span> &#125;);
+    <span class="hljs-title function_">fetch</span>(<span class="hljs-string">&#x27;some api&#x27;</span>).<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> &#123;
+        store.<span class="hljs-title function_">dispatch</span>(&#123; <span class="hljs-attr">action</span>: <span class="hljs-string">&#x27;acynsResolve&#x27;</span> &#125;);
+    &#125;).<span class="hljs-title function_">catch</span>(<span class="hljs-function">() =&gt;</span> &#123;
+        store.<span class="hljs-title function_">dispatch</span>(&#123; <span class="hljs-attr">action</span>: <span class="hljs-string">&#x27;acynsError&#x27;</span> &#125;);
+    &#125;)
+&#125;</code></pre>
+
+<p>这样写，可以用，只是看起来手动调用 store.dispatch, store.getState 可能并不优雅。</p>
+<p>可以通过中间件来解决，这也是 redux-thunk 的方案，dispatch 一个函数，将 store.dispatch, store.getState 作为入参提供给函数，从而实现更优雅的异步操作。</p>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">thunkMiddware</span> = (<span class="hljs-params">store</span>) =&gt; <span class="hljs-function">(<span class="hljs-params">dispatch</span>) =&gt;</span> <span class="hljs-function">(<span class="hljs-params">action</span>) =&gt;</span> &#123;
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> action === <span class="hljs-string">&#x27;function&#x27;</span>) &#123;
+        <span class="hljs-keyword">return</span> <span class="hljs-title function_">action</span>(store.<span class="hljs-property">dispatch</span>, store.<span class="hljs-property">getState</span>);
+    &#125;
+    
+    <span class="hljs-keyword">return</span> <span class="hljs-title function_">dispatch</span>(action);
+&#125;
+
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">asyncAction</span> = (<span class="hljs-params">dispatch, getState</span>) =&gt; &#123;
+    <span class="hljs-title function_">dispatch</span>(&#123; <span class="hljs-attr">action</span>: <span class="hljs-string">&#x27;startAcyns&#x27;</span> &#125;);
+     <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function"><span class="hljs-params">resolve</span> =&gt;</span> <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123; <span class="hljs-title function_">resolve</span>(<span class="hljs-number">1</span>) &#125;, <span class="hljs-number">1000</span>)).<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> &#123;
+        <span class="hljs-title function_">dispatch</span>(&#123; <span class="hljs-attr">action</span>: <span class="hljs-string">&#x27;acynsResolve&#x27;</span> &#125;);
+    &#125;).<span class="hljs-title function_">catch</span>(<span class="hljs-function">() =&gt;</span> &#123;
+        <span class="hljs-title function_">dispatch</span>(&#123; <span class="hljs-attr">action</span>: <span class="hljs-string">&#x27;acynsError&#x27;</span> &#125;);
+    &#125;)
+&#125;
+
+store.<span class="hljs-title function_">dispatch</span>(asyncAction);</code></pre>
+
+<h2 id="能让普通函数也用上中间件吗？"><a href="#能让普通函数也用上中间件吗？" class="headerlink" title="能让普通函数也用上中间件吗？"></a>能让普通函数也用上中间件吗？</h2><p>redux 这个洋葱模型还是很实用的，如果想给普通函数绑定上这样按照洋葱模型使用的中间件，可以吗？</p>
+<p>通过之前的分析，redux 中间件的本质就是在不断的修改 store.dispatch，那么其实只需要将其替换为目标的函数，即可实现。完整的代码如下：</p>
+<pre><code class="hljs js"><span class="hljs-comment">// 给普通函数增加中间件</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">createFuncWithMiddware</span> = (<span class="hljs-params">func, middwares</span>) =&gt; &#123;
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">compose</span> = (<span class="hljs-params">fns</span>) =&gt; fns.<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> <span class="hljs-function">(<span class="hljs-params">args</span>) =&gt;</span> <span class="hljs-title function_">a</span>(<span class="hljs-title function_">b</span>(args)));
+
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">applyMiddware</span> = (<span class="hljs-params">store, middwares</span>) =&gt; &#123;
+    <span class="hljs-keyword">const</span> fns = middwares.<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">middware</span>) =&gt;</span> <span class="hljs-title function_">middware</span>(store));
+    store.<span class="hljs-property">dispatch</span> = <span class="hljs-title function_">compose</span>(fns)(store.<span class="hljs-property">dispatch</span>);
+  &#125;;
+  
+  
+  <span class="hljs-comment">// 按照 store 的模式直接创建一个</span>
+  <span class="hljs-keyword">const</span> store = &#123;
+    <span class="hljs-attr">getState</span>: <span class="hljs-function">() =&gt;</span> &#123;&#125;,
+    <span class="hljs-comment">// dispatch 指定为目标函数</span>
+    <span class="hljs-attr">dispatch</span>: func,
+  &#125;;
+
+  <span class="hljs-title function_">applyMiddware</span>(store, middwares);
+
+  <span class="hljs-keyword">return</span> store.<span class="hljs-property">dispatch</span>;
+&#125;;</code></pre>
+
+<p>用法如下：</p>
+<pre><code class="hljs js"><span class="hljs-comment">// 省略timeMiddware, loggerMiddware 的定义</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">normalfunction</span>(<span class="hljs-params">a, b</span>) &#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(a, b);
+  <span class="hljs-keyword">return</span> a + b;
+&#125;
+
+<span class="hljs-keyword">const</span> newFunction = <span class="hljs-title function_">createFuncWithMiddware</span>(
+  normalfunction,
+  [timeMiddware, loggerMiddware],
+);
+
+<span class="hljs-title function_">newFunction</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>);</code></pre>
+
+<p>此时，普通函数也会按照洋葱模型执行中间件的一个逻辑。</p>
+<p>不过其中的 store 的创建不太有必要，函数本身并不需要 getState 等方法，基于此，可以对上述代码再进行简化，省略掉整体的 store。</p>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">compose</span> = (<span class="hljs-params">fns</span>) =&gt; fns.<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> <span class="hljs-function">(<span class="hljs-params">args</span>) =&gt;</span> <span class="hljs-title function_">a</span>(<span class="hljs-title function_">b</span>(args)));
+
+<span class="hljs-comment">// 省去了 store.dispatch 相关逻辑</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">applyMiddware</span> = (<span class="hljs-params">func, middwares</span>) =&gt; <span class="hljs-title function_">compose</span>(middwares)(func);
+
+<span class="hljs-comment">// 省去了 store =&gt; xxx 的逻辑，少了一层箭头函数的联写</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">loggerMiddware</span> = (<span class="hljs-params">dispatch</span>) =&gt; <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span> &#123;
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;before dispatch&#x27;</span>, args);
+    <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">dispatch</span>(...args);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;after dispatch&#x27;</span>, args);
+    <span class="hljs-keyword">return</span> res;
+&#125;;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">normalfunction</span>(<span class="hljs-params">a, b</span>) &#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(a, b);
+  <span class="hljs-keyword">return</span> a + b;
+&#125;
+
+<span class="hljs-keyword">const</span> newFunction = <span class="hljs-title function_">applyMiddware</span>(normalfunction, [loggerMiddware]);
+
+<span class="hljs-title function_">newFunction</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>);
+
+<span class="hljs-comment">// 输出</span>
+<span class="hljs-comment">// before dispatch [1, 2]</span>
+<span class="hljs-comment">// 1 2</span>
+<span class="hljs-comment">// after dispatch [1, 2]</span></code></pre>
+
+<p>但是，对于普通函数来讲，也存在异步的场景，如果不加以处理，loggerMiddware 便会失去其原本的作用。如下：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">normalfunction</span>(<span class="hljs-params">a, b</span>) &#123;
+  <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve</span>) =&gt;</span> &#123;
+    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+      <span class="hljs-title function_">resolve</span>(a + b);
+    &#125;, <span class="hljs-number">1000</span>);
+  &#125;);
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(a, b);
+  <span class="hljs-keyword">return</span> res;
+&#125;
+
+<span class="hljs-comment">// 此时会输出</span>
+<span class="hljs-comment">// before dispatch [1, 2]</span>
+<span class="hljs-comment">// after dispatch [1, 2]</span>
+<span class="hljs-comment">// 1s 后，输出 1 2</span></code></pre>
+
+<p>这是由于中间件中没有支持异步，也很简单，但是异步具有传导性，所有的中间件都必须改为支持异步的写法：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> loggerMiddware =
+  <span class="hljs-comment">// 外层无需异步，这里就应该是同步修改原函数的行为</span>
+  <span class="hljs-function">(<span class="hljs-params">dispatch</span>) =&gt;</span>
+  <span class="hljs-comment">// 此处需要支持异步</span>
+  <span class="hljs-title function_">async</span> (...args) =&gt; &#123;
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;before dispatch&#x27;</span>, args);
+    <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> <span class="hljs-title function_">dispatch</span>(...args);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;after dispatch&#x27;</span>, args);
+    <span class="hljs-keyword">return</span> res;
+  &#125;;</code></pre>
+
+<p>这样修改之后，就能够满足正常的异步需求了。</p>
+<p>至此，这一轮面试题，我认为才算走到了终点。当然，还可以继续发散，比如 koa 的中间件，express 的中间件，这些又和 redux 的中间件有何区别？不过面试就这么点时间，这么多怕是问不完啦。</p>
+<h2 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h2><p>本文来自一道面试题。虽说是一道题，但是 redux 背后的中间件思想还是非常实用的一个模式。</p>
+<p>本文在实现 redux 核心的基础上，对中间件的实现进行了比较深入的探讨，从写法和原因上都进行了不同程度的讨论，这块代码虽然短，但是确实不太容易理解。</p>
+<p>与此同时，本文进行了发散，在借助 redux 的基础上，对任意函数套用洋葱模型来将中间件应用在每个函数上，而且代码真的就一两行，可以说是本文的精华了。</p>
+<p>最后，面试结果，自然是通过啦，都写到这个份上了，也算是真真真超常发挥了。</p>
+
+        </section>
+        <nav class="post-neighbors">
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/posts/2f066054/">TS 中箭头函数如何重载</a></p>
+          
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/posts/c8cb6b5b/">中高级前端面试必刷：三道超高频的异步并发流程控制题</a></p>
+          
+        </nav>
+        
+        <section class="post-comments">
+          <script src="https://giscus.app/client.js"
+            data-repo="yuzai/blog-comments"
+            data-repo-id="R_kgDOTReJTg"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOTReJTs4DAwJG"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="light"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous" async></script>
+        </section>
+        
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/index.js?v=1783506963749"></script>
+    <script src="/js/jquery-1.12.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/search.js?v=1783506963749"></script>
+    
+    <script src="/js/general.js?v=1783506963749"></script>
+    
+    <script src="/js/post.js?v=1783506963749"></script>
+    
+    <script src="/js/tag.js?v=1783506963749"></script>
+    
+</body>
+</html>

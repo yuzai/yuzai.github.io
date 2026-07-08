@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    
+    <title>javascript执行环境和作用域 - 芋仔的个人博客</title>
+    <meta name="description" content="之前没有系统的对javascript进行学习，主要用来操作DOM，每次看js的书，也就是看到变量类型和语句就停下来了。因为这一块跟c语言还是很像，就没什么兴趣继续读下去,最近写了一个比较长的js，发现变量，函数的作用域很重要，虽然看懂了问题，但是没有理解到位，今天看了《javascript高级程序设计》，提到的执行环境和作用域，才总算是弄明白了问题的来龙去脉。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javascript执行环境和作用域">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/posts/efa737a4/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="之前没有系统的对javascript进行学习，主要用来操作DOM，每次看js的书，也就是看到变量类型和语句就停下来了。因为这一块跟c语言还是很像，就没什么兴趣继续读下去,最近写了一个比较长的js，发现变量，函数的作用域很重要，虽然看懂了问题，但是没有理解到位，今天看了《javascript高级程序设计》，提到的执行环境和作用域，才总算是弄明白了问题的来龙去脉。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://blog.xiaoboma.com/%E4%BD%9C%E7%94%A8%E5%9F%9F.jpg">
+<meta property="article:published_time" content="2016-10-13T17:32:21.000Z">
+<meta property="article:modified_time" content="2026-07-08T10:35:50.887Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://blog.xiaoboma.com/%E4%BD%9C%E7%94%A8%E5%9F%9F.jpg">
+    
+    <link rel="canonical" href="https://blog.maxiaobo.com.cn/posts/efa737a4/">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "javascript执行环境和作用域",
+      "datePublished": "2016-10-13T17:32:21.000Z",
+      "dateModified": "2026-07-08T10:35:50.887Z",
+      "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
+      "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/efa737a4/",
+      "description": "之前没有系统的对javascript进行学习，主要用来操作DOM，每次看js的书，也就是看到变量类型和语句就停下来了。因为这一块跟c语言还是很像，就没什么兴趣继续读下去,最近写了一个比较长的js，发现变量，函数的作用域很重要，虽然看懂了问题，但是没有理解到位，今天看了《javascript高级程序设",
+      "inLanguage": "zh-CN"
+    }
+    </script>
+    
+    
+    <link rel="stylesheet" href="/css/atom-one-dark.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963758">
+    <link rel="stylesheet" href="/css/style.css?v=1783506963758">
+
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="site-search-overlay" id="site-search-overlay">
+  <div class="site-search-panel">
+    <input type="text" class="site-search-input" id="site-search-input" placeholder="搜索文章标题和内容…" autocomplete="off">
+    <ul class="site-search-results" id="site-search-results"></ul>
+  </div>
+</div>
+
+<div class="inner-page-shell">
+    <article class="post-reading">
+      
+      
+      <div id="post-toc-widget">
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <div class="post-toc-panel" id="post-toc-panel">
+          <div class="post-toc-head">本文目录</div>
+          <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%8B%E5%AD%901"><span class="toc-text">例子1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%8B%E5%AD%902"><span class="toc-text">例子2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E4%B9%A6%E4%B8%AD%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="toc-text">原书中的例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%E4%B8%80%E6%AC%A1%E7%A1%AE%E8%AE%A4%E9%97%AE%E9%A2%98"><span class="toc-text">最后一次确认问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+        </div>
+      </div>
+      
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2016-10-13</time><span class="post-eyebrow-sep">·</span>约 1098 字<span class="post-eyebrow-sep">·</span>读完约 3 分钟</p>
+          <h1 class="post-title">javascript执行环境和作用域</h1>
+        </header>
+        <section class="post-content">
+            <p>之前没有系统的对javascript进行学习，主要用来操作DOM，每次看js的书，也就是看到变量类型和语句就停下来了。因为这一块跟c语言还是很像，就没什么兴趣继续读下去,最近写了一个比较长的js，发现变量，函数的作用域很重要，虽然看懂了问题，但是没有理解到位，今天看了《javascript高级程序设计》，提到的执行环境和作用域，才总算是弄明白了问题的来龙去脉。</p>
+<span id="more"></span>
+<h3 id="例子1"><a href="#例子1" class="headerlink" title="例子1"></a>例子1</h3><pre><code>function f2()&#123;
+    var s=10;
+    function f1()&#123;
+        console.log(s);
+    &#125;
+    f1();
+&#125;
+f2();//输出10
+</code></pre>
+<p>在上述代码中，函数f2中定义了函数f1,在f1中输出s。结果是10。不难理解</p>
+<h3 id="例子2"><a href="#例子2" class="headerlink" title="例子2"></a>例子2</h3><pre><code>var s = 100;
+function f1()&#123;
+    console.log(s);
+&#125;
+function f2()&#123;
+    var s=10;
+    f1(); //输出100
+    console.log(s);
+&#125;
+f2();//输出10
+</code></pre>
+<p>这个例子中，f1函数定义在全局中，在f2中调用f1函数，输出的s还是全局中的s。这个就是执行环境的问题。</p>
+<h3 id="原书中的例子"><a href="#原书中的例子" class="headerlink" title="原书中的例子"></a>原书中的例子</h3><p><img src="http://blog.xiaoboma.com/%E4%BD%9C%E7%94%A8%E5%9F%9F.jpg" alt="图一" loading="lazy" referrerpolicy="no-referrer"></p>
+<p>有点尴尬，在hexo中还不知道怎么可以便捷的插入图片，暂时把图片文件传到主页吧。<br>看到图中的解释，其实就是，<strong>定义函数的位置，决定了函数的执行环境，也就是决定了在该函数中变量的访问权限：只能访问到高级以及同级的变量，不论该函数在哪里调用（例子2中就是在同级函数中进行调用，并没有修改s的值，s还是同级的s，而不是函数f2中的局部变量s），都不会改变它对变量的访问权限。</strong> 这一点跟c语言很不一样，这次就因为这个错调试了一会。记录一下这个坑，其实不算坑，书上写的明明白白，只是自己没有注意。</p>
+<h3 id="最后一次确认问题"><a href="#最后一次确认问题" class="headerlink" title="最后一次确认问题"></a>最后一次确认问题</h3><p>最后用一个同级函数的子函数的子函数对f1()函数进行调用，彻底验证执行环境以及作用域问题。</p>
+<pre><code>var s = 1;
+function f1()&#123;
+    console.log(s);
+&#125;
+function f2()&#123;
+    var s=2;
+    function f3()&#123;
+        var s=3
+        function f4()&#123;
+            var s=4;
+        f1();//输出1
+        console.log(s);//输出4
+      &#125;
+        f4();
+  &#125;
+    f3();
+&#125;
+f2();
+</code></pre>
+<p>f1(),不论在何时进行调用，内部的s由f1()定义的位置决定，必定是同级定义的或者更外层定义的s起作用。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><strong>定义函数的位置，决定了函数的执行环境，也就是决定了在该函数中变量的访问权限：只能访问到高级以及同级的变量，不论该函数在哪里调用，都不会改变它对变量的访问权限。</strong></p>
+
+        </section>
+        <nav class="post-neighbors">
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/posts/bbad8cd9/">hexo主题制作（4）：学习以及巩固的知识记录</a></p>
+          
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/posts/b99a5e90/">前端面试：循环绑定click事件</a></p>
+          
+        </nav>
+        
+        <section class="post-comments">
+          <script src="https://giscus.app/client.js"
+            data-repo="yuzai/blog-comments"
+            data-repo-id="R_kgDOTReJTg"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOTReJTs4DAwJG"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="light"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous" async></script>
+        </section>
+        
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/index.js?v=1783506963758"></script>
+    <script src="/js/jquery-1.12.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/search.js?v=1783506963758"></script>
+    
+    <script src="/js/general.js?v=1783506963758"></script>
+    
+    <script src="/js/post.js?v=1783506963758"></script>
+    
+    <script src="/js/tag.js?v=1783506963758"></script>
+    
+</body>
+</html>

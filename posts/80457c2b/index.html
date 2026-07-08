@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    
+    <title>es5-generator - 芋仔的个人博客</title>
+    <meta name="description" content="es6的学习笔记(五)：generator">
+<meta property="og:type" content="article">
+<meta property="og:title" content="es5-generator">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/posts/80457c2b/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="es6的学习笔记(五)：generator">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-11-23T22:56:02.000Z">
+<meta property="article:modified_time" content="2026-07-08T10:35:50.886Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="javascript">
+<meta property="article:tag" content="es6">
+<meta name="twitter:card" content="summary">
+    
+    <link rel="canonical" href="https://blog.maxiaobo.com.cn/posts/80457c2b/">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "es5-generator",
+      "datePublished": "2016-11-23T22:56:02.000Z",
+      "dateModified": "2026-07-08T10:35:50.886Z",
+      "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
+      "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/80457c2b/",
+      "description": "es6的学习笔记(五)：generator",
+      "inLanguage": "zh-CN"
+    }
+    </script>
+    
+    
+    <link rel="stylesheet" href="/css/atom-one-dark.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963756">
+    <link rel="stylesheet" href="/css/style.css?v=1783506963756">
+
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="site-search-overlay" id="site-search-overlay">
+  <div class="site-search-panel">
+    <input type="text" class="site-search-input" id="site-search-input" placeholder="搜索文章标题和内容…" autocomplete="off">
+    <ul class="site-search-results" id="site-search-results"></ul>
+  </div>
+</div>
+
+<div class="inner-page-shell">
+    <article class="post-reading">
+      
+      
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2016-11-23</time><span class="post-eyebrow-sep">·</span>约 2060 字<span class="post-eyebrow-sep">·</span>读完约 5 分钟</p>
+          <h1 class="post-title">es5-generator</h1>
+        </header>
+        <section class="post-content">
+            <p>es6的学习笔记(五)：generator</p>
+<span id="more"></span>
+
+<p>generator是一个简单的生成符合iterator协议的新特性。它可以方便的生成iterator，具有iterator的特性，也就是具有[Symbol.iterator]，同时也有next()函数，同时可以使用for of,Array.from,[…]等操作。<br>调用generator函数，返回一个iterator对象，执行next()函数，会返回{value:value,done:boolean}。内部通过yield产生value，实例如下：</p>
+<pre><code class="hljs js"><span class="hljs-keyword">function</span>* <span class="hljs-title function_">gen</span>(<span class="hljs-params"></span>)&#123;
+  <span class="hljs-keyword">yield</span> <span class="hljs-string">&#x27;hello&#x27;</span>
+  <span class="hljs-keyword">yield</span> <span class="hljs-string">&#x27;hi&#x27;</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;byebye&#x27;</span>
+&#125;;
+<span class="hljs-keyword">let</span> g = <span class="hljs-title function_">gen</span>();
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(g.<span class="hljs-title function_">next</span>().<span class="hljs-property">value</span>);<span class="hljs-comment">//hello</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(g.<span class="hljs-title function_">next</span>().<span class="hljs-property">value</span>);<span class="hljs-comment">//hi</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(g.<span class="hljs-title function_">next</span>().<span class="hljs-property">value</span>);<span class="hljs-comment">//byebye</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(g.<span class="hljs-title function_">next</span>().<span class="hljs-property">value</span>);<span class="hljs-comment">//undefined</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(g.<span class="hljs-title function_">next</span>().<span class="hljs-property">value</span>);<span class="hljs-comment">//undefined</span></code></pre>
+
+<p>其中，迭代器的next()执行顺序如下：</p>
+<ol>
+<li>遇到yield语句，暂停执行后面的操作，并把紧跟在yield后面的值作为返回值。</li>
+<li>下一次调用next()方法时，再继续往下运行，直到遇到下一个yield，如果next()函数有参数，则在一定条件下会进行赋值操作，然后再继续执行,第一次next的参数是无效的</li>
+<li>如果没有再遇到新的yield语句，就一直运行到函数结束，直到return语句为止，并将return语句后面的表达式的值，作为返回的对象的value属性值。</li>
+<li>如果该函数没有return语句，则返回的对象的value属性值为undefined。</li>
+</ol>
+<pre><code class="hljs js"><span class="hljs-keyword">var</span> arr = [<span class="hljs-number">1</span>, [[<span class="hljs-number">2</span>, <span class="hljs-number">3</span>], <span class="hljs-number">4</span>], [<span class="hljs-number">5</span>, <span class="hljs-number">6</span>]];
+
+<span class="hljs-keyword">var</span> flat = <span class="hljs-keyword">function</span>* (a) &#123;
+  <span class="hljs-keyword">var</span> length = a.<span class="hljs-property">length</span>;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; length; i++) &#123;
+    <span class="hljs-keyword">let</span> y;
+    <span class="hljs-keyword">var</span> item = a[i];
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> item !== <span class="hljs-string">&#x27;number&#x27;</span>) &#123;
+      y=<span class="hljs-keyword">yield</span>* <span class="hljs-title function_">flat</span>(item);
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(y)
+    &#125; <span class="hljs-keyword">else</span> &#123;
+      y=<span class="hljs-keyword">yield</span> item;
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(y);
+    &#125;
+  &#125;
+&#125;;
+
+<span class="hljs-keyword">const</span> s=<span class="hljs-title function_">flat</span>(arr);
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(s.<span class="hljs-title function_">next</span>(<span class="hljs-string">&#x27;hi1&#x27;</span>).<span class="hljs-property">value</span>); <span class="hljs-comment">//1</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(s.<span class="hljs-title function_">next</span>(<span class="hljs-string">&#x27;hi2&#x27;</span>).<span class="hljs-property">value</span>); <span class="hljs-comment">//hi2  2</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(s.<span class="hljs-title function_">next</span>(<span class="hljs-string">&#x27;hi3&#x27;</span>).<span class="hljs-property">value</span>); <span class="hljs-comment">//hi3  3</span></code></pre>
+
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> answers = [
+  <span class="hljs-string">`It is certain`</span>,
+  <span class="hljs-string">`Yes definitely`</span>,
+  <span class="hljs-string">`Most likely`</span>,
+  <span class="hljs-string">`Yes`</span>,
+  <span class="hljs-string">`Ask again later`</span>,
+  <span class="hljs-string">`Better not tell you now`</span>,
+  <span class="hljs-string">`Cannot predict now`</span>,
+  <span class="hljs-string">`Don&#x27;t count on it`</span>,
+  <span class="hljs-string">`My sources say no`</span>,
+  <span class="hljs-string">`Very doubtful`</span>
+]
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">answer</span> (<span class="hljs-params"></span>) &#123;
+  <span class="hljs-keyword">return</span> answers[<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>() * answers.<span class="hljs-property">length</span>)]
+&#125;
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">answer</span>()) <span class="hljs-comment">//每次运行都随机产生一句话</span></code></pre>
+
+<p>这个时候，可以写一个generator来产生一个无限序列，序列内容就是一个个随机的回答。generator的形式如下：</p>
+<pre><code class="hljs js"><span class="hljs-comment">//version1</span>
+<span class="hljs-keyword">function</span>* <span class="hljs-title function_">ball</span>(<span class="hljs-params"></span>)&#123;
+  <span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)
+    <span class="hljs-keyword">yield</span> <span class="hljs-string">`[a] <span class="hljs-subst">$&#123;answer()&#125;</span>`</span>
+&#125;
+<span class="hljs-keyword">const</span> g = <span class="hljs-title function_">ball</span>();
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(g.<span class="hljs-title function_">next</span>().<span class="hljs-property">value</span>);
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(g.<span class="hljs-title function_">next</span>().<span class="hljs-property">value</span>);<span class="hljs-comment">//随机产生一个回答</span>
+
+<span class="hljs-comment">//version2</span>
+<span class="hljs-keyword">function</span>* <span class="hljs-title function_">ball</span>(<span class="hljs-params"></span>)&#123;
+  <span class="hljs-keyword">let</span> question;
+  <span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)&#123;
+    question = <span class="hljs-keyword">yield</span> <span class="hljs-string">`[a] <span class="hljs-subst">$&#123;answer()&#125;</span>`</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`[q] <span class="hljs-subst">$&#123; question &#125;</span>`</span>)
+  &#125;
+&#125;
+<span class="hljs-keyword">const</span> g = <span class="hljs-title function_">ball</span>()
+g.<span class="hljs-title function_">next</span>();<span class="hljs-comment">//跳过第一个，因为第一个输入值不会影响输出，具体原因有待回头继续研究</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(g.<span class="hljs-title function_">next</span>(<span class="hljs-string">&#x27;hello?&#x27;</span>).<span class="hljs-property">value</span>)<span class="hljs-comment">//先输出[q],在输出[a]</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(g.<span class="hljs-title function_">next</span>(<span class="hljs-string">&#x27;hi?&#x27;</span>).<span class="hljs-property">value</span>)</code></pre>
+<blockquote>
+<p>关于generator还有很多内容，有待后续继续挖掘</p>
+</blockquote>
+
+        </section>
+        <nav class="post-neighbors">
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/posts/60e1b18f/">arrow的疑问</a></p>
+          
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/posts/57c7e427/">es66-内部的扩展</a></p>
+          
+        </nav>
+        
+        <section class="post-comments">
+          <script src="https://giscus.app/client.js"
+            data-repo="yuzai/blog-comments"
+            data-repo-id="R_kgDOTReJTg"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOTReJTs4DAwJG"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="light"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous" async></script>
+        </section>
+        
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/index.js?v=1783506963756"></script>
+    <script src="/js/jquery-1.12.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/search.js?v=1783506963756"></script>
+    
+    <script src="/js/general.js?v=1783506963756"></script>
+    
+    <script src="/js/post.js?v=1783506963756"></script>
+    
+    <script src="/js/tag.js?v=1783506963756"></script>
+    
+</body>
+</html>

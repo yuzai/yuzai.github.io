@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    
+    <title>imgmaker-解放双手高效生成占位图 - 芋仔的个人博客</title>
+    <meta name="description" content="我开发了一款chrome插件–imgmaker（插件地址及仓库地址见文末），可以根据指定的尺寸、指定的关键字，生成想要的图片。可以在占位图的时候，输入想要的关键字，比如妹子、美女，动漫等等，生成一张赏心悦目的图片放上去，解决问题的同时没准还能提高工具效率（毕竟，好看的meizi图片 &#x3D; 第一生产力）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="imgmaker-解放双手高效生成占位图">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/posts/433b61d5/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="我开发了一款chrome插件–imgmaker（插件地址及仓库地址见文末），可以根据指定的尺寸、指定的关键字，生成想要的图片。可以在占位图的时候，输入想要的关键字，比如妹子、美女，动漫等等，生成一张赏心悦目的图片放上去，解决问题的同时没准还能提高工具效率（毕竟，好看的meizi图片 &#x3D; 第一生产力）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic4.zhimg.com/v2-b0ca900628103f5a353d7ec20defbb2b_b.jpg">
+<meta property="article:published_time" content="2021-04-13T20:52:26.000Z">
+<meta property="article:modified_time" content="2026-07-08T10:35:50.887Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="javascript">
+<meta property="article:tag" content="chrome扩展">
+<meta property="article:tag" content="vue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic4.zhimg.com/v2-b0ca900628103f5a353d7ec20defbb2b_b.jpg">
+    
+    <link rel="canonical" href="https://blog.maxiaobo.com.cn/posts/433b61d5/">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "imgmaker-解放双手高效生成占位图",
+      "datePublished": "2021-04-13T20:52:26.000Z",
+      "dateModified": "2026-07-08T10:35:50.887Z",
+      "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
+      "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/433b61d5/",
+      "description": "我开发了一款chrome插件–imgmaker（插件地址及仓库地址见文末），可以根据指定的尺寸、指定的关键字，生成想要的图片。可以在占位图的时候，输入想要的关键字，比如妹子、美女，动漫等等，生成一张赏心悦目的图片放上去，解决问题的同时没准还能提高工具效率（毕竟，好看的meizi图片 &#x3D; 第",
+      "inLanguage": "zh-CN"
+    }
+    </script>
+    
+    
+    <link rel="stylesheet" href="/css/atom-one-dark.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963752">
+    <link rel="stylesheet" href="/css/style.css?v=1783506963752">
+
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="site-search-overlay" id="site-search-overlay">
+  <div class="site-search-panel">
+    <input type="text" class="site-search-input" id="site-search-input" placeholder="搜索文章标题和内容…" autocomplete="off">
+    <ul class="site-search-results" id="site-search-results"></ul>
+  </div>
+</div>
+
+<div class="inner-page-shell">
+    <article class="post-reading">
+      
+      
+      <div id="post-toc-widget">
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <div class="post-toc-panel" id="post-toc-panel">
+          <div class="post-toc-head">本文目录</div>
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C"><span class="toc-text">最终效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0"><span class="toc-text">技术实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#chrome%E6%8F%92%E4%BB%B6"><span class="toc-text">chrome插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E6%BA%90%E8%8E%B7%E5%8F%96"><span class="toc-text">图片源获取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E7%9A%84%E7%94%9F%E6%88%90%E5%8F%8A%E4%B8%8B%E8%BD%BD"><span class="toc-text">图片的生成及下载</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9D%9F%E8%AF%AD"><span class="toc-text">结束语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A2%8E%E7%A2%8E%E5%BF%B5"><span class="toc-text">碎碎念</span></a></li></ol>
+        </div>
+      </div>
+      
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2021-04-13</time><span class="post-eyebrow-sep">·</span>约 1092 字<span class="post-eyebrow-sep">·</span>读完约 3 分钟</p>
+          <h1 class="post-title">imgmaker-解放双手高效生成占位图</h1>
+        </header>
+        <section class="post-content">
+            <p>我开发了一款chrome插件–imgmaker（插件地址及仓库地址见文末），可以根据指定的尺寸、指定的关键字，生成想要的图片。可以在占位图的时候，输入想要的关键字，比如妹子、美女，动漫等等，生成一张赏心悦目的图片放上去，解决问题的同时没准还能提高工具效率（毕竟，好看的meizi图片 &#x3D; 第一生产力）</p>
+<span id="more"></span>
+
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在前端的日常开发中，经常会碰到这样的情景：</p>
+<ol>
+<li>在写一个h5页面，视觉稿此处有个375*200的背景图，但是切图又没给，只能先随便找个图或者直接用背景色替代，往往背景图被拉伸，或者背景色很难看</li>
+<li>在写后台的时候，需要提供图片上传的功能，这里一般是需要限制图片上传尺寸的，而开发手头并没有合适尺寸的图片，不得不打开裁剪工具，低效又浪费时间。</li>
+</ol>
+<p>在这样的困扰下，我开发了一款chrome插件–imgmaker（插件地址及仓库地址见文末），可以根据指定的尺寸、指定的关键字，生成想要的图片。可以在占位图的时候，输入想要的关键字，比如妹子、美女，动漫等等，生成一张赏心悦目的图片放上去，解决问题的同时没准还能提高工具效率（毕竟，好看的meizi图片 &#x3D; 第一生产力）</p>
+<h2 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h2><p><img src="https://pic4.zhimg.com/v2-b0ca900628103f5a353d7ec20defbb2b_b.jpg" alt="image.png" loading="lazy" referrerpolicy="no-referrer"></p>
+<p>图片不够，可以看看视频效果：<a target="_blank" rel="noopener" href="https://v.douyin.com/eMhKmFj/">v.douyin.com&#x2F;eMhKmFj&#x2F;</a></p>
+<p>修改宽高、关键字以及输出类型，都会重新生成一张图片。图片内容是通过爬取百度图片的接口获得，每次都不同，更具新鲜感！同时点击save， 可以将图片保存到本地。</p>
+<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="chrome插件"><a href="#chrome插件" class="headerlink" title="chrome插件"></a>chrome插件</h3><p>chrome插件开发时，需要书写manifest.json，如果想要使用vue、react或者比较新的js语法的话，还需要配置一些自动化的工作流，同时热更新也同正常的热更新有所区别。经过调研后，直接使用现成的模版进行修改开发，还比较好用，拿到手即可着手开发，非常方方便。<a target="_blank" rel="noopener" href="https://github.com/mubaidr/vue-chrome-extension-boilerplate">模版地址</a></p>
+<h3 id="图片源获取"><a href="#图片源获取" class="headerlink" title="图片源获取"></a>图片源获取</h3><p>如果在插件中内置几张图片的话，会显得非常单调，故通过爬取百度图片的接口，来根据关键字，宽高获取图片，同时，chrome插件中允许配置跨域接口的地址，可以解决掉跨域的问题</p>
+<h3 id="图片的生成及下载"><a href="#图片的生成及下载" class="headerlink" title="图片的生成及下载"></a>图片的生成及下载</h3><p>采用常规的canvas的drawImg以及toBlob进行绘制和下载。其中需要注意的是cover和contain的绘制，还是花了点时间。以画布大小作为canvas的宽高，contain模式时，只需要等比例对图片绘制区域进行缩放，而cover时，需要将短比例的边铺满，长比例的边裁剪，才能达到该效果。</p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>最后，欢迎大家试用，希望能够带来工作效率的提升，奉上<a target="_blank" rel="noopener" href="https://chrome.google.com/webstore/detail/imgmaker/gcnibpcodipjdbobdnfihkljfdojhgdb?hl=zh-CN">chrome商店地址</a>(需梯子)及<a target="_blank" rel="noopener" href="https://github.com/yuzai/imgmaker">github地址</a>（可以自行打包安装）</p>
+<h2 id="碎碎念"><a href="#碎碎念" class="headerlink" title="碎碎念"></a>碎碎念</h2><p>工作之余开发，欢迎issues，欢迎聊天<a href="http://blog.maxiaobo.com.cn/rs/wechat.jpg">提需求</a></p>
+
+        </section>
+        <nav class="post-neighbors">
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/posts/53270427/">极简webpack插件：彻底解决vscode点击无法跳转问题</a></p>
+          
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/posts/d783c5e2/">chrome 94预计cookie策略再加码，怎么放心大胆的升级？</a></p>
+          
+        </nav>
+        
+        <section class="post-comments">
+          <script src="https://giscus.app/client.js"
+            data-repo="yuzai/blog-comments"
+            data-repo-id="R_kgDOTReJTg"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOTReJTs4DAwJG"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="light"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous" async></script>
+        </section>
+        
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/index.js?v=1783506963752"></script>
+    <script src="/js/jquery-1.12.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/search.js?v=1783506963752"></script>
+    
+    <script src="/js/general.js?v=1783506963752"></script>
+    
+    <script src="/js/post.js?v=1783506963752"></script>
+    
+    <script src="/js/tag.js?v=1783506963752"></script>
+    
+</body>
+</html>

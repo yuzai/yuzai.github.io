@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "Shortcut Icon" href= '/favicon.ico' >
+    
+    <title>es64 - 芋仔的个人博客</title>
+    <meta name="description" content="es6的学习笔记(四)：iterators and iterable">
+<meta property="og:type" content="article">
+<meta property="og:title" content="es64">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/posts/d3a36be4/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="es6的学习笔记(四)：iterators and iterable">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-11-23T15:46:43.000Z">
+<meta property="article:modified_time" content="2026-07-08T10:35:50.886Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="javascript">
+<meta property="article:tag" content="es6">
+<meta name="twitter:card" content="summary">
+    
+    <link rel="canonical" href="https://blog.maxiaobo.com.cn/posts/d3a36be4/">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "es64",
+      "datePublished": "2016-11-23T15:46:43.000Z",
+      "dateModified": "2026-07-08T10:35:50.886Z",
+      "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
+      "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/d3a36be4/",
+      "description": "es6的学习笔记(四)：iterators and iterable",
+      "inLanguage": "zh-CN"
+    }
+    </script>
+    
+    
+    <link rel="stylesheet" href="/css/atom-one-dark.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963756">
+    <link rel="stylesheet" href="/css/style.css?v=1783506963756">
+
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
+<body class=" post-page">
+    <div class="main">
+        <header id = 'daohang'>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" >
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+      
+          <li><a href="/" >Welcome</a></li>
+      
+          <li><a href="/archives" >Archives</a></li>
+      
+          <li><a href="/my-works" >My-Work</a></li>
+      
+      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+<div class="site-search-overlay" id="site-search-overlay">
+  <div class="site-search-panel">
+    <input type="text" class="site-search-input" id="site-search-input" placeholder="搜索文章标题和内容…" autocomplete="off">
+    <ul class="site-search-results" id="site-search-results"></ul>
+  </div>
+</div>
+
+<div class="inner-page-shell">
+    <article class="post-reading">
+      
+      
+      <div id="post-toc-widget">
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <div class="post-toc-panel" id="post-toc-panel">
+          <div class="post-toc-head">本文目录</div>
+          <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%AD%E4%BB%A3%E8%A7%84%E5%88%99"><span class="toc-text">迭代规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%B8%A6%E8%BF%AD%E4%BB%A3%E5%B1%9E%E6%80%A7%E7%9A%84%E5%AF%B9%E8%B1%A1"><span class="toc-text">自带迭代属性的对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%86%E5%8F%AF%E8%BF%AD%E4%BB%A3%E7%9A%84%E5%AF%B9%E8%B1%A1%E8%BF%98%E5%8E%9F%E4%B8%BA%E6%95%B0%E7%BB%84"><span class="toc-text">将可迭代的对象还原为数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A0%E9%99%90%E5%BA%8F%E5%88%97"><span class="toc-text">无限序列</span></a></li></ol>
+        </div>
+      </div>
+      
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2016-11-23</time><span class="post-eyebrow-sep">·</span>约 2224 字<span class="post-eyebrow-sep">·</span>读完约 6 分钟</p>
+          <h1 class="post-title">es64</h1>
+        </header>
+        <section class="post-content">
+            <p>es6的学习笔记(四)：iterators and iterable</p>
+<span id="more"></span>
+
+<blockquote>
+<p>iterator本质上是一种协议，用于定义适用于所有对象的迭代</p>
+</blockquote>
+<h3 id="迭代规则"><a href="#迭代规则" class="headerlink" title="迭代规则"></a>迭代规则</h3><p>所有的对象，都可以使用迭代协议，只要为它添加一个属性名为[Symbol.iterator]，属性值为遵循协议的一个函数就可以使用迭代协议。</p>
+<pre><code class="hljs js"><span class="hljs-keyword">var</span> s=&#123;
+  <span class="hljs-attr">name</span>:[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>],
+  <span class="hljs-attr">value</span>:<span class="hljs-number">0</span>,
+  [<span class="hljs-title class_">Symbol</span>.<span class="hljs-property">iterator</span>]:<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;   <span class="hljs-comment">//绑定一个方法，该方法返回一个具有next方法的对象。</span>
+    <span class="hljs-keyword">return</span> &#123;
+      <span class="hljs-attr">next</span>:<span class="hljs-function">()=&gt;</span>&#123;
+        <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span>==<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>.<span class="hljs-property">length</span>)&#123;
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span> = <span class="hljs-number">0</span>;          <span class="hljs-comment">//此处需要将控制迭代的数值清零，不然只能迭代一次，亲测</span>
+          <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">value</span>:<span class="hljs-literal">undefined</span>,<span class="hljs-attr">done</span>:<span class="hljs-literal">true</span>&#125;;
+        &#125;
+        <span class="hljs-keyword">else</span> &#123;
+          <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">value</span>:<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span>++],<span class="hljs-attr">done</span>:<span class="hljs-literal">false</span>&#125;;
+        &#125;
+      &#125;
+    &#125;
+  &#125;
+&#125;
+<span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> value <span class="hljs-keyword">of</span> s)&#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(value);<span class="hljs-comment">//输出1,2,3,4,5</span>
+&#125;</code></pre>
+
+<p>当为对象s绑定了属性名为[Symbol.iterator]，且属性值符合一定的要求，就可以使用for of来进行迭代。在该方法中，应该符合以下几个规则：</p>
+<ol>
+<li>返回值是next函数</li>
+<li>next函数没有参数，返回值是一个对象{value,done}</li>
+<li>done表示该序列是否迭代结束，是一个boolean类型</li>
+<li>value是当前的输出值<br><strong>注意迭代器结束时需将控制迭代的数字还原，不然迭代器只能使用一次，其实也不算使用一次，它可以继续使用，只是使用一次之后如果不归零，再次使用直接就结束，也就没有任何数值输出，容易出错而已</strong><br>这样，就可以使用for of 语句迭代，数值就是next方法中的value,而结束就是根据done的值来判断是否结束。</li>
+</ol>
+<h3 id="自带迭代属性的对象"><a href="#自带迭代属性的对象" class="headerlink" title="自带迭代属性的对象"></a>自带迭代属性的对象</h3><p>上述的方法使得普通的对象也可以进行迭代，不过，还有一些预定义的对象也具有迭代性。比如：Array,String,DOM中的NodeList，arguments都是默认可以迭代的，也就是可以直接使用for of结构。</p>
+<h3 id="将可迭代的对象还原为数组"><a href="#将可迭代的对象还原为数组" class="headerlink" title="将可迭代的对象还原为数组"></a>将可迭代的对象还原为数组</h3><p>有两种方法，一种是spread操作符。一种是Array.form函数。Array.from除了可以把可迭代对象转换成数组，也可以把类数组对象转换成数组。类数组对象就是属性名为0,1,2,3,4并且具有length属性的对象</p>
+<pre><code class="hljs js"><span class="hljs-keyword">var</span> s=&#123;
+  <span class="hljs-attr">name</span>:[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>],
+  <span class="hljs-attr">value</span>:<span class="hljs-number">0</span>,
+  [<span class="hljs-title class_">Symbol</span>.<span class="hljs-property">iterator</span>]:<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;   <span class="hljs-comment">//绑定一个方法，该方法返回一个具有next方法的对象。</span>
+    <span class="hljs-keyword">return</span> &#123;
+      <span class="hljs-attr">next</span>:<span class="hljs-function">()=&gt;</span>&#123;
+        <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span>==<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>.<span class="hljs-property">length</span>)&#123;
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span> = <span class="hljs-number">0</span>;
+          <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">value</span>:<span class="hljs-literal">undefined</span>,<span class="hljs-attr">done</span>:<span class="hljs-literal">true</span>&#125;;
+        &#125;
+        <span class="hljs-keyword">else</span> &#123;
+          <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">value</span>:<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span>++],<span class="hljs-attr">done</span>:<span class="hljs-literal">false</span>&#125;;
+        &#125;
+      &#125;
+    &#125;
+  &#125;
+&#125;
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(...s);<span class="hljs-comment">//此处直接使用...操作符，输出1 2 3 4 5，此处是没有,的，因为并没有转换成数组，相当于连续输出了</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(s));<span class="hljs-comment">//此处输出1,2,3,4,5</span>
+<span class="hljs-keyword">var</span> q = [...s];<span class="hljs-comment">//使用...操作符将s转换成数组</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(q);<span class="hljs-comment">//输出1,2,3,4,5</span>
+<span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i <span class="hljs-keyword">in</span> q)
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(i)<span class="hljs-comment">//输出0-4</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(&#123;<span class="hljs-number">0</span>:<span class="hljs-string">&#x27;a&#x27;</span>,<span class="hljs-number">1</span>:<span class="hljs-string">&#x27;b&#x27;</span>,<span class="hljs-number">2</span>:<span class="hljs-string">&#x27;c&#x27;</span>,<span class="hljs-attr">length</span>:<span class="hljs-number">3</span>&#125;));<span class="hljs-comment">//此处输出a,b,c</span></code></pre>
+
+<h3 id="无限序列"><a href="#无限序列" class="headerlink" title="无限序列"></a>无限序列</h3><p>如果在next函数中，done变量始终是false，那么这个序列永远不会结束，同样的，如果对这个序列进行Array.from()或者[…]操作以及for of都会使程序崩溃。</p>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> x = &#123;
+  [<span class="hljs-title class_">Symbol</span>.<span class="hljs-property">iterator</span>]:<span class="hljs-function">()=&gt;</span>&#123;
+    <span class="hljs-keyword">return</span> &#123;
+      <span class="hljs-attr">next</span>:<span class="hljs-function">()=&gt;</span>&#123;<span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">value</span>:<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>(),<span class="hljs-attr">done</span>:<span class="hljs-literal">false</span>&#125;&#125;
+    &#125;
+  &#125;
+&#125;
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(x[<span class="hljs-title class_">Symbol</span>.<span class="hljs-property">iterator</span>]().<span class="hljs-title function_">next</span>().<span class="hljs-property">value</span>)<span class="hljs-comment">//不断执行，一直会产生一个新的随机数</span>
+<span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> s <span class="hljs-keyword">of</span> x)
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(s)<span class="hljs-comment">//后面的for循环一旦执行，浏览器的控制台就卡住，只能关闭重启</span>
+
+<span class="hljs-keyword">const</span> [one, another] = random  <span class="hljs-comment">//可以使用这样的结构来访问有限的无限序列中的元素</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(one)
+<span class="hljs-comment">// &lt;‐ 0.23235511826351285</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(another)
+<span class="hljs-comment">// &lt;‐ 0.28749457537196577</span></code></pre>
+
+        </section>
+        <nav class="post-neighbors">
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/posts/4fdac6fe/">es6笔记三</a></p>
+          
+          
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/posts/60e1b18f/">arrow的疑问</a></p>
+          
+        </nav>
+        
+        <section class="post-comments">
+          <script src="https://giscus.app/client.js"
+            data-repo="yuzai/blog-comments"
+            data-repo-id="R_kgDOTReJTg"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOTReJTs4DAwJG"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="light"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous" async></script>
+        </section>
+        
+      </div>
+    </article>
+
+</div>
+
+<div style="position:fixed;right:1%;bottom:1%">
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+</div>
+
+<footer id="footer" class="myfoot">
+  <div class="container-fluid">
+    <div class="beian-wrap">
+      <a class="beian-link" target="_blank" rel="noopener" href="http://beian.miit.gov.cn">浙ICP备2024109661号</a>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/js/index.js?v=1783506963756"></script>
+    <script src="/js/jquery-1.12.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/search.js?v=1783506963756"></script>
+    
+    <script src="/js/general.js?v=1783506963756"></script>
+    
+    <script src="/js/post.js?v=1783506963756"></script>
+    
+    <script src="/js/tag.js?v=1783506963756"></script>
+    
+</body>
+</html>
