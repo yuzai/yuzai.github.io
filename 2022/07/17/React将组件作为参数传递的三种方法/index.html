@@ -6,15 +6,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>React 将组件作为参数进行传递的三种方法 - 芋仔的个人博客</title>
+    <meta name="description" content="在日常的开发中，开发通用组件的机会其实并不多，尤其是在各种组件库已经遍地都是的情况下。而作为一个通用组件库的使用者，经常会看到把 React 组件作为参数传递下去的场景，每当这个时候，其实或多或少都会有一些疑问，比如：有些组件传递下去的是组件名，而有些组件传递下去的是一个箭头函数返回一个组件，而有些直接传递一个 jsx 创建好的元素，这些传递方案的适用场景如何，有什么不同，是否会导致组件的 mem">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React 将组件作为参数进行传递的三种方法">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2022/07/17/React%E5%B0%86%E7%BB%84%E4%BB%B6%E4%BD%9C%E4%B8%BA%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="在日常的开发中，开发通用组件的机会其实并不多，尤其是在各种组件库已经遍地都是的情况下。而作为一个通用组件库的使用者，经常会看到把 React 组件作为参数传递下去的场景，每当这个时候，其实或多或少都会有一些疑问，比如：有些组件传递下去的是组件名，而有些组件传递下去的是一个箭头函数返回一个组件，而有些直接传递一个 jsx 创建好的元素，这些传递方案的适用场景如何，有什么不同，是否会导致组件的 mem">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h4a8l7sj5uj204g01zglf.jpg">
+<meta property="article:published_time" content="2022-07-17T09:50:00.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h4a8l7sj5uj204g01zglf.jpg">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241079">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241079">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +78,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2022-07-17</time><span class="post-eyebrow-sep">·</span>约 9388 字<span class="post-eyebrow-sep">·</span>读完约 23 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2022-07-17</time><span class="post-eyebrow-sep">·</span>约 9416 字<span class="post-eyebrow-sep">·</span>读完约 24 分钟</p>
           <h1 class="post-title">React 将组件作为参数进行传递的三种方法</h1>
         </header>
         <section class="post-content">
@@ -79,289 +94,289 @@
 </ol>
 <p>下文也主要展开介绍这三种方式并结合实际场景对比这三种方案。</p>
 <h3 id="方式一：直接传递-jsx-创建好的元素"><a href="#方式一：直接传递-jsx-创建好的元素" class="headerlink" title="方式一：直接传递 jsx 创建好的元素"></a>方式一：直接传递 jsx 创建好的元素</h3><p>在 antd 的组件 api 中，最常见的方式便是这个方法，以 button 为例，有一个 icon 参数便是允许使用者传递一个经过 jsx 创建好的元素。简化后的示例如下：</p>
-<pre><code class="js">function DownloadOutlined() &#123;
-    return /* icon 的实现*/;
+<pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">DownloadOutlined</span>(<span class="hljs-params"></span>) &#123;
+    <span class="hljs-keyword">return</span> <span class="hljs-comment">/* icon 的实现*/</span>;
 &#125; 
 
-function Button(&#123; icon, children &#125;) &#123;
-    return &lt;button&gt;
-        &#123;icon&#125;
-        &#123;children&#125;
-    &lt;/button&gt;
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Button</span>(<span class="hljs-params">&#123; icon, children &#125;</span>) &#123;
+    <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">        &#123;icon&#125;</span>
+<span class="language-xml">        &#123;children&#125;</span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
 &#125;
 
-function App() &#123;
-    return &lt;Button icon=&#123;&lt;DownloadOutlined /&gt;&#125;&gt;test&lt;/Button&gt;
-&#125;
-</code></pre>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;
+    <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&#123;</span>&lt;<span class="hljs-attr">DownloadOutlined</span> /&gt;</span>&#125;&gt;test<span class="hljs-tag">&lt;/<span class="hljs-name">Button</span>&gt;</span></span>
+&#125;</code></pre>
+
 <p>可以看出来，icon 直接传递了一个 jsx 创建好的组件，从而满足了用户自定义 icon 的需求。</p>
 <p>相比于通过字符串枚举内置 icon, 给了用户更大的定制空间。</p>
 <h3 id="方式二：直接传递组件本身"><a href="#方式二：直接传递组件本身" class="headerlink" title="方式二：直接传递组件本身"></a>方式二：直接传递组件本身</h3><p>这一用法在 antd 中很少出现，在 <a target="_blank" rel="noopener" href="https://react-select.com/components">react-select</a> 中比较常见。</p>
 <p>这里为了方便还是以 Button 为例，修改下上文的 Button 组件，将其参数改为传递 <code>DownloadOutlined</code> 而非经过 jsx 创建好的元素 <code>&lt;DownloadOutlined /&gt;</code></p>
-<pre><code class="js">function DownloadOutlined() &#123;
-    return /* icon 的实现*/;
+<pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">DownloadOutlined</span>(<span class="hljs-params"></span>) &#123;
+    <span class="hljs-keyword">return</span> <span class="hljs-comment">/* icon 的实现*/</span>;
 &#125; 
 
-function Button(&#123; icon: Icon, children &#125;) &#123;
-    return &lt;button&gt;
-    // 渲染方式进行了改变
-    &lt;Icon /&gt;
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Button</span>(<span class="hljs-params">&#123; icon: Icon, children &#125;</span>) &#123;
+    <span class="hljs-keyword">return</span> &lt;button&gt;
+    <span class="hljs-comment">// 渲染方式进行了改变</span>
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Icon</span> /&gt;</span></span>
     &#123;children&#125;
-    &lt;/Button&gt;
+    &lt;/<span class="hljs-title class_">Button</span>&gt;
 &#125;
 
-function App() &#123;
-    return &lt;Button icon=&#123;DownloadOutlined&#125;&gt;test&lt;/Button&gt;
-&#125;
-</code></pre>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;
+    <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&#123;DownloadOutlined&#125;</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">Button</span>&gt;</span></span>
+&#125;</code></pre>
+
 <p>通过直接传递组件本身的方式，也可将其传递给子组件进行渲染，当然，子组件渲染的地方也改成了 <code>&lt;Icon /&gt;</code> 而非上文的 <code>&#123;icon&#125;</code>。ps: 上文中由于 jsx 语法要求，将 icon 变量名改成了首字母大写的 Icon。</p>
 <h3 id="方式三：传递一个返回组件的函数"><a href="#方式三：传递一个返回组件的函数" class="headerlink" title="方式三：传递一个返回组件的函数"></a>方式三：传递一个返回组件的函数</h3><p>这一用法用 Button 示例改写如下：</p>
-<pre><code class="js">function DownloadOutlined() &#123;
-    return /* icon 的实现*/;
+<pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">DownloadOutlined</span>(<span class="hljs-params"></span>) &#123;
+    <span class="hljs-keyword">return</span> <span class="hljs-comment">/* icon 的实现*/</span>;
 &#125; 
 
-function Button(&#123; icon, children &#125;) &#123;
-    return &lt;button&gt;
-    // 渲染方式进行了改变
-    &#123;icon()&#125;
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Button</span>(<span class="hljs-params">&#123; icon, children &#125;</span>) &#123;
+    <span class="hljs-keyword">return</span> &lt;button&gt;
+    <span class="hljs-comment">// 渲染方式进行了改变</span>
+    &#123;<span class="hljs-title function_">icon</span>()&#125;
     &#123;children&#125;
-    &lt;/Button&gt;
+    &lt;/<span class="hljs-title class_">Button</span>&gt;
 &#125;
 
-function App() &#123;
-    return &lt;Button icon=&#123;() =&gt; &lt;DownloadOutlined /&gt;&#125;&gt;test&lt;/Button&gt;
-&#125;
-</code></pre>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;
+    <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">DownloadOutlined</span> /&gt;</span>&#125;&gt;test<span class="hljs-tag">&lt;/<span class="hljs-name">Button</span>&gt;</span></span>
+&#125;</code></pre>
+
 <p>在这一例子中，由于传递的是个函数，那么返回值在渲染时，改成执行函数即可。</p>
 <h3 id="三种方案的对比"><a href="#三种方案的对比" class="headerlink" title="三种方案的对比"></a>三种方案的对比</h3><p>上文中分别介绍了这三种方案的实现方法，从结果来看，三种方案都能满足传递组件作为组件参数的场景。</p>
 <p>但是在实际的场景中，往往不会这么简单，往往有更多需要考虑的情况。</p>
 <p>情况一： 考虑是否存在不必要的渲染?</p>
 <p>三种方案下，当父组件发生渲染时，Button 组件是否会发生不必要的渲染。示例如下：</p>
-<pre><code class="js">import React, &#123; useState &#125; from &#39;react&#39;;
+<pre><code class="hljs js"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, &#123; useState &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
 
-function DownloadOutlined() &#123;
-  return &lt;span&gt;icon&lt;/span&gt;;
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">DownloadOutlined</span>(<span class="hljs-params"></span>) &#123;
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>icon<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>;
 &#125;
 
-const Button1 = React.memo((&#123; icon, children &#125;) =&gt; &#123;
-  console.log(&#39;button1 render&#39;);
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Button1</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">(<span class="hljs-params">&#123; icon, children &#125;</span>) =&gt;</span> &#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;button1 render&#x27;</span>);
 
-  return (
-    &lt;button&gt;
-      &#123;icon&#125;
-      &#123;children&#125;
-    &lt;/button&gt;
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">      &#123;icon&#125;</span>
+<span class="language-xml">      &#123;children&#125;</span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
   );
 &#125;);
 
-const Button2 = React.memo((&#123; icon: Icon, children &#125;) =&gt; &#123;
-  console.log(&#39;button2 render&#39;);
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Button2</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">(<span class="hljs-params">&#123; icon: Icon, children &#125;</span>) =&gt;</span> &#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;button2 render&#x27;</span>);
 
-  return (
-    &lt;button&gt;
-      &lt;Icon /&gt;
-      &#123;children&#125;
-    &lt;/button&gt;
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Icon</span> /&gt;</span></span>
+<span class="language-xml">      &#123;children&#125;</span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
   );
 &#125;);
 
-const Button3 = React.memo((&#123; icon, children &#125;) =&gt; &#123;
-  console.log(&#39;button3 render&#39;);
-  return (
-    &lt;button&gt;
-      &#123;icon()&#125;
-      &#123;children&#125;
-    &lt;/button&gt;
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Button3</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">(<span class="hljs-params">&#123; icon, children &#125;</span>) =&gt;</span> &#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;button3 render&#x27;</span>);
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">      &#123;icon()&#125;</span>
+<span class="language-xml">      &#123;children&#125;</span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
   );
 &#125;);
 
-export default function App() &#123;
-  const [count, setCount] = useState(0);
-  console.log(&#39;App render&#39;);
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;
+  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>);
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;App render&#x27;</span>);
 
-  return (
-    &lt;&gt;
-      &lt;Button1 icon=&#123;&lt;DownloadOutlined /&gt;&#125;&gt;button1&lt;/Button1&gt;
-      &lt;Button2 icon=&#123;DownloadOutlined&#125;&gt;button2&lt;/Button2&gt;
-      &lt;Button3 icon=&#123;() =&gt; &lt;DownloadOutlined /&gt;&#125;&gt;button3&lt;/Button3&gt;
-      &lt;button onClick=&#123;() =&gt; setCount((pre) =&gt; pre + 1)&#125;&gt;render&lt;/button&gt;
-    &lt;/&gt;
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Button1</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&#123;</span>&lt;<span class="hljs-attr">DownloadOutlined</span> /&gt;</span>&#125;&gt;button1<span class="hljs-tag">&lt;/<span class="hljs-name">Button1</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Button2</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&#123;DownloadOutlined&#125;</span>&gt;</span>button2<span class="hljs-tag">&lt;/<span class="hljs-name">Button2</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Button3</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">DownloadOutlined</span> /&gt;</span>&#125;&gt;button3<span class="hljs-tag">&lt;/<span class="hljs-name">Button3</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> setCount((pre) =&gt; pre + 1)&#125;&gt;render<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/&gt;</span></span>
   );
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>在该示例中，点击 render button，此时，期望的最小渲染应该是仅仅渲染 app 组件即可，Button1 - Button3 由于并未依赖 count 的变化，同时 Button1 - Button3 都通过 React.memo 进行包裹，期望的是组件不进行渲染。</p>
 <p>实际输出如下：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h4a8l7sj5uj204g01zglf.jpg" alt="img" referrerpolicy="no-referrer"></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h4a8l7sj5uj204g01zglf.jpg" alt="img" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>可以看出，Button1 和 Button3 均进行了渲染，这是由于这两种方案下，icon的参数发生了变化，对于 Button1, <code>&lt;DownloadOutlined /&gt;</code>, 本质是 <code>React.createElement(DownloadOutlined)</code>, 此时将会返回一个新的引用，就导致了 Button1 参数的改变，从而使得其会重新渲染。而对于 Button3，就更加明显，每次渲染后返回的箭头函数都是新的，自然也会引发渲染。而只有方案二，由于返回的始终是组件的引用，故不会重新渲染。</p>
 <p>要避免（虽然实际中，99%的场景都不需要避免，也不会有性能问题）这种情况，可以通过加 memo 解决。改动点如下：</p>
-<pre><code class="js">export default function App() &#123;
-  const [count, setCount] = useState(0);
-  console.log(&#39;App render&#39;);
+<pre><code class="hljs js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;
+  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>);
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;App render&#x27;</span>);
 
-  const button1Icon = useMemo(() =&gt; &#123;
-      return &lt;DownloadOutlined /&gt;;
+  <span class="hljs-keyword">const</span> button1Icon = <span class="hljs-title function_">useMemo</span>(<span class="hljs-function">() =&gt;</span> &#123;
+      <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">DownloadOutlined</span> /&gt;</span></span>;
   &#125;, []);
 
-  const button3Icon = useCallback(() =&gt; &#123;
-      return () =&gt; &lt;DownloadOutlined /&gt;;
+  <span class="hljs-keyword">const</span> button3Icon = <span class="hljs-title function_">useCallback</span>(<span class="hljs-function">() =&gt;</span> &#123;
+      <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">DownloadOutlined</span> /&gt;</span></span>;
   &#125;, []);
 
-  return (
-    &lt;&gt;
-      &lt;Button1 icon=&#123;butto1Icon&#125;&gt;button1&lt;/Button1&gt;
-      &lt;Button2 icon=&#123;DownloadOutlined&#125;&gt;button2&lt;/Button2&gt;
-      &lt;Button3 icon=&#123;button3Icon&#125;&gt;button3&lt;/Button3&gt;
-      &lt;button onClick=&#123;() =&gt; setCount((pre) =&gt; pre + 1)&#125;&gt;render&lt;/button&gt;
-    &lt;/&gt;
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Button1</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&#123;butto1Icon&#125;</span>&gt;</span>button1<span class="hljs-tag">&lt;/<span class="hljs-name">Button1</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Button2</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&#123;DownloadOutlined&#125;</span>&gt;</span>button2<span class="hljs-tag">&lt;/<span class="hljs-name">Button2</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Button3</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&#123;button3Icon&#125;</span>&gt;</span>button3<span class="hljs-tag">&lt;/<span class="hljs-name">Button3</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> setCount((pre) =&gt; pre + 1)&#125;&gt;render<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/&gt;</span></span>
   );
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>通过 useMemo, useCallback包裹后，即可实现 Button1, Button3 组件参数的不变，从而避免了多余的渲染。相比之下，目前看，直接传递组件本身的方案写法似乎更为简单。</p>
 <p>实际的场景中，Icon 组件往往不会如此简单，往往会有一些参数来控制其比如颜色、点击行为以及大小等等，此时，要将这些参数传递给 Icon 组件，这也是笔者想要讨论的：</p>
 <p>情况二：需要传递来自父组件(App)的参数的情况。</p>
 <p>在现有的基础上, 以传递 size 到 Icon 组件为例，改造如下：</p>
-<pre><code class="js">import React, &#123; useState, useMemo, useCallback &#125; from &#39;react&#39;;
+<pre><code class="hljs js"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, &#123; useState, useMemo, useCallback &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
 
-// 增加 size 参数, 控制 icon 大小
-function DownloadOutlined(&#123; size &#125;) &#123;
-  return &lt;span style=&#123;&#123; fontSize: `$&#123;size&#125;px` &#125;&#125;&gt;icon&lt;/span&gt;;
+<span class="hljs-comment">// 增加 size 参数, 控制 icon 大小</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">DownloadOutlined</span>(<span class="hljs-params">&#123; size &#125;</span>) &#123;
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">fontSize:</span> `$&#123;<span class="hljs-attr">size</span>&#125;<span class="hljs-attr">px</span>` &#125;&#125;&gt;</span>icon<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>;
 &#125;
 
-// 无需修改
-const Button1 = React.memo((&#123; icon, children &#125;) =&gt; &#123;
-  console.log(&#39;button1 render&#39;);
+<span class="hljs-comment">// 无需修改</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Button1</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">(<span class="hljs-params">&#123; icon, children &#125;</span>) =&gt;</span> &#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;button1 render&#x27;</span>);
 
-  return (
-    &lt;button&gt;
-      &#123;icon&#125;
-      &#123;children&#125;
-    &lt;/button&gt;
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">      &#123;icon&#125;</span>
+<span class="language-xml">      &#123;children&#125;</span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
   );
 &#125;);
 
-// 增加 iconProps，来传递给 Icon 组件
-const Button2 = React.memo((&#123; icon: Icon, children, iconProps = &#123;&#125; &#125;) =&gt; &#123;
-  console.log(&#39;button2 render&#39;);
+<span class="hljs-comment">// 增加 iconProps，来传递给 Icon 组件</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Button2</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">(<span class="hljs-params">&#123; icon: Icon, children, iconProps = &#123;&#125; &#125;</span>) =&gt;</span> &#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;button2 render&#x27;</span>);
 
-  return (
-    &lt;button&gt;
-      &lt;Icon &#123;...iconProps&#125; /&gt;
-      &#123;children&#125;
-    &lt;/button&gt;
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Icon</span> &#123;<span class="hljs-attr">...iconProps</span>&#125; /&gt;</span></span>
+<span class="language-xml">      &#123;children&#125;</span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
   );
 &#125;);
 
-// 无需修改
-const Button3 = React.memo((&#123; icon, children &#125;) =&gt; &#123;
-  console.log(&#39;button3 render&#39;);
-  return (
-    &lt;button&gt;
-      &#123;icon()&#125;
-      &#123;children&#125;
-    &lt;/button&gt;
+<span class="hljs-comment">// 无需修改</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Button3</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">(<span class="hljs-params">&#123; icon, children &#125;</span>) =&gt;</span> &#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;button3 render&#x27;</span>);
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">      &#123;icon()&#125;</span>
+<span class="language-xml">      &#123;children&#125;</span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
   );
 &#125;);
 
-export default function App() &#123;
-  const [count, setCount] = useState(0);
-  const [size, setSize] = useState(12);
-  console.log(&#39;App render&#39;);
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;
+  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [size, setSize] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">12</span>);
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;App render&#x27;</span>);
   
-  // 增加size依赖
-  const button1Icon = useMemo(() =&gt; &#123;
-    return &lt;DownloadOutlined size=&#123;size&#125; /&gt;;
+  <span class="hljs-comment">// 增加size依赖</span>
+  <span class="hljs-keyword">const</span> button1Icon = <span class="hljs-title function_">useMemo</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">DownloadOutlined</span> <span class="hljs-attr">size</span>=<span class="hljs-string">&#123;size&#125;</span> /&gt;</span></span>;
   &#125;, [size]);
   
-  // 增加size依赖
-  const button3Icon = useCallback(() =&gt; &#123;
-    return &lt;DownloadOutlined size=&#123;size&#125; /&gt;;
+  <span class="hljs-comment">// 增加size依赖</span>
+  <span class="hljs-keyword">const</span> button3Icon = <span class="hljs-title function_">useCallback</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">DownloadOutlined</span> <span class="hljs-attr">size</span>=<span class="hljs-string">&#123;size&#125;</span> /&gt;</span></span>;
   &#125;, [size]);
 
-  return (
-    &lt;&gt;
-      &lt;Button1 icon=&#123;button1Icon&#125;&gt;button1&lt;/Button1&gt;
-      &lt;Button2 icon=&#123;DownloadOutlined&#125; iconProps=&#123;&#123; size &#125;&#125;&gt;
-        button2
-      &lt;/Button2&gt;
-      &lt;Button3 icon=&#123;button3Icon&#125;&gt;button3&lt;/Button3&gt;
-      &lt;button onClick=&#123;() =&gt; setCount((pre) =&gt; pre + 1)&#125;&gt;render&lt;/button&gt;
-      &lt;button onClick=&#123;() =&gt; setSize((pre) =&gt; pre + 1)&#125;&gt;addSize&lt;/button&gt;
-    &lt;/&gt;
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Button1</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&#123;button1Icon&#125;</span>&gt;</span>button1<span class="hljs-tag">&lt;/<span class="hljs-name">Button1</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Button2</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&#123;DownloadOutlined&#125;</span> <span class="hljs-attr">iconProps</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">size</span> &#125;&#125;&gt;</span></span>
+<span class="language-xml">        button2</span>
+<span class="language-xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">Button2</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Button3</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&#123;button3Icon&#125;</span>&gt;</span>button3<span class="hljs-tag">&lt;/<span class="hljs-name">Button3</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> setCount((pre) =&gt; pre + 1)&#125;&gt;render<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> setSize((pre) =&gt; pre + 1)&#125;&gt;addSize<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/&gt;</span></span>
   );
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>通过上述改动，可以发现，当需要从 App 组件中，向 Icon 传递参数时，Button1 和 Button3 组件本身不需要做任何改动，仅仅需要修改 Icon jsx创建时的参数即可，而 Button2 的 Icon 由于渲染发生在内部，故需要额外传递 iconProps 作为参数传递给 Icon。与此同时，render按钮点击时，由于 iconProps 是个引用类型，导致触发了 Button2 的额外渲染，当然可以通过 useMemo 来控制，此处不再赘述。</p>
 <p>接下来看情况三，当子组件(Button1 - button3)需要传递它自身内部的状态到 Icon 组件中时，需要做什么改动。</p>
 <p>设想一个虚构的需求， Button1 - Button3 组件内部维护了一个状态，count，也就是每个组件点击的次数，而 <code>DownloadOutlined</code> 也接收一个参数，count, 随着 count 的变化，他的颜色会从 <code>rbg(0, 0, 0)</code> 变化为 <code>rgb(count, 0, 0)</code>。</p>
 <p>DownloadOutlined 改动如下:</p>
-<pre><code class="js">// 增加 count 参数，控制 icon 颜色
-function DownloadOutlined(&#123; size = 12, count = 0 &#125;) &#123;
-  console.log(count);
-  return (
-    &lt;span style=&#123;&#123; fontSize: `$&#123;size&#125;px`, color: `rgb($&#123;count&#125;, 0, 0)` &#125;&#125;&gt;
-      icon
-    &lt;/span&gt;
+<pre><code class="hljs js"><span class="hljs-comment">// 增加 count 参数，控制 icon 颜色</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">DownloadOutlined</span>(<span class="hljs-params">&#123; size = <span class="hljs-number">12</span>, count = <span class="hljs-number">0</span> &#125;</span>) &#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(count);
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">fontSize:</span> `$&#123;<span class="hljs-attr">size</span>&#125;<span class="hljs-attr">px</span>`, <span class="hljs-attr">color:</span> `<span class="hljs-attr">rgb</span>($&#123;<span class="hljs-attr">count</span>&#125;, <span class="hljs-attr">0</span>, <span class="hljs-attr">0</span>)` &#125;&#125;&gt;</span></span>
+<span class="language-xml">      icon</span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>
   );
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>Button2 的改造(Button1放在最后)如下:</p>
-<pre><code class="js">const Button2 = React.memo((&#123; icon: Icon, children, iconProps = &#123;&#125; &#125;) =&gt; &#123;
-  console.log(&#39;button2 render&#39;);
-  const [count, setCount] = useState(0);
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title class_">Button2</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">(<span class="hljs-params">&#123; icon: Icon, children, iconProps = &#123;&#125; &#125;</span>) =&gt;</span> &#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;button2 render&#x27;</span>);
+  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>);
 
-  return (
-    &lt;button onClick=&#123;() =&gt; setCount(pre =&gt; pre + 40)&#125;&gt;
-      &#123;/* 将count参数注入即可 */&#125;
-      &lt;Icon &#123;...iconProps&#125; count=&#123;count&#125; /&gt;
-      &#123;children&#125;
-    &lt;/button&gt;
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> setCount(pre =&gt; pre + 40)&#125;&gt;</span>
+<span class="language-xml">      &#123;/* 将count参数注入即可 */&#125;</span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Icon</span> &#123;<span class="hljs-attr">...iconProps</span>&#125; <span class="hljs-attr">count</span>=<span class="hljs-string">&#123;count&#125;</span> /&gt;</span></span>
+<span class="language-xml">      &#123;children&#125;</span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
   );
-&#125;);
-</code></pre>
+&#125;);</code></pre>
+
 <p>Button3的改造如下：</p>
-<pre><code class="js">const Button3 = React.memo((&#123; icon, children &#125;) =&gt; &#123;
-  console.log(&#39;button3 render&#39;);
-  const [count, setCount] = useState(0);
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title class_">Button3</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">(<span class="hljs-params">&#123; icon, children &#125;</span>) =&gt;</span> &#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;button3 render&#x27;</span>);
+  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>);
 
-  return (
-    // 此处为了放大颜色的改变，点击一次加 40
-    &lt;button onClick=&#123;() =&gt; setCount(pre =&gt; pre + 40)&#125;&gt;
-      &#123;/* 将 count 作为参数传递给 icon 函数 */&#125;
-      &#123;icon(&#123;count&#125;)&#125;
-      &#123;children&#125;
-    &lt;/button&gt;
+  <span class="hljs-keyword">return</span> (
+    <span class="hljs-comment">// 此处为了放大颜色的改变，点击一次加 40</span>
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> setCount(pre =&gt; pre + 40)&#125;&gt;</span>
+<span class="language-xml">      &#123;/* 将 count 作为参数传递给 icon 函数 */&#125;</span>
+<span class="language-xml">      &#123;icon(&#123;count&#125;)&#125;</span>
+<span class="language-xml">      &#123;children&#125;</span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
   );
-&#125;);
-</code></pre>
+&#125;);</code></pre>
+
 <p>相应的，App 组件传入也需要做改动</p>
-<pre><code class="js">export default function App() &#123;
-  /* 省略 */
+<pre><code class="hljs js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;
+  <span class="hljs-comment">/* 省略 */</span>
   
-  const button3Icon = useCallback((props) =&gt; &#123;
-    // 接收参数并将其传递给icon组件
-    return &lt;DownloadOutlined size=&#123;size&#125; &#123;...props&#125; /&gt;;
+  <span class="hljs-keyword">const</span> button3Icon = <span class="hljs-title function_">useCallback</span>(<span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> &#123;
+    <span class="hljs-comment">// 接收参数并将其传递给icon组件</span>
+    <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">DownloadOutlined</span> <span class="hljs-attr">size</span>=<span class="hljs-string">&#123;size&#125;</span> &#123;<span class="hljs-attr">...props</span>&#125; /&gt;</span></span>;
   &#125;, [size]);
 
-  /* 省略 */
-&#125;
-</code></pre>
+  <span class="hljs-comment">/* 省略 */</span>
+&#125;</code></pre>
+
 <p>而对于 button1, 由于 icon 渲染的时机，是在 App 组件中，而在 App 组件中，获取 Button1 组件内部的状态并不方便(可以通过 ref， 但是略显麻烦)。此时可以借助 <code>React.cloneElement</code> api来新建一个 Icon 组件并将子组件参数注入，改造如下：</p>
-<pre><code class="js">const Button1 = React.memo((&#123; icon, children &#125;) =&gt; &#123;
-  console.log(&#39;button1 render&#39;);
-  const [count, setCount] = useState(0);
-  // 借助 cloneElement 向icon 注入参数
-  const newIcon = React.cloneElement(icon, &#123;
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title class_">Button1</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">(<span class="hljs-params">&#123; icon, children &#125;</span>) =&gt;</span> &#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;button1 render&#x27;</span>);
+  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>);
+  <span class="hljs-comment">// 借助 cloneElement 向icon 注入参数</span>
+  <span class="hljs-keyword">const</span> newIcon = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">cloneElement</span>(icon, &#123;
     count,
   &#125;);
 
-  return (
-    &lt;button onClick=&#123;() =&gt; setCount((pre) =&gt; pre + 40)&#125;&gt;
-      &#123;newIcon&#125;
-      &#123;children&#125;
-    &lt;/button&gt;
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> setCount((pre) =&gt; pre + 40)&#125;&gt;</span>
+<span class="language-xml">      &#123;newIcon&#125;</span>
+<span class="language-xml">      &#123;children&#125;</span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
   );
-&#125;);
-</code></pre>
+&#125;);</code></pre>
+
 <p>从这个例子可以看出，如果传入的组件(icon)，需要获取即将传入组件(Button1, Button2, Button3)内部的组件，那么直接传递 jsx 创建好的元素，并不方便，因为在父组件(App)中获取子组件(Button1)内部的状态并不方便，而直接传递组件本身，和传递返回 jsx 创建元素的函数，前者由于元素真正的创建，就是发生在子组件内部，故可以方便的获取子组件状态，而后者由于是函数式的创建，通过简单的参数传递，即可将内部参数传入 icon 中，从而方便的实现响应的需求。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本文先简单介绍了三种将组件作为参数传递的方案：</p>
 <ol>
@@ -391,7 +406,6 @@ function DownloadOutlined(&#123; size = 12, count = 0 &#125;) &#123;
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2022/07/31/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AintersectionObserver%20%E5%AE%9E%E6%88%98%E7%BB%8F%E9%AA%8C/">可视化埋点（二）：intersectionObserver 实战经验</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -411,19 +425,15 @@ function DownloadOutlined(&#123; size = 12, count = 0 &#125;) &#123;
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774342"></script>
+    <script src="/js/index.js?v=1783498241079"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774342"></script>
+    <script src="/js/general.js?v=1783498241079"></script>
     
-    <script src="/js/post.js?v=1783490774342"></script>
+    <script src="/js/post.js?v=1783498241079"></script>
     
-    <script src="/js/tag.js?v=1783490774342"></script>
+    <script src="/js/tag.js?v=1783498241079"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

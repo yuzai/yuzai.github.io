@@ -6,15 +6,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>100行代码盘一个react数据流管理工具 - 芋仔的个人博客</title>
+    <meta name="description" content="前言在我们团队目前的业务中，随着移动端h5页面复杂度增加以及需要长期维护的项目增多，初期选择多页无数据管理的一些弊端就暴露出来。页面内多个轮询，消息监听、各种优化交互的loading态、倒计时，导致一个h5中，往往有几十个核心的状态，组件嵌套的层级也较多。代码往往也是开头十几个useState的定义，而这些state通过组件一层层传递下去，让后来的维护者，可以说是如履薄冰。 而在组内推行数据流管理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="100行代码盘一个react数据流管理工具">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2021/10/27/100%E8%A1%8C%E4%BB%A3%E7%A0%81%E7%9B%98%E4%B8%80%E4%B8%AAreact%E6%95%B0%E6%8D%AE%E6%B5%81%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="前言在我们团队目前的业务中，随着移动端h5页面复杂度增加以及需要长期维护的项目增多，初期选择多页无数据管理的一些弊端就暴露出来。页面内多个轮询，消息监听、各种优化交互的loading态、倒计时，导致一个h5中，往往有几十个核心的状态，组件嵌套的层级也较多。代码往往也是开头十几个useState的定义，而这些state通过组件一层层传递下去，让后来的维护者，可以说是如履薄冰。 而在组内推行数据流管理">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-10-27T10:04:00.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241080">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241080">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +76,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2021-10-27</time><span class="post-eyebrow-sep">·</span>约 11015 字<span class="post-eyebrow-sep">·</span>读完约 28 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2021-10-27</time><span class="post-eyebrow-sep">·</span>约 11077 字<span class="post-eyebrow-sep">·</span>读完约 28 分钟</p>
           <h1 class="post-title">100行代码盘一个react数据流管理工具</h1>
         </header>
         <section class="post-content">
@@ -74,99 +87,100 @@
 <span id="more"></span>
 
 <h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p>预期的使用方法类似redux， 暴露的api有：</p>
-<pre><code class="js">export &#123;
-    createStore, // 创建store, 传入state, reducer
-    ContextProvider, // react的contex provider组件
-    useSelector, // 获取state中的部分数据
-    useDispatch, // 获取触发reducer的方法
-    shadowEqual, // 浅比较方法
+<pre><code class="hljs js"><span class="hljs-keyword">export</span> &#123;
+    createStore, <span class="hljs-comment">// 创建store, 传入state, reducer</span>
+    <span class="hljs-title class_">ContextProvider</span>, <span class="hljs-comment">// react的contex provider组件</span>
+    useSelector, <span class="hljs-comment">// 获取state中的部分数据</span>
+    useDispatch, <span class="hljs-comment">// 获取触发reducer的方法</span>
+    shadowEqual, <span class="hljs-comment">// 浅比较方法</span>
 &#125;
 </code></pre>
-<p>使用方法的伪代码如下：</p>
-<pre><code class="jsx">// app.js
-import &#123; ContextProvider, createStore &#125; from &#39;tinysm&#39;;
-import Todo from &#39;./Todo&#39;;
-import Counter from &#39;./Counter&#39;;
 
-// 定义初始state
-const initialState = &#123;
-  count: 1,
-  todos: []
+<p>使用方法的伪代码如下：</p>
+<pre><code class="hljs jsx"><span class="hljs-comment">// app.js</span>
+<span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">ContextProvider</span>, createStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;tinysm&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">Todo</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./Todo&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">Counter</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./Counter&#x27;</span>;
+
+<span class="hljs-comment">// 定义初始state</span>
+<span class="hljs-keyword">const</span> initialState = &#123;
+  <span class="hljs-attr">count</span>: <span class="hljs-number">1</span>,
+  <span class="hljs-attr">todos</span>: []
 &#125;;
 
-// 定义更新state的reducer
-const reducer = (state, action) =&gt; &#123;
-  switch(action.type) &#123;
-    case &#39;ADD_COUNT&#39;: return &#123;
+<span class="hljs-comment">// 定义更新state的reducer</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">reducer</span> = (<span class="hljs-params">state, action</span>) =&gt; &#123;
+  <span class="hljs-keyword">switch</span>(action.<span class="hljs-property">type</span>) &#123;
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;ADD_COUNT&#x27;</span>: <span class="hljs-keyword">return</span> &#123;
       ...state,
-      count: state.count + 1,
+      <span class="hljs-attr">count</span>: state.<span class="hljs-property">count</span> + <span class="hljs-number">1</span>,
     &#125;
-    case &#39;ADD_TODO&#39;: return &#123;
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;ADD_TODO&#x27;</span>: <span class="hljs-keyword">return</span> &#123;
       ...state,
-      todos: [...todos, action.payload],
+      <span class="hljs-attr">todos</span>: [...todos, action.<span class="hljs-property">payload</span>],
     &#125;
-    default: return &#123;
+    <span class="hljs-attr">default</span>: <span class="hljs-keyword">return</span> &#123;
       ...state,
     &#125;
   &#125;
 &#125;;
 
-const store = createStore(initialState, reducer);
+<span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(initialState, reducer);
 
-export const App = () =&gt; (
-  &lt;ContextProvider value=&#123;store&#125;&gt;
-      &lt;&gt;
-            &lt;Counter /&gt;
-            &lt;Todo /&gt;
-          &lt;/&gt;
-  &lt;/ContextProvider&gt;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title function_">App</span> = (<span class="hljs-params"></span>) =&gt; (
+  <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ContextProvider</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&#123;store&#125;</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;&gt;</span></span>
+<span class="language-xml">    		<span class="hljs-tag">&lt;<span class="hljs-name">Counter</span> /&gt;</span></span>
+<span class="language-xml">    		<span class="hljs-tag">&lt;<span class="hljs-name">Todo</span> /&gt;</span></span>
+<span class="language-xml">  		<span class="hljs-tag">&lt;/&gt;</span></span>
+  &lt;/<span class="hljs-title class_">ContextProvider</span>&gt;
 )
 
-// Counter.js
-import &#123; useSelect, useDispatch &#125; from &#39;tinysm&#39;;
+<span class="hljs-comment">// Counter.js</span>
+<span class="hljs-keyword">import</span> &#123; useSelect, useDispatch &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;tinysm&#x27;</span>;
 
-export const Counter = React.memo(() =&gt; &#123;
-  const count = useSelect(state =&gt; state.count);
-  const dispatch = useDispatch();
-  const handleClick = useCallback(() =&gt; &#123;
-    dispatch(&#123;
-      type: &#39;ADD_COUNT&#39;,
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">Counter</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">() =&gt;</span> &#123;
+  <span class="hljs-keyword">const</span> count = <span class="hljs-title function_">useSelect</span>(<span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> state.<span class="hljs-property">count</span>);
+  <span class="hljs-keyword">const</span> dispatch = <span class="hljs-title function_">useDispatch</span>();
+  <span class="hljs-keyword">const</span> handleClick = <span class="hljs-title function_">useCallback</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    <span class="hljs-title function_">dispatch</span>(&#123;
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;ADD_COUNT&#x27;</span>,
     &#125;)
   &#125;, [dispatch]);
   
-  return (
-    &lt;div&gt;
-      &lt;p&gt;&#123;count&#125;&lt;/p&gt;
-      &lt;button onclick=&#123;handleClick&#125;&gt;add count&lt;/button&gt;
-    &lt;/div&gt;
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>&#123;count&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">&#123;handleClick&#125;</span>&gt;</span>add count<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
   )
 &#125;);
 
-// Todo.js
-import &#123; useSelect, useDispatch &#125; from &#39;tinysm&#39;;
+<span class="hljs-comment">// Todo.js</span>
+<span class="hljs-keyword">import</span> &#123; useSelect, useDispatch &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;tinysm&#x27;</span>;
 
-export const Todo = React.memo(() =&gt; &#123;
-  const todos = useSelect(state =&gt; state.todos);
-  const dispatch = useDispatch();
-  const handleClick = useCallback(() =&gt; &#123;
-    dispatch(&#123;
-      type: &#39;ADD_TODO&#39;,
-      payload: &#39;test&#39;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">Todo</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">() =&gt;</span> &#123;
+  <span class="hljs-keyword">const</span> todos = <span class="hljs-title function_">useSelect</span>(<span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> state.<span class="hljs-property">todos</span>);
+  <span class="hljs-keyword">const</span> dispatch = <span class="hljs-title function_">useDispatch</span>();
+  <span class="hljs-keyword">const</span> handleClick = <span class="hljs-title function_">useCallback</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    <span class="hljs-title function_">dispatch</span>(&#123;
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;ADD_TODO&#x27;</span>,
+      <span class="hljs-attr">payload</span>: <span class="hljs-string">&#x27;test&#x27;</span>
     &#125;)
   &#125;, [dispatch]);
   
-  return (
-    &lt;div&gt;
-      &#123;
-        todos.map((v, index) =&gt; (
-          &lt;li key=&#123;index&#125;&gt;&#123;v&#125;&lt;/li&gt;
-        ))
-      &#125;
-      &lt;button onclick=&#123;handleClick&#125;&gt;add todo test&lt;/button&gt;
-    &lt;/div&gt;
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span>
+<span class="language-xml">      &#123;</span>
+<span class="language-xml">        todos.map((v, index) =&gt; (</span>
+<span class="language-xml">          <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;index&#125;</span>&gt;</span>&#123;v&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span></span>
+<span class="language-xml">        ))</span>
+<span class="language-xml">      &#125;</span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">&#123;handleClick&#125;</span>&gt;</span>add todo test<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
   )
-&#125;);
-</code></pre>
+&#125;);</code></pre>
+
 <p>上述代码中，使用者定义好初始state， reducer，通过<code>createStore</code>创建store, 顶层父组件通过<code>ContextProvider</code>包裹，将store注入context，子组件通过<code>useSelector</code>获取store中的数据，通过<code>useDispatch</code>获取触发reducer的方法。</p>
 <p>通过这样的方式，开发者一方面不需要将状态及操作状态的方法通过props一层层传递，另一方面，state及操作state的方法集中管理在一起，非常便于后期维护和修改。</p>
 <h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>本人在探索过程中，实现了几个版本，也在网上查了不少文章以及redux的代码，下述的这几个版本间是有递进关系的，按照顺序来看更容易理清思路。</p>
@@ -179,159 +193,163 @@ export const Todo = React.memo(() =&gt; &#123;
 </ol>
 <p>关于这三个api此处不做介绍，具体查看<a target="_blank" rel="noopener" href="https://react.docschina.org/docs/context.html">官网文档Context章节</a>即可。</p>
 <p>对上述三个api进行包装简化，很容易写出一个非常简单的代码如下：</p>
-<pre><code class="jsx">// tinysm.js
+<pre><code class="hljs jsx"><span class="hljs-comment">// tinysm.js</span>
 
-import &#123; createContext, useContext &#125; from &#39;react&#39;;
+<span class="hljs-keyword">import</span> &#123; createContext, useContext &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
 
-const Context = createContext();
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Context</span> = <span class="hljs-title function_">createContext</span>();
 
-const ContextProvider = Context.Provider;
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">ContextProvider</span> = <span class="hljs-title class_">Context</span>.<span class="hljs-property">Provider</span>;
 
-const useSelector = (selector) =&gt; &#123;
-  const store = useContext(Context);
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">useSelector</span> = (<span class="hljs-params">selector</span>) =&gt; &#123;
+  <span class="hljs-keyword">const</span> store = <span class="hljs-title function_">useContext</span>(<span class="hljs-title class_">Context</span>);
 
-  return selector(store.state);
+  <span class="hljs-keyword">return</span> <span class="hljs-title function_">selector</span>(store.<span class="hljs-property">state</span>);
 &#125;;
 
-const useDispatch = () =&gt; &#123;
-  const store = useContext(Context);
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">useDispatch</span> = (<span class="hljs-params"></span>) =&gt; &#123;
+  <span class="hljs-keyword">const</span> store = <span class="hljs-title function_">useContext</span>(<span class="hljs-title class_">Context</span>);
 
-  return store.dispatch;
+  <span class="hljs-keyword">return</span> store.<span class="hljs-property">dispatch</span>;
 &#125;;
 
-export &#123; ContextProvider, useSelector, useDispatch &#125;;
+<span class="hljs-keyword">export</span> &#123; <span class="hljs-title class_">ContextProvider</span>, useSelector, useDispatch &#125;;
 </code></pre>
-<p>在app.js中借助<code>useReducer</code>将数据注入ContextProvider中，如下：</p>
-<pre><code class="jsx">import React, &#123; useReducer &#125; from &#39;react&#39;;
-import &#123; ContextProvider &#125; from &#39;./tinysm&#39;;
-import Todo from &#39;./Todo&#39;;
-import Counter from &#39;./Counter&#39;;
-import &#39;./style.css&#39;;
 
-const initialState = &#123;
-  todos: [1, 2, 3, 4],
-  count: 0,
+<p>在app.js中借助<code>useReducer</code>将数据注入ContextProvider中，如下：</p>
+<pre><code class="hljs jsx"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, &#123; useReducer &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">ContextProvider</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./tinysm&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">Todo</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./Todo&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">Counter</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./Counter&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;./style.css&#x27;</span>;
+
+<span class="hljs-keyword">const</span> initialState = &#123;
+  <span class="hljs-attr">todos</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>],
+  <span class="hljs-attr">count</span>: <span class="hljs-number">0</span>,
 &#125;;
 
-const reducer = (state, action) =&gt; &#123;
-  switch (action.type) &#123;
-    case &#39;ADD_TODO&#39;:
-      return &#123;
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">reducer</span> = (<span class="hljs-params">state, action</span>) =&gt; &#123;
+  <span class="hljs-keyword">switch</span> (action.<span class="hljs-property">type</span>) &#123;
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;ADD_TODO&#x27;</span>:
+      <span class="hljs-keyword">return</span> &#123;
         ...state,
-        todos: [...state.todos, action.payload],
+        <span class="hljs-attr">todos</span>: [...state.<span class="hljs-property">todos</span>, action.<span class="hljs-property">payload</span>],
       &#125;;
-    case &#39;ADD_COUNT&#39;:
-      return &#123;
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;ADD_COUNT&#x27;</span>:
+      <span class="hljs-keyword">return</span> &#123;
         ...state,
-        count: state.count + 1,
+        <span class="hljs-attr">count</span>: state.<span class="hljs-property">count</span> + <span class="hljs-number">1</span>,
       &#125;;
-    default:
-      return &#123;
+    <span class="hljs-attr">default</span>:
+      <span class="hljs-keyword">return</span> &#123;
         ...state,
       &#125;;
   &#125;
 &#125;;
 
-export default function App() &#123;
-  const [state, dispatch] = useReducer(reducer, initialState);
-  return (
-    &lt;ContextProvider
-      value=&#123;&#123;
-        state,
-        dispatch,
-      &#125;&#125;
-    &gt;
-      &lt;Todo /&gt;
-      &lt;Counter /&gt;
-    &lt;/ContextProvider&gt;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;
+  <span class="hljs-keyword">const</span> [state, dispatch] = <span class="hljs-title function_">useReducer</span>(reducer, initialState);
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ContextProvider</span></span></span>
+<span class="hljs-tag"><span class="language-xml">      <span class="hljs-attr">value</span>=<span class="hljs-string">&#123;&#123;</span></span></span>
+<span class="hljs-tag"><span class="language-xml">        <span class="hljs-attr">state</span>,</span></span>
+<span class="hljs-tag"><span class="language-xml">        <span class="hljs-attr">dispatch</span>,</span></span>
+<span class="hljs-tag"><span class="language-xml">      &#125;&#125;</span></span>
+<span class="hljs-tag"><span class="language-xml">    &gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Todo</span> /&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Counter</span> /&gt;</span></span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">ContextProvider</span>&gt;</span></span>
   );
 &#125;
 </code></pre>
+
 <p>如此，在Todo, Counter中即可通过useSelector和useDipatch获取全局的state和修改state的方法。</p>
 <p>完整的demo在<a target="_blank" rel="noopener" href="https://stackblitz.com/edit/tinysmv0?file=src/App.js">这里</a>。</p>
 <p>在这个版本中，没有实现createStore，而是在app.js中通过useReducer作为其替代品。是因为useContext的机制会导致组件不更新，官方文档指出:</p>
 <p><code>任何使用了useContext的组件，在Context.Provider的value发生改变时，就会触发更新</code></p>
 <p>试想，如果Context.Provider中传入了createStore的返回值，那么value其实永远不会主动发生改变，就会导致子组件dispatch失效。即便在app.js中通过解构获取store，但是由于dispatch并没有触发组件渲染，解构也就没有执行，context.provider的value值自然也不会更新，就带来了子组件的不更新。这一问题，可以看看接下来的v1版本。</p>
 <p>除此之外，这个版本最大的问题就是不必要渲染，也是因为useContext的机制，只要value值变化，所有使用了useContext的组件都会更新。例如在<a target="_blank" rel="noopener" href="https://stackblitz.com/edit/tinysmv0?file=src/App.js">demo</a>中，count组件触发dispatch后，todo组件也触发了渲染，虽说只是一次重复的操作，由于diff的存在，并不会真的触发dom的反复操作，但是不必要的渲染总归不是个好的开始。</p>
-<h3 id="v1-不更新版"><a href="#v1-不更新版" class="headerlink" title="v1-不更新版"></a>v1-不更新版</h3><pre><code class="jsx">// tinysm.js
-import &#123; createContext, useContext &#125; from &#39;react&#39;;
+<h3 id="v1-不更新版"><a href="#v1-不更新版" class="headerlink" title="v1-不更新版"></a>v1-不更新版</h3><pre><code class="hljs jsx"><span class="hljs-comment">// tinysm.js</span>
+<span class="hljs-keyword">import</span> &#123; createContext, useContext &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
 
-// 创建context
-const Context = createContext();
-// 构建provoder
-const ContextProvider = Context.Provider;
+<span class="hljs-comment">// 创建context</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Context</span> = <span class="hljs-title function_">createContext</span>();
+<span class="hljs-comment">// 构建provoder</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">ContextProvider</span> = <span class="hljs-title class_">Context</span>.<span class="hljs-property">Provider</span>;
 
-// 创建store
-function createStore(initialState, reducer) &#123;
-  // 定义store
-  const store = &#123;
-    state: initialState,
+<span class="hljs-comment">// 创建store</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">createStore</span>(<span class="hljs-params">initialState, reducer</span>) &#123;
+  <span class="hljs-comment">// 定义store</span>
+  <span class="hljs-keyword">const</span> store = &#123;
+    <span class="hljs-attr">state</span>: initialState,
   &#125;
   
-  // 增加dispatch方法，本质就是把state, action传递给reducer执行，而后更新state
-  store.dispatch = function(action) &#123;
-    this.state = reducer(this.state, action);
+  <span class="hljs-comment">// 增加dispatch方法，本质就是把state, action传递给reducer执行，而后更新state</span>
+  store.<span class="hljs-property">dispatch</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">action</span>) &#123;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span> = <span class="hljs-title function_">reducer</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span>, action);
   &#125;
   
-  // 绑定this
-  store.dispatch = store.dispatch.bind(store);
+  <span class="hljs-comment">// 绑定this</span>
+  store.<span class="hljs-property">dispatch</span> = store.<span class="hljs-property">dispatch</span>.<span class="hljs-title function_">bind</span>(store);
   
-  return store;
+  <span class="hljs-keyword">return</span> store;
 &#125;
 
-const useSelector = (selector) =&gt; &#123;
-  const store = useContext(Context);
-  return selector(store.state);
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">useSelector</span> = (<span class="hljs-params">selector</span>) =&gt; &#123;
+  <span class="hljs-keyword">const</span> store = <span class="hljs-title function_">useContext</span>(<span class="hljs-title class_">Context</span>);
+  <span class="hljs-keyword">return</span> <span class="hljs-title function_">selector</span>(store.<span class="hljs-property">state</span>);
 &#125;
 
-const useDispatch = () =&gt; &#123;
-  const store = useContext(Context);
-  return store.dispatch;
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">useDispatch</span> = (<span class="hljs-params"></span>) =&gt; &#123;
+  <span class="hljs-keyword">const</span> store = <span class="hljs-title function_">useContext</span>(<span class="hljs-title class_">Context</span>);
+  <span class="hljs-keyword">return</span> store.<span class="hljs-property">dispatch</span>;
 &#125;
 </code></pre>
+
 <p>在app.js中，可以按照目标中提到的方式进行代码的编写:</p>
-<pre><code class="jsx">import React from &#39;react&#39;;
-import &#123; ContextProvider, createStore &#125; from &#39;./tinysm&#39;;
-import Todo from &#39;./Todo&#39;;
-import Counter from &#39;./Counter&#39;;
+<pre><code class="hljs jsx"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">ContextProvider</span>, createStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./tinysm&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">Todo</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./Todo&#x27;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">Counter</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./Counter&#x27;</span>;
 
-import &#39;./style.css&#39;;
+<span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;./style.css&#x27;</span>;
 
-const reducer = (state, action) =&gt; &#123;
-  switch (action.type) &#123;
-    case &#39;ADD_TODO&#39;:
-      return &#123;
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">reducer</span> = (<span class="hljs-params">state, action</span>) =&gt; &#123;
+  <span class="hljs-keyword">switch</span> (action.<span class="hljs-property">type</span>) &#123;
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;ADD_TODO&#x27;</span>:
+      <span class="hljs-keyword">return</span> &#123;
         ...state,
-        todos: [...state.todos, action.payload],
+        <span class="hljs-attr">todos</span>: [...state.<span class="hljs-property">todos</span>, action.<span class="hljs-property">payload</span>],
       &#125;;
-    case &#39;ADD_COUNT&#39;:
-      return &#123;
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;ADD_COUNT&#x27;</span>:
+      <span class="hljs-keyword">return</span> &#123;
         ...state,
-        count: state.count + 1,
+        <span class="hljs-attr">count</span>: state.<span class="hljs-property">count</span> + <span class="hljs-number">1</span>,
       &#125;;
-    default:
-      return &#123;
+    <span class="hljs-attr">default</span>:
+      <span class="hljs-keyword">return</span> &#123;
         ...state,
       &#125;;
   &#125;
 &#125;;
 
-const initialState = &#123;
-  todos: [1, 2, 3, 4],
-  count: 0,
+<span class="hljs-keyword">const</span> initialState = &#123;
+  <span class="hljs-attr">todos</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>],
+  <span class="hljs-attr">count</span>: <span class="hljs-number">0</span>,
 &#125;;
 
-const store = createStore(initialState, reducer);
+<span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(initialState, reducer);
 
-export default function App() &#123;
-  return (
-    &lt;ContextProvider value=&#123;store&#125;&gt;
-      &lt;Todo /&gt;
-      &lt;Counter /&gt;
-    &lt;/ContextProvider&gt;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ContextProvider</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&#123;store&#125;</span>&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Todo</span> /&gt;</span></span>
+<span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Counter</span> /&gt;</span></span>
+<span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">ContextProvider</span>&gt;</span></span>
   );
 &#125;
 </code></pre>
+
 <p>通过该代码实现的tinysm demo可以查看<a target="_blank" rel="noopener" href="https://stackblitz.com/edit/tinysmv1?file=src/App.js">demo</a>。</p>
 <p>相信眼尖的同学，通过代码就能发现，这个dispatch是不能触发更新的，虽然改变了store.state的值，但是页面并不会更新。如果说v0版本是带来了很多不必要的更新，那么v1版本，就是全部不更新。</p>
 <p>究其原因，在于dispatch执行之后，没有触发app中store的改变，可能有同学会说，把app.js中<code>&lt;ContextProvider value=&#123;&#123;...store&#125;&#125;&gt;</code>，这样解构之后，value在app每次渲染的时候，就会更新了。但是问题是，并没有任何人触发app的重新渲染，解构也没用。</p>
@@ -348,87 +366,87 @@ export default function App() &#123;
 <li>在dispatch操作完成后，通知所有的事件订阅者</li>
 </ol>
 <p>好了，不废话了，上代码：</p>
-<pre><code class="jsx">// tinysm.js
-import &#123; useContext, createContext, useRef, useEffect, useReducer &#125; from &#39;react&#39;;
+<pre><code class="hljs jsx"><span class="hljs-comment">// tinysm.js</span>
+<span class="hljs-keyword">import</span> &#123; useContext, createContext, useRef, useEffect, useReducer &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
 
-const Context = createContext();
-const ContextProvider = Context.Provider;
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Context</span> = <span class="hljs-title function_">createContext</span>();
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">ContextProvider</span> = <span class="hljs-title class_">Context</span>.<span class="hljs-property">Provider</span>;
 
-// 非常常见的发布订阅模式
-const EventCenter = &#123;
-  listensers: [],
-  subscribe: function (func) &#123;
-    this.listensers.push(func);
+<span class="hljs-comment">// 非常常见的发布订阅模式</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">EventCenter</span> = &#123;
+  <span class="hljs-attr">listensers</span>: [],
+  <span class="hljs-attr">subscribe</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">func</span>) &#123;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">listensers</span>.<span class="hljs-title function_">push</span>(func);
   &#125;,
-  unsubscribe: () =&gt; &#123;&#125;, // 一一比较删除即可，不赘述
-  notify: function() &#123;
-    this.listensers.forEach(v =&gt; v()); // 监听器一一执行
+  <span class="hljs-attr">unsubscribe</span>: <span class="hljs-function">() =&gt;</span> &#123;&#125;, <span class="hljs-comment">// 一一比较删除即可，不赘述</span>
+  <span class="hljs-attr">notify</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">listensers</span>.<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="hljs-title function_">v</span>()); <span class="hljs-comment">// 监听器一一执行</span>
   &#125;
 &#125;
 
-function createStore(initialState, reducer) &#123;
-  const store = &#123;
-    state: initialState,
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">createStore</span>(<span class="hljs-params">initialState, reducer</span>) &#123;
+  <span class="hljs-keyword">const</span> store = &#123;
+    <span class="hljs-attr">state</span>: initialState,
   &#125;
   
-  store.dispatch = function(action) &#123;
-    this.state = reducer(this.state, action);
-    // 通知监听器执行
-    EventCenter.notify();
+  store.<span class="hljs-property">dispatch</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">action</span>) &#123;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span> = <span class="hljs-title function_">reducer</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span>, action);
+    <span class="hljs-comment">// 通知监听器执行</span>
+    <span class="hljs-title class_">EventCenter</span>.<span class="hljs-title function_">notify</span>();
   &#125;
   
-  store.dispatch = store.dispatch.bind(store);
+  store.<span class="hljs-property">dispatch</span> = store.<span class="hljs-property">dispatch</span>.<span class="hljs-title function_">bind</span>(store);
   
-  return store;
+  <span class="hljs-keyword">return</span> store;
 &#125;
 
-const useSelector = (selector, equalFunc = (a, b) =&gt; a === b) =&gt; &#123;
-  const store = useContext(Context);
-  // 获取用户需要的state
-  const state = selector(store.state);
-  // 通过ref存储上一次的state值
-  const preState = useRef(state);
-  // 触发组件更新
-  const [, forceRender] = useReducer(s =&gt; s + 1, 0);
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">useSelector</span> = (<span class="hljs-params">selector, equalFunc = (a, b) =&gt; a === b</span>) =&gt; &#123;
+  <span class="hljs-keyword">const</span> store = <span class="hljs-title function_">useContext</span>(<span class="hljs-title class_">Context</span>);
+  <span class="hljs-comment">// 获取用户需要的state</span>
+  <span class="hljs-keyword">const</span> state = <span class="hljs-title function_">selector</span>(store.<span class="hljs-property">state</span>);
+  <span class="hljs-comment">// 通过ref存储上一次的state值</span>
+  <span class="hljs-keyword">const</span> preState = <span class="hljs-title function_">useRef</span>(state);
+  <span class="hljs-comment">// 触发组件更新</span>
+  <span class="hljs-keyword">const</span> [, forceRender] = <span class="hljs-title function_">useReducer</span>(<span class="hljs-function"><span class="hljs-params">s</span> =&gt;</span> s + <span class="hljs-number">1</span>, <span class="hljs-number">0</span>);
 
-  const checkForUpdate = () =&gt; &#123;
-    // 获取最新的state值
-    const curState = selector(store.state);
-        
-    // 比较上一次的值和当前最新值是否相同
-    if (equalFunc(curState, preState.current)) &#123;
-        return;
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">checkForUpdate</span> = (<span class="hljs-params"></span>) =&gt; &#123;
+    <span class="hljs-comment">// 获取最新的state值</span>
+    <span class="hljs-keyword">const</span> curState = <span class="hljs-title function_">selector</span>(store.<span class="hljs-property">state</span>);
+		
+    <span class="hljs-comment">// 比较上一次的值和当前最新值是否相同</span>
+    <span class="hljs-keyword">if</span> (<span class="hljs-title function_">equalFunc</span>(curState, preState.<span class="hljs-property">current</span>)) &#123;
+        <span class="hljs-keyword">return</span>;
     &#125;
-        // 不相同，更新上一次的state值，并触发组件渲染
-    preState.current = curState;
-    forceRender();
+		<span class="hljs-comment">// 不相同，更新上一次的state值，并触发组件渲染</span>
+    preState.<span class="hljs-property">current</span> = curState;
+    <span class="hljs-title function_">forceRender</span>();
   &#125;;
 
-  useEffect(() =&gt; &#123;
-    // 订阅
-    EventCenter.subscribe(checkForUpdate);
-    return () =&gt; &#123;
-       // 取消订阅
-       EventCenter.unsubscribe(checkForUpdate);
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    <span class="hljs-comment">// 订阅</span>
+    <span class="hljs-title class_">EventCenter</span>.<span class="hljs-title function_">subscribe</span>(checkForUpdate);
+    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> &#123;
+       <span class="hljs-comment">// 取消订阅</span>
+       <span class="hljs-title class_">EventCenter</span>.<span class="hljs-title function_">unsubscribe</span>(checkForUpdate);
     &#125;
-    // eslint-disable-next-line
+    <span class="hljs-comment">// eslint-disable-next-line</span>
   &#125;, [store]);
-  return state;
+  <span class="hljs-keyword">return</span> state;
 &#125;;
 
-const useDispatch = () =&gt; &#123;
-    const store = useContext(Context);
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">useDispatch</span> = (<span class="hljs-params"></span>) =&gt; &#123;
+    <span class="hljs-keyword">const</span> store = <span class="hljs-title function_">useContext</span>(<span class="hljs-title class_">Context</span>);
 
-    return store.dispatch;
+    <span class="hljs-keyword">return</span> store.<span class="hljs-property">dispatch</span>;
 &#125;;
 
-export &#123;
-    ContextProvider,
+<span class="hljs-keyword">export</span> &#123;
+	<span class="hljs-title class_">ContextProvider</span>,
   createStore,
   useSelector,
   useDispatch,
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>上述代码的核心，有三个点</p>
 <ol>
 <li>useSelector中在useEffect中订阅事件</li>
@@ -454,53 +472,53 @@ export &#123;
 <li>异步行为需要的参数payload，可能会根据当前的参数执行不同的异步操作</li>
 </ol>
 <p>定义一个简单的action:</p>
-<pre><code class="jsx">const actions = &#123;
-  getATodo: (state, commit, payload) =&gt; &#123;
-    const fetchSomeTodoFromRemote = (payload) =&gt; &#123;
-      // your logic to fetch data according to payload
-      return new Promise(resolve =&gt; &#123;
-        setTimeout(() =&gt; &#123;
-          resolve(&#39;remote todo&#39;);
-        &#125;, 3000);
+<pre><code class="hljs jsx"><span class="hljs-keyword">const</span> actions = &#123;
+  <span class="hljs-attr">getATodo</span>: <span class="hljs-function">(<span class="hljs-params">state, commit, payload</span>) =&gt;</span> &#123;
+    <span class="hljs-keyword">const</span> <span class="hljs-title function_">fetchSomeTodoFromRemote</span> = (<span class="hljs-params">payload</span>) =&gt; &#123;
+      <span class="hljs-comment">// your logic to fetch data according to payload</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function"><span class="hljs-params">resolve</span> =&gt;</span> &#123;
+        <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+          <span class="hljs-title function_">resolve</span>(<span class="hljs-string">&#x27;remote todo&#x27;</span>);
+        &#125;, <span class="hljs-number">3000</span>);
       &#125;)
     &#125;
-    fetchSomeTodoFromRemote(payload).then((data) =&gt; &#123;
-      commit(&#123;
-        type: &#39;ADD_TODO&#39;,
-        payload: data,
+    <span class="hljs-title function_">fetchSomeTodoFromRemote</span>(payload).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> &#123;
+      <span class="hljs-title function_">commit</span>(&#123;
+        <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;ADD_TODO&#x27;</span>,
+        <span class="hljs-attr">payload</span>: data,
       &#125;)
     &#125;)
   &#125;
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>在tinysm中增加如下代码：</p>
-<pre><code class="jsx">// 增加参数actions
-function createStore(initialState, reducer, actions) &#123;
-    const store = &#123;
-        state: initialState,
+<pre><code class="hljs jsx"><span class="hljs-comment">// 增加参数actions</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">createStore</span>(<span class="hljs-params">initialState, reducer, actions</span>) &#123;
+    <span class="hljs-keyword">const</span> store = &#123;
+        <span class="hljs-attr">state</span>: initialState,
     &#125;
-    store.dispatch = function(action) &#123;
-        // dispatch优先从action中获取 
-        if (this.actions[action.type]) &#123;
-            const act = this.actions[action.type];
-            if (typeof act === &#39;function&#39;) &#123;
-                // commit本质就是触发reducer的方法，也就是dispatch
-                act(this.state, this.dispatch, action.payload);
-                // act执行后不需要手动触发事件通知，因为在action中
-                // 用户自行编写代码选择何时触发reducer，届时便会触发事件通知 
-            &#125; else &#123;
-                console.error(&#39;action is not a function&#39;);
+    store.<span class="hljs-property">dispatch</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">action</span>) &#123;
+        <span class="hljs-comment">// dispatch优先从action中获取 </span>
+        <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">actions</span>[action.<span class="hljs-property">type</span>]) &#123;
+            <span class="hljs-keyword">const</span> act = <span class="hljs-variable language_">this</span>.<span class="hljs-property">actions</span>[action.<span class="hljs-property">type</span>];
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> act === <span class="hljs-string">&#x27;function&#x27;</span>) &#123;
+                <span class="hljs-comment">// commit本质就是触发reducer的方法，也就是dispatch</span>
+                <span class="hljs-title function_">act</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">dispatch</span>, action.<span class="hljs-property">payload</span>);
+                <span class="hljs-comment">// act执行后不需要手动触发事件通知，因为在action中</span>
+                <span class="hljs-comment">// 用户自行编写代码选择何时触发reducer，届时便会触发事件通知 </span>
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">&#x27;action is not a function&#x27;</span>);
             &#125;
-        &#125; else &#123;
-            // 如果actions中没有找到，就执行reducer
-            this.state = reducer(this.state, action);
-            EventCenter.notify();
+        &#125; <span class="hljs-keyword">else</span> &#123;
+            <span class="hljs-comment">// 如果actions中没有找到，就执行reducer</span>
+            <span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span> = <span class="hljs-title function_">reducer</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span>, action);
+            <span class="hljs-title class_">EventCenter</span>.<span class="hljs-title function_">notify</span>();
         &#125;
     &#125;
-    store.dispatch = store.dispatch.bind(store);
-    return store;
-&#125;
-</code></pre>
+    store.<span class="hljs-property">dispatch</span> = store.<span class="hljs-property">dispatch</span>.<span class="hljs-title function_">bind</span>(store);
+    <span class="hljs-keyword">return</span> store;
+&#125;</code></pre>
+
 <p>通过该代码实现的tinysm demo可以查看<a target="_blank" rel="noopener" href="https://stackblitz.com/edit/tinysmv3?file=src/tinysm.js">demo</a>。</p>
 <p>到了这个版本，功能上基本都实现了，支持异步，支持按需更新子组件，能够覆盖移动端h5中数据管理的场景。在代码中再不不会一层一层传递state和setState了。而且数据集中在一起，可维护性高了非常多。</p>
 <h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>本文相关的代码，除了上述提到的demo，github上也有一份<a target="_blank" rel="noopener" href="https://github.com/yuzai/tinysm">地址</a>，npm也发了个小包<a target="_blank" rel="noopener" href="https://www.npmjs.com/package/hooks-tinysm">地址</a>。</p>
@@ -519,7 +537,6 @@ function createStore(initialState, reducer, actions) &#123;
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2022/02/16/%E6%AF%95%E4%B8%9A3%E5%B9%B4%EF%BC%8C%E6%88%91%E5%9C%A8%E5%A4%A7%E5%8E%82%E6%98%AF%E5%A6%82%E4%BD%95%E5%8F%8D%E5%86%85%E5%8D%B7%E7%9A%84%EF%BC%9F/">毕业3年，我在大厂是如何反内卷的？</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -539,19 +556,15 @@ function createStore(initialState, reducer, actions) &#123;
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774342"></script>
+    <script src="/js/index.js?v=1783498241080"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774342"></script>
+    <script src="/js/general.js?v=1783498241080"></script>
     
-    <script src="/js/post.js?v=1783490774342"></script>
+    <script src="/js/post.js?v=1783498241080"></script>
     
-    <script src="/js/tag.js?v=1783490774342"></script>
+    <script src="/js/tag.js?v=1783498241080"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

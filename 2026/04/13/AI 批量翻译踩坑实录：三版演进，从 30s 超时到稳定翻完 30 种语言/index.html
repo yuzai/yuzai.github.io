@@ -6,15 +6,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>把翻译交给 AI 之后，我重写了三版代码 - 芋仔的个人博客</title>
+    <meta name="description" content="国际化链路里，文案的提取、同步、回填通常都有工具链兜着，真正卡节奏的是人工翻译：一批文案翻成 30 种语言，交给翻译平台排期，快则几小时，慢则几天。业务方等不及，于是想到交给 AI——后台调 GPT，一次性出全部语种。 听起来是个非常简单就能搞定的事。实际上前后改了三四版，每版上线都被生产环境顶出一类新问题。 这篇文章就是介绍我的踩坑之路。 背景 内容：每次翻译 30–50 条业务文案，短的是 “">
+<meta property="og:type" content="article">
+<meta property="og:title" content="把翻译交给 AI 之后，我重写了三版代码">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2026/04/13/AI%20%E6%89%B9%E9%87%8F%E7%BF%BB%E8%AF%91%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95%EF%BC%9A%E4%B8%89%E7%89%88%E6%BC%94%E8%BF%9B%EF%BC%8C%E4%BB%8E%2030s%20%E8%B6%85%E6%97%B6%E5%88%B0%E7%A8%B3%E5%AE%9A%E7%BF%BB%E5%AE%8C%2030%20%E7%A7%8D%E8%AF%AD%E8%A8%80/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="国际化链路里，文案的提取、同步、回填通常都有工具链兜着，真正卡节奏的是人工翻译：一批文案翻成 30 种语言，交给翻译平台排期，快则几小时，慢则几天。业务方等不及，于是想到交给 AI——后台调 GPT，一次性出全部语种。 听起来是个非常简单就能搞定的事。实际上前后改了三四版，每版上线都被生产环境顶出一类新问题。 这篇文章就是介绍我的踩坑之路。 背景 内容：每次翻译 30–50 条业务文案，短的是 “">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-04-13T12:00:00.000Z">
+<meta property="article:modified_time" content="2026-04-14T06:59:21.000Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774341">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774341">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241075">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241075">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +76,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2026-04-13</time><span class="post-eyebrow-sep">·</span>约 5283 字<span class="post-eyebrow-sep">·</span>读完约 13 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2026-04-13</time><span class="post-eyebrow-sep">·</span>约 5309 字<span class="post-eyebrow-sep">·</span>读完约 13 分钟</p>
           <h1 class="post-title">把翻译交给 AI 之后，我重写了三版代码</h1>
         </header>
         <section class="post-content">
@@ -76,27 +89,27 @@
 <li><strong>链路</strong>：用户点”翻译”按钮 → 前端调接口 → 后端调 OpenAI → 返回结果</li>
 </ul>
 <h2 id="v1：一把梭"><a href="#v1：一把梭" class="headerlink" title="v1：一把梭"></a>v1：一把梭</h2><p>第一版最朴素——所有文案 + 所有语种塞进一个 prompt，丢给 GPT：</p>
-<pre><code class="js">const systemPrompt = `你是一个翻译助手。用户会给你一组 JSON 键值对，
-key 的格式是 &#123;语言代码&#125;_&#123;序号&#125;，value 是要翻译的英文原文。
-请将每个 value 翻译成 key 对应的语言，保持 JSON 格式原样返回。`
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> systemPrompt = <span class="hljs-string">`你是一个翻译助手。用户会给你一组 JSON 键值对，</span>
+<span class="hljs-string">key 的格式是 &#123;语言代码&#125;_&#123;序号&#125;，value 是要翻译的英文原文。</span>
+<span class="hljs-string">请将每个 value 翻译成 key 对应的语言，保持 JSON 格式原样返回。`</span>
 
-// 把所有文案 × 所有语种拼成一个大 JSON 丢过去
-const payload = &#123;&#125;
-for (const lang of targetLangs) &#123;
-  entries.forEach((text, i) =&gt; &#123;
-    payload[`$&#123;lang&#125;_$&#123;i&#125;`] = text
+<span class="hljs-comment">// 把所有文案 × 所有语种拼成一个大 JSON 丢过去</span>
+<span class="hljs-keyword">const</span> payload = &#123;&#125;
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> lang <span class="hljs-keyword">of</span> targetLangs) &#123;
+  entries.<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">text, i</span>) =&gt;</span> &#123;
+    payload[<span class="hljs-string">`<span class="hljs-subst">$&#123;lang&#125;</span>_<span class="hljs-subst">$&#123;i&#125;</span>`</span>] = text
   &#125;)
 &#125;
 
-const response = await openai.chat.completions.create(&#123;
-  model: &#39;gpt-5.4-mini&#39;,
-  messages: [
-    &#123; role: &#39;system&#39;, content: systemPrompt &#125;,
-    &#123; role: &#39;user&#39;, content: JSON.stringify(payload, null, 2) &#125;,
+<span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> openai.<span class="hljs-property">chat</span>.<span class="hljs-property">completions</span>.<span class="hljs-title function_">create</span>(&#123;
+  <span class="hljs-attr">model</span>: <span class="hljs-string">&#x27;gpt-5.4-mini&#x27;</span>,
+  <span class="hljs-attr">messages</span>: [
+    &#123; <span class="hljs-attr">role</span>: <span class="hljs-string">&#x27;system&#x27;</span>, <span class="hljs-attr">content</span>: systemPrompt &#125;,
+    &#123; <span class="hljs-attr">role</span>: <span class="hljs-string">&#x27;user&#x27;</span>, <span class="hljs-attr">content</span>: <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(payload, <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>) &#125;,
   ],
 &#125;)
-const result = JSON.parse(response.choices[0].message.content)
-</code></pre>
+<span class="hljs-keyword">const</span> result = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(response.<span class="hljs-property">choices</span>[<span class="hljs-number">0</span>].<span class="hljs-property">message</span>.<span class="hljs-property">content</span>)</code></pre>
+
 <p>本地自测没问题——10 条文案、1 个语种，秒级返回。上线后直接翻车：生产环境一次 50 条文案 × 30+ 语言，网关 30s 超时把请求掐了。</p>
 <h2 id="v2：异步化"><a href="#v2：异步化" class="headerlink" title="v2：异步化"></a>v2：异步化</h2><p>超时好办，改异步：</p>
 <ol>
@@ -121,7 +134,7 @@ const result = JSON.parse(response.choices[0].message.content)
 <li>JSON 偶尔损坏 → <strong>加修复</strong></li>
 </ol>
 <p>整体结构变成两层并发：</p>
-<pre><code>translate(texts, targetLangs)
+<pre><code class="hljs plaintext">translate(texts, targetLangs)
 │
 ├─ 语言并行（Promise.all）──────────────────────
 │  │               │               │
@@ -134,44 +147,44 @@ const result = JSON.parse(response.choices[0].message.content)
 │       ▼                ▼                ▼
 │  批次并行         批次并行         批次并行
 │
-└─ 合并结果 → &#123; ja: [...], ko: [...], vi: [...] &#125;
-</code></pre>
+└─ 合并结果 → &#123; ja: [...], ko: [...], vi: [...] &#125;</code></pre>
+
 <p>30 种语言 × 5 个批次 &#x3D; 150 个请求几乎同时发出，总耗时回到 15–30 秒。</p>
 <p>单个批次内部的策略：</p>
-<pre><code>第 1-2 次尝试 → mini 模型（快、便宜）
+<pre><code class="hljs plaintext">第 1-2 次尝试 → mini 模型（快、便宜）
      ↓ 失败
 第 3 次尝试 → 好一点的模型（稳定、贵）+ JSON 修复
      ↓ 失败
-抛异常，整个批次标记失败
-</code></pre>
+抛异常，整个批次标记失败</code></pre>
+
 <p>每次尝试都做三件事：调模型、解析 JSON、<strong>校验数组长度</strong>。最后一条不能省——AI 偶尔会漏翻（输入 30 条返回 28 条），不校验长度就会导致译文和原文错位，比翻译不准更严重。</p>
 <p>代码大致长这样：</p>
-<pre><code class="ts">for (let attempt = 0; attempt &lt; 3; attempt++) &#123;
-  const isLastAttempt = attempt === 2
+<pre><code class="hljs ts"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> attempt = <span class="hljs-number">0</span>; attempt &lt; <span class="hljs-number">3</span>; attempt++) &#123;
+  <span class="hljs-keyword">const</span> isLastAttempt = attempt === <span class="hljs-number">2</span>
 
-  const response = await fetchWithRetry(url, &#123;
-    data: &#123;
-      model: isLastAttempt ? &#39;gpt-5.4&#39; : &#39;gpt-5.4-mini&#39;,
-      messages: [systemMsg, userMsg],
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetchWithRetry</span>(url, &#123;
+    <span class="hljs-attr">data</span>: &#123;
+      <span class="hljs-attr">model</span>: isLastAttempt ? <span class="hljs-string">&#x27;gpt-5.4&#x27;</span> : <span class="hljs-string">&#x27;gpt-5.4-mini&#x27;</span>,
+      <span class="hljs-attr">messages</span>: [systemMsg, userMsg],
     &#125;,
   &#125;)
 
-  let arr
-  try &#123;
-    arr = JSON.parse(response.data.choices[0].message.content)
-  &#125; catch &#123;
-    if (isLastAttempt) arr = JSON.parse(cleanAndFixJson(text))
-    else continue
+  <span class="hljs-keyword">let</span> arr
+  <span class="hljs-keyword">try</span> &#123;
+    arr = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(response.<span class="hljs-property">data</span>.<span class="hljs-property">choices</span>[<span class="hljs-number">0</span>].<span class="hljs-property">message</span>.<span class="hljs-property">content</span>)
+  &#125; <span class="hljs-keyword">catch</span> &#123;
+    <span class="hljs-keyword">if</span> (isLastAttempt) arr = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(<span class="hljs-title function_">cleanAndFixJson</span>(text))
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">continue</span>
   &#125;
 
-  if (!Array.isArray(arr) || arr.length !== expected) &#123;
-    if (isLastAttempt) throw new Error(&#39;length mismatch after 3 attempts&#39;)
-    continue
+  <span class="hljs-keyword">if</span> (!<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>(arr) || arr.<span class="hljs-property">length</span> !== expected) &#123;
+    <span class="hljs-keyword">if</span> (isLastAttempt) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;length mismatch after 3 attempts&#x27;</span>)
+    <span class="hljs-keyword">continue</span>
   &#125;
 
-  return arr
-&#125;
-</code></pre>
+  <span class="hljs-keyword">return</span> arr
+&#125;</code></pre>
+
 <p>v3 上线后头几天很稳，几乎没收到反馈。然后问题从一个意想不到的方向冒出来了。</p>
 <h3 id="相对冷门的语言集体翻车"><a href="#相对冷门的语言集体翻车" class="headerlink" title="相对冷门的语言集体翻车"></a>相对冷门的语言集体翻车</h3><p>上线大概一周，开始零星收到反馈说翻译结果有问题。一开始以为是随机的 AI 抽风，后来翻日志发现了规律：**出错的请求，语种几乎全集中在 <code>hi / bn / th / mr</code>**——印地、孟加拉、泰语、马拉地。英日韩法德西基本不出问题，这几个小语种却稳定翻车。</p>
 <p>症状也很一致：</p>
@@ -185,19 +198,19 @@ const result = JSON.parse(response.choices[0].message.content)
 <p>根因想通之后不复杂：JSON 字符串里 <code>\n</code> <code>\t</code> 必须以转义形式存在。模型在生成输出时，要决定这一位写”真实换行”还是”字面量 <code>\n</code>“——英中日韩这种训练语料里大量见过 JSON 的语种，几乎不会搞混；但印地、孟加拉、泰语这种训练占比低的语言，模型会在两种写法之间摇摆。一旦裸换行落在字符串中间，整个 JSON 就废了。</p>
 <p>本质是<strong>特殊字符 + 小语种训练覆盖不足</strong>的叠加效应。v2 里那些”空字符串”和”JSON 解析错误”也终于有了解释——当时多语种混在一起，这些小语种的问题被淹没在大量正常输出里，不容易看出规律。</p>
 <h3 id="逐条翻译兜底"><a href="#逐条翻译兜底" class="headerlink" title="逐条翻译兜底"></a>逐条翻译兜底</h3><p>到这里，”三次重试 + JSON 修复”已经不够——问题不是偶发的，而是结构性的。降级链得再往下延一级：<strong>扛不住的批次，不走 JSON，一条一条翻</strong>：</p>
-<pre><code class="ts">async function translateSingleEntry(text, lang) &#123;
-  const response = await fetchWithRetry(url, &#123;
-    data: &#123;
-      model: &#39;gpt-5.4-mini&#39;,
-      messages: [
-        &#123; role: &#39;system&#39;, content: `你是翻译助手，只返回翻译结果，不要其他内容。` &#125;,
-        &#123; role: &#39;user&#39;, content: `请将以下英文翻译成 $&#123;lang&#125;：\n$&#123;text&#125;` &#125;,
+<pre><code class="hljs ts"><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">translateSingleEntry</span>(<span class="hljs-params">text, lang</span>) &#123;
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetchWithRetry</span>(url, &#123;
+    <span class="hljs-attr">data</span>: &#123;
+      <span class="hljs-attr">model</span>: <span class="hljs-string">&#x27;gpt-5.4-mini&#x27;</span>,
+      <span class="hljs-attr">messages</span>: [
+        &#123; <span class="hljs-attr">role</span>: <span class="hljs-string">&#x27;system&#x27;</span>, <span class="hljs-attr">content</span>: <span class="hljs-string">`你是翻译助手，只返回翻译结果，不要其他内容。`</span> &#125;,
+        &#123; <span class="hljs-attr">role</span>: <span class="hljs-string">&#x27;user&#x27;</span>, <span class="hljs-attr">content</span>: <span class="hljs-string">`请将以下英文翻译成 <span class="hljs-subst">$&#123;lang&#125;</span>：\n<span class="hljs-subst">$&#123;text&#125;</span>`</span> &#125;,
       ],
     &#125;,
   &#125;)
-  return response.data.choices[0].message.content.trim()
-&#125;
-</code></pre>
+  <span class="hljs-keyword">return</span> response.<span class="hljs-property">data</span>.<span class="hljs-property">choices</span>[<span class="hljs-number">0</span>].<span class="hljs-property">message</span>.<span class="hljs-property">content</span>.<span class="hljs-title function_">trim</span>()
+&#125;</code></pre>
+
 <p>这个 prompt 里一个字都没提 JSON，只让 AI 做一件事：翻译。</p>
 <p>这里有个值得单独拎出来的认知：<strong>JSON 结构本身就是一种噪声</strong>。输入一旦复杂（长句、特殊字符、相对冷门的语言），让 AI 同时兼顾”翻对”和”输出合法 JSON”，成功率会明显下降；把这两件事拆开，翻译成功率几乎 100%，代价只是多调几次接口。</p>
 <p>实测数据：31 条文案 × 27 种语言 &#x3D; 837 条翻译，拆成 108 个批次。一次任务里平均：</p>
@@ -212,24 +225,24 @@ const result = JSON.parse(response.choices[0].message.content)
 <h3 id="自定义分隔符比-JSON-更差"><a href="#自定义分隔符比-JSON-更差" class="headerlink" title="自定义分隔符比 JSON 更差"></a>自定义分隔符比 JSON 更差</h3><p>发现转义符问题后，第一反应是不用 JSON 了，输入输出都用 <code>|||</code> 分隔，把转义问题整个绕过去。</p>
 <p>改完反而更差——要么全返英文，要么一半英文一半目标语种。回头想也说得通：<strong>JSON 的严格语法在某种程度上”逼” AI 认真对待每一个元素</strong>，结构约束一旦没了，AI 很容易半路开小差。</p>
 <h3 id="带-index-的-key-会让-AI-困惑"><a href="#带-index-的-key-会让-AI-困惑" class="headerlink" title="带 index 的 key 会让 AI 困惑"></a>带 index 的 key 会让 AI 困惑</h3><p>最初用过 <code>&#123;lang&#125;_&#123;index&#125;: value</code> 格式：</p>
-<pre><code class="json">&#123; &quot;ja_0&quot;: &quot;ログイン&quot;, &quot;ja_1&quot;: &quot;登録&quot;, &quot;ko_0&quot;: &quot;로그인&quot;, &quot;ko_1&quot;: &quot;가입&quot; &#125;
-</code></pre>
+<pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;ja_0&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ログイン&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ja_1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;登録&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ko_0&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;로그인&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ko_1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;가입&quot;</span> <span class="hljs-punctuation">&#125;</span></code></pre>
+
 <p>直觉上挺合理，但 AI 在这种 schema 下经常乱：漏 key、index 跳号、语言代码写错。后来换成最朴素的数组 <code>[&quot;翻译1&quot;, &quot;翻译2&quot;, &quot;翻译3&quot;]</code>，稳定性立刻上来了。AI 只需要维持一个维度（顺序），不用同时盯语言和序号。<strong>结构越简单，AI 越不容易出错</strong>。</p>
 <h3 id="语言代码要写全名"><a href="#语言代码要写全名" class="headerlink" title="语言代码要写全名"></a>语言代码要写全名</h3><p><code>my</code> <code>ms</code> <code>id</code> <code>fil</code> 这些短代码 AI 经常不认识：<code>my</code> 理解成”我的”，<code>ms</code> 理解成 Microsoft，<code>id</code> 理解成 identifier。</p>
 <p>解法是维护映射表，prompt 里用全名：</p>
-<pre><code class="ts">const LANG_NAME_MAP = &#123;
-  my: &#39;Burmese&#39;,
-  ms: &#39;Malay&#39;,
-  id: &#39;Indonesian&#39;,
-  fil: &#39;Filipino&#39;,
-  // ...
-&#125;
-</code></pre>
+<pre><code class="hljs ts"><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">LANG_NAME_MAP</span> = &#123;
+  <span class="hljs-attr">my</span>: <span class="hljs-string">&#x27;Burmese&#x27;</span>,
+  <span class="hljs-attr">ms</span>: <span class="hljs-string">&#x27;Malay&#x27;</span>,
+  <span class="hljs-attr">id</span>: <span class="hljs-string">&#x27;Indonesian&#x27;</span>,
+  <span class="hljs-attr">fil</span>: <span class="hljs-string">&#x27;Filipino&#x27;</span>,
+  <span class="hljs-comment">// ...</span>
+&#125;</code></pre>
+
 <p>写”请翻译成 Burmese”而不是”请翻译成 my”。对容易混淆的语种（马来&#x2F;印尼、简体&#x2F;繁体），再加一对示例：</p>
-<pre><code>示例（英语翻译成 Burmese）：
+<pre><code class="hljs plaintext">示例（英语翻译成 Burmese）：
 - [&quot;Sign in&quot;] =&gt; [&quot;ဝင်ရန်&quot;]
-- [&quot;Sign in&quot;, &quot;Sign up&quot;] =&gt; [&quot;ဝင်ရန်&quot;, &quot;ဆိုင်းအပ်&quot;]
-</code></pre>
+- [&quot;Sign in&quot;, &quot;Sign up&quot;] =&gt; [&quot;ဝင်ရန်&quot;, &quot;ဆိုင်းအပ်&quot;]</code></pre>
+
 <h2 id="三版对比"><a href="#三版对比" class="headerlink" title="三版对比"></a>三版对比</h2><table>
 <thead>
 <tr>
@@ -280,7 +293,6 @@ const result = JSON.parse(response.choices[0].message.content)
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2026/04/17/%E6%88%91%E7%9A%84%E5%A4%A7%E8%84%91%E4%B8%8D%E4%B8%8B%E7%8F%AD%EF%BC%9A%E4%B8%80%E4%B8%AA%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%B8%88%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8F%8D%E5%88%8D%E8%87%AA%E6%95%91%E6%8C%87%E5%8D%97/">我的大脑不下班：一个前端工程师的工作反刍自救指南</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -300,19 +312,15 @@ const result = JSON.parse(response.choices[0].message.content)
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774341"></script>
+    <script src="/js/index.js?v=1783498241075"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774341"></script>
+    <script src="/js/general.js?v=1783498241075"></script>
     
-    <script src="/js/post.js?v=1783490774341"></script>
+    <script src="/js/post.js?v=1783498241075"></script>
     
-    <script src="/js/tag.js?v=1783490774341"></script>
+    <script src="/js/tag.js?v=1783498241075"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

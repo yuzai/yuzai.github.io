@@ -6,15 +6,31 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>无限滚动的优化方案(一)：预加载实现 - 芋仔的个人博客</title>
+    <meta name="description" content="最近看了很多关于无限滚动的文章，也在面试中被问到了，优化方案很多，本次针对其中一条优化方案做了一个实际的优化：预加载。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="无限滚动的优化方案(一)：预加载实现">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2017/03/05/%E6%97%A0%E9%99%90%E6%BB%9A%E5%8A%A8%E7%9A%84%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88(%E4%B8%80)%EF%BC%9A%E9%A2%84%E5%8A%A0%E8%BD%BD%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="最近看了很多关于无限滚动的文章，也在面试中被问到了，优化方案很多，本次针对其中一条优化方案做了一个实际的优化：预加载。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3967512-6873e811ea7eb32b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2017-03-05T03:05:26.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3967512-6873e811ea7eb32b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774343">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774343">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241080">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241080">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +79,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-03-05</time><span class="post-eyebrow-sep">·</span>约 2545 字<span class="post-eyebrow-sep">·</span>读完约 6 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-03-05</time><span class="post-eyebrow-sep">·</span>约 2549 字<span class="post-eyebrow-sep">·</span>读完约 6 分钟</p>
           <h1 class="post-title">无限滚动的优化方案(一)：预加载实现</h1>
         </header>
         <section class="post-content">
@@ -71,7 +87,7 @@
 <span id="more"></span>
 
 <h2 id="实例简介"><a href="#实例简介" class="headerlink" title="实例简介"></a>实例简介</h2><p>之前一直对单页应用有兴趣，所以自己写了一个前端路由，相关的文章见<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/5a5813648d87">这里</a>，这个单页应用采取hash的方式实现路由。最终的实例页面见<a target="_blank" rel="noopener" href="http://blog.xiaoboma.com/dazhequan2/">这里</a>。仓库在<a target="_blank" rel="noopener" href="https://github.com/yuzai/dazhequan2">这里</a>是一个经典的单页应用。要做优化的就是主页的信息滚动。这些信息通过ajax从服务器端获取，这里为了方便，服务器端会一直返回数据，哪怕是重复的。<br>页面如下：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/3967512-6873e811ea7eb32b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png" referrerpolicy="no-referrer"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3967512-6873e811ea7eb32b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png" loading="lazy" referrerpolicy="no-referrer"></p>
 <h2 id="预加载原理"><a href="#预加载原理" class="headerlink" title="预加载原理"></a>预加载原理</h2><p>正常情况下我的一个ajax请求服务器端会返回最多10条信息，当用户滑动到页面底部，就会触发ajax请求，发送一条新的请求来获取信息。但是这样造成了用户的等待，但是如果用户空闲，就进行ajax的发送也是不行的，这个浪费了用户的流量。<br>需要采用一种检测手段，检测用户会不会继续往下看，如果会，就进行预加载，不必等到用户翻到最底部。这样可以最大程度的优化用户的体验</p>
 <h2 id="预加载实现"><a href="#预加载实现" class="headerlink" title="预加载实现"></a>预加载实现</h2><h3 id="剩余内容的高度检测"><a href="#剩余内容的高度检测" class="headerlink" title="剩余内容的高度检测"></a>剩余内容的高度检测</h3><p>理解了原理，其实预加载的核心，就是进行一个即将滚动到底部的一个检测。这里需要用到一些高度，我采用的是</p>
 <ol>
@@ -79,64 +95,63 @@
 <li>document.body.clientHeight：这个是用户视窗的高度</li>
 <li>document.body.offsetHeight：这个是body的高度，也就是整个文档的实际高度。<br>这三个高度，前两个加起来就是用户已经翻看的高度，通过与整个文档的高度的对比就能检测到剩余文档的高度，只要这个高度小于阈值(OFFSET)，就进行ajax请求的发送，从而实现预加载</li>
 </ol>
-<pre><code class="js">var body = document.body;
-var height = body.offsetHeight-（body.scrollTop+body.clientHeight）;
-if(height&lt;OFFSET)&#123;
-    //浏览器快滚动到底部了
-&#125;
-</code></pre>
+<pre><code class="hljs js"><span class="hljs-keyword">var</span> body = <span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>;
+<span class="hljs-keyword">var</span> height = body.<span class="hljs-property">offsetHeight</span>-（body.<span class="hljs-property">scrollTop</span>+body.<span class="hljs-property">clientHeight</span>）;
+<span class="hljs-keyword">if</span>(height&lt;<span class="hljs-variable constant_">OFFSET</span>)&#123;
+    <span class="hljs-comment">//浏览器快滚动到底部了</span>
+&#125;</code></pre>
+
 <h3 id="scroll事件反复执行带来的性能问题"><a href="#scroll事件反复执行带来的性能问题" class="headerlink" title="scroll事件反复执行带来的性能问题"></a>scroll事件反复执行带来的性能问题</h3><p>上述函数可以直接和scroll事件进行绑定，但是这样直接绑定会造成一些不好的影响:</p>
 <ol>
 <li>scroll的反复执行降低了页面的流畅度</li>
 <li>当达到目标高度之后，每一次的滚动都符合预加载的要求，所以轻微滚动都会触发n次的预加载请求。</li>
 </ol>
 <h3 id="scroll事件优化方案"><a href="#scroll事件优化方案" class="headerlink" title="scroll事件优化方案"></a>scroll事件优化方案</h3><p>针对上述第一个问题，可以采用函数节流的方式进行优化，但是要注意，最后一次用户的滚动必须执行，因为有可能最后一次滚动进入了阈值，此时必须尽快执行预加载请求。关于节流的原理网上描述的比较多，此处给一个我实现的包装代码：</p>
-<pre><code class="js">method.throttling2 = function(func,delay)&#123;
-  var inthrott = false;//节流
-  var timer;//保证最后一次执行
-  return function()&#123;
-    var self = this;
-    var args = arguments;//保留上下文
-    if(!inthrott)&#123;//判断上一次是否执行完毕
-      func.apply(self,args);
-      inthrott = true;
-      setTimeout(function()&#123;
-        inthrott = false;
+<pre><code class="hljs js">method.<span class="hljs-property">throttling2</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">func,delay</span>)&#123;
+  <span class="hljs-keyword">var</span> inthrott = <span class="hljs-literal">false</span>;<span class="hljs-comment">//节流</span>
+  <span class="hljs-keyword">var</span> timer;<span class="hljs-comment">//保证最后一次执行</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+    <span class="hljs-keyword">var</span> self = <span class="hljs-variable language_">this</span>;
+    <span class="hljs-keyword">var</span> args = <span class="hljs-variable language_">arguments</span>;<span class="hljs-comment">//保留上下文</span>
+    <span class="hljs-keyword">if</span>(!inthrott)&#123;<span class="hljs-comment">//判断上一次是否执行完毕</span>
+      func.<span class="hljs-title function_">apply</span>(self,args);
+      inthrott = <span class="hljs-literal">true</span>;
+      <span class="hljs-built_in">setTimeout</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+        inthrott = <span class="hljs-literal">false</span>;
       &#125;,delay);
-    &#125;else &#123;
-      clearTimeout(timer);
-      timer = setTimeout(function()&#123;
-        func.apply(self,args);
-        inthrott = false;
-      &#125;,500);//此处500可以进行加快，主要是希望能够尽快的执行最后一次
+    &#125;<span class="hljs-keyword">else</span> &#123;
+      <span class="hljs-built_in">clearTimeout</span>(timer);
+      timer = <span class="hljs-built_in">setTimeout</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+        func.<span class="hljs-title function_">apply</span>(self,args);
+        inthrott = <span class="hljs-literal">false</span>;
+      &#125;,<span class="hljs-number">500</span>);<span class="hljs-comment">//此处500可以进行加快，主要是希望能够尽快的执行最后一次</span>
     &#125;
   &#125;
-&#125;
-</code></pre>
+&#125;</code></pre>
 <p>而要解决第二个问题，就必须要保证上一次ajax请求没有结束之前，不会进行下一次ajax请求。这个其实通过一个标识符就可以解决，默认情况下是true,当ajax请求发送开始，修改为false,此时高度的改变会触发scroll函数，但是函数内部会判断这个标识符，如果为false，就不会进行高度的检测以及下一个ajax请求的发送。而当ajax请求结束后，标志位回归true，从而用户的滚动就可以触发下次的预加载了。</p>
 <p>最后的代码大概像这样：</p>
-<pre><code class="js">//method是我定义的一些公共方法
-method.addevent(window,&#39;scroll&#39;,method.throttling2(scrollTop,1000))//绑定scroll函数，通过之前的节流函数对原函数进行包装
+<pre><code class="hljs js"><span class="hljs-comment">//method是我定义的一些公共方法</span>
+method.<span class="hljs-title function_">addevent</span>(<span class="hljs-variable language_">window</span>,<span class="hljs-string">&#x27;scroll&#x27;</span>,method.<span class="hljs-title function_">throttling2</span>(scrollTop,<span class="hljs-number">1000</span>))<span class="hljs-comment">//绑定scroll函数，通过之前的节流函数对原函数进行包装</span>
 
-//高度检测函数，通过节流之后绑定在了scroll事件上
-function scrollTop()&#123;
-  var height1 = document.body.scrollTop+document.body.clientHeight;
-  var height2 = document.body.offsetHeight;
-  if(state)&#123;//检测标识变量
-      if(height2 - height1 &lt; eleheight*3)&#123;
-        console.log(&#39;到达预加载阈值，开始预加载&#39;);
-        getInfo();
+<span class="hljs-comment">//高度检测函数，通过节流之后绑定在了scroll事件上</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">scrollTop</span>(<span class="hljs-params"></span>)&#123;
+  <span class="hljs-keyword">var</span> height1 = <span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>.<span class="hljs-property">scrollTop</span>+<span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>.<span class="hljs-property">clientHeight</span>;
+  <span class="hljs-keyword">var</span> height2 = <span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>.<span class="hljs-property">offsetHeight</span>;
+  <span class="hljs-keyword">if</span>(state)&#123;<span class="hljs-comment">//检测标识变量</span>
+      <span class="hljs-keyword">if</span>(height2 - height1 &lt; eleheight*<span class="hljs-number">3</span>)&#123;
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;到达预加载阈值，开始预加载&#x27;</span>);
+        <span class="hljs-title function_">getInfo</span>();
       &#125;
   &#125;
 &#125;
-//包装ajax请求，加上标识变量
-function getInfo()&#123;
-  //从服务器端获取商家发布的新信息
-  state = false;
-  //发送实际的ajax请求
-    &#123;state = true;&#125;//此语句写入ajax的回调
-&#125;
-</code></pre>
+<span class="hljs-comment">//包装ajax请求，加上标识变量</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">getInfo</span>(<span class="hljs-params"></span>)&#123;
+  <span class="hljs-comment">//从服务器端获取商家发布的新信息</span>
+  state = <span class="hljs-literal">false</span>;
+  <span class="hljs-comment">//发送实际的ajax请求</span>
+    &#123;state = <span class="hljs-literal">true</span>;&#125;<span class="hljs-comment">//此语句写入ajax的回调</span>
+&#125;</code></pre>
+
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>目前我在预加载的时候会进行一个输出，方便我的观察以及调试。最后大概用户距离底部300px左右的时候，会触发预加载，此时，用户的任何滚动先经过节流，然后再进行标识的检测，不会出现两次预加载同时出现的情况。达到了我预期的目标。</p>
 <h2 id="展望"><a href="#展望" class="headerlink" title="展望"></a>展望</h2><p>我认为，现实中还有可能出现一种极端情况：就是用户不断的下滑，在查找之前的一条历史消息，此时，因为我的预加载的阻拦，其实在一定程度上限制了用户的滑动（每次只能同时进行一个ajax请求），这里应该有优化的空间，可以通过检测是否出现在可视区域来进行加载。<br>另外一个可以优化的点在于图片，如果我的作品里面不是框，而是图片，预加载的效果就不太好，需要图片的懒加载，也就是用户可视范围内才进行图片的加载。还有待后续进行改进</p>
 
@@ -149,7 +164,6 @@ function getInfo()&#123;
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2017/03/10/Js%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E5%AE%9E%E7%8E%B0%E5%8F%8A%E7%A8%B3%E5%AE%9A%E6%80%A7%E5%88%86%E6%9E%90/">js快速排序实现及稳定性分析</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -169,19 +183,15 @@ function getInfo()&#123;
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774343"></script>
+    <script src="/js/index.js?v=1783498241080"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774343"></script>
+    <script src="/js/general.js?v=1783498241080"></script>
     
-    <script src="/js/post.js?v=1783490774343"></script>
+    <script src="/js/post.js?v=1783498241080"></script>
     
-    <script src="/js/tag.js?v=1783490774343"></script>
+    <script src="/js/tag.js?v=1783498241080"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

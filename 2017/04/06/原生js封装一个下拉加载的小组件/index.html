@@ -6,15 +6,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>原生js封装一个下拉加载的小组件 - 芋仔的个人博客</title>
+    <meta name="description" content="之前在面试的时候，有些公司直接问我写过什么组件，而当时的我的回答是：封装ajax，封装事件处理（兼容性），前端路由，这些方法组件，而并没有一个比如下拉加载，轮播，加载中，拖拽这样的配合css以及js的这种组件。当时最后的结果就是现场思考：一个轮播组件，该有哪些方法，应该暴露什么方法，暴露什么属性。所以最近静下心来，也刚好在自己做的一个前后端分离的小项目中用到了下拉加载，就顺带把这个给抽离出来。记录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="原生js封装一个下拉加载的小组件">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2017/04/06/%E5%8E%9F%E7%94%9Fjs%E5%B0%81%E8%A3%85%E4%B8%80%E4%B8%AA%E4%B8%8B%E6%8B%89%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%B0%8F%E7%BB%84%E4%BB%B6/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="之前在面试的时候，有些公司直接问我写过什么组件，而当时的我的回答是：封装ajax，封装事件处理（兼容性），前端路由，这些方法组件，而并没有一个比如下拉加载，轮播，加载中，拖拽这样的配合css以及js的这种组件。当时最后的结果就是现场思考：一个轮播组件，该有哪些方法，应该暴露什么方法，暴露什么属性。所以最近静下心来，也刚好在自己做的一个前后端分离的小项目中用到了下拉加载，就顺带把这个给抽离出来。记录">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-04-06T13:38:30.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241080">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241080">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +77,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-04-06</time><span class="post-eyebrow-sep">·</span>约 3050 字<span class="post-eyebrow-sep">·</span>读完约 8 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-04-06</time><span class="post-eyebrow-sep">·</span>约 3052 字<span class="post-eyebrow-sep">·</span>读完约 8 分钟</p>
           <h1 class="post-title">原生js封装一个下拉加载的小组件</h1>
         </header>
         <section class="post-content">
@@ -79,56 +93,55 @@
 <li>callback: 当下拉加载触发的时候要进行什么样的回调</li>
 <li>ptr： 显示下拉的loading的元素<br>根据上述的说法，大致的结构应该是这样：</li>
 </ol>
-<pre><code class="js">var callback
-var pullreload = function(options)&#123;
-    this.content = options.content;//目标下拉元素
-    callback = options.callback || (default自己设计一个默认的回调)//下拉触发后的回调
-   this.ptr = options.ptr；
-    this.start = function()&#123;&#125;//绑定事件
-    this.remove = function()&#123;&#125; //清除绑定
-&#125;
-</code></pre>
-<p>可以看到，上述callback定义在外部，这是因为touchened,mouseup这些事件中需要对其进行操作，定义在内部，一方面是事件回调不好进行访问，另一方面，用户能够通过this.callback进行访问，这个可以有，但是我并不希望用户能够通过这样的方式修改callback，将其放在外部，除了内部函数，没有别人可以访问到，能够私有这个变量，达到私有的效果。事实上，个人感觉，用原生js写组件的话，<strong>有些方法需要放在外部，而有些方法需要放在属性，有些方法放在prototype上。这些取决于实际的应用，不希望实例访问，当然是放在外部合适，而希望每一个实例都拥有，放在属性上更合适，而公用的方法，适合放在原型上。最后，外部通过立即执行函数包裹或者webpack等工具进行打包，都可以避免外部私有变量污染全局。</strong><br>除了上述变量，还定义了一些私有变量以及方法，最终的代码框架如下：</p>
-<pre><code class="js">//检测是否正在拉动,start设为true,end设为false，防止移动二次滑动产生干扰
-var isDragging = false;
-//是否达到阈值，下拉到一定程度之后，为true,否则为false
-var isThresholdReached = false;
-//记录下拉初始鼠标位置
-var popStart = 0;
-//设置初始阈值
-var threshold = 20;
-//记录上一次end回调是否执行完毕
-var isend = true;
-//记录当前是否处于最顶端
-var isTop = true;
+<pre><code class="hljs js"><span class="hljs-keyword">var</span> callback
+<span class="hljs-keyword">var</span> pullreload = <span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>)&#123;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">content</span> = options.<span class="hljs-property">content</span>;<span class="hljs-comment">//目标下拉元素</span>
+    callback = options.<span class="hljs-property">callback</span> || (<span class="hljs-keyword">default</span>自己设计一个默认的回调)<span class="hljs-comment">//下拉触发后的回调</span>
+   <span class="hljs-variable language_">this</span>.<span class="hljs-property">ptr</span> = options.<span class="hljs-property">ptr</span>；
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">start</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;&#125;<span class="hljs-comment">//绑定事件</span>
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">remove</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;&#125; <span class="hljs-comment">//清除绑定</span>
+&#125;</code></pre>
 
-function getheight(event) &#123;
-   //通过event获取高度，因为pc端和移动端不同，单独写一个方法来解决兼容问题
+<p>可以看到，上述callback定义在外部，这是因为touchened,mouseup这些事件中需要对其进行操作，定义在内部，一方面是事件回调不好进行访问，另一方面，用户能够通过this.callback进行访问，这个可以有，但是我并不希望用户能够通过这样的方式修改callback，将其放在外部，除了内部函数，没有别人可以访问到，能够私有这个变量，达到私有的效果。事实上，个人感觉，用原生js写组件的话，<strong>有些方法需要放在外部，而有些方法需要放在属性，有些方法放在prototype上。这些取决于实际的应用，不希望实例访问，当然是放在外部合适，而希望每一个实例都拥有，放在属性上更合适，而公用的方法，适合放在原型上。最后，外部通过立即执行函数包裹或者webpack等工具进行打包，都可以避免外部私有变量污染全局。</strong><br>除了上述变量，还定义了一些私有变量以及方法，最终的代码框架如下：</p>
+<pre><code class="hljs js"><span class="hljs-comment">//检测是否正在拉动,start设为true,end设为false，防止移动二次滑动产生干扰</span>
+<span class="hljs-keyword">var</span> isDragging = <span class="hljs-literal">false</span>;
+<span class="hljs-comment">//是否达到阈值，下拉到一定程度之后，为true,否则为false</span>
+<span class="hljs-keyword">var</span> isThresholdReached = <span class="hljs-literal">false</span>;
+<span class="hljs-comment">//记录下拉初始鼠标位置</span>
+<span class="hljs-keyword">var</span> popStart = <span class="hljs-number">0</span>;
+<span class="hljs-comment">//设置初始阈值</span>
+<span class="hljs-keyword">var</span> threshold = <span class="hljs-number">20</span>;
+<span class="hljs-comment">//记录上一次end回调是否执行完毕</span>
+<span class="hljs-keyword">var</span> isend = <span class="hljs-literal">true</span>;
+<span class="hljs-comment">//记录当前是否处于最顶端</span>
+<span class="hljs-keyword">var</span> isTop = <span class="hljs-literal">true</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">getheight</span>(<span class="hljs-params">event</span>) &#123;
+   <span class="hljs-comment">//通过event获取高度，因为pc端和移动端不同，单独写一个方法来解决兼容问题</span>
 &#125;;
-function movestart(event)&#123;
-  //记录初始位置，判断是否位于顶端
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">movestart</span>(<span class="hljs-params">event</span>)&#123;
+  <span class="hljs-comment">//记录初始位置，判断是否位于顶端</span>
 &#125;
-function moving(event)&#123;
-  //检测滑动方向，进行相应的位移
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">moving</span>(<span class="hljs-params">event</span>)&#123;
+  <span class="hljs-comment">//检测滑动方向，进行相应的位移</span>
 &#125;
-function moveend()&#123;
-  //检测是否达到下拉阈值，达到则进行回调，否则恢复初始状态
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">moveend</span>(<span class="hljs-params"></span>)&#123;
+  <span class="hljs-comment">//检测是否达到下拉阈值，达到则进行回调，否则恢复初始状态</span>
 &#125;
-var callback;
-var pullReload = function(options)&#123;
-  this.content = document.getElementById(options.content);
-  this.ptr = document.getElementById(&#39;ptr&#39;);
-  callback = options.callback || function()&#123;&#125;;
-  this.start = function()&#123;
-    //绑定事件
+<span class="hljs-keyword">var</span> callback;
+<span class="hljs-keyword">var</span> pullReload = <span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>)&#123;
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">content</span> = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(options.<span class="hljs-property">content</span>);
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">ptr</span> = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;ptr&#x27;</span>);
+  callback = options.<span class="hljs-property">callback</span> || <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;&#125;;
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">start</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+    <span class="hljs-comment">//绑定事件</span>
   &#125;
-  this.remove = function()&#123;
-    //移除事件
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">remove</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+    <span class="hljs-comment">//移除事件</span>
   &#125;
-  return this;
+  <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>;
 &#125;
-export default pullReload;
-</code></pre>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> pullReload;</code></pre>
 <p>源码见<a target="_blank" rel="noopener" href="https://github.com/yuzai/dazhequan2/tree/master/src/method/components/pullreload">这里</a>,里面是js和css分开写的，最后通过webpack进行一个打包从而完成组件化。</p>
 <h3 id="碰到的问题"><a href="#碰到的问题" class="headerlink" title="碰到的问题"></a>碰到的问题</h3><ol>
 <li>content加载好之后，start中应该进行所有事件(touchmove)的绑定还是当touchstart或者mousedown之后进行事件的绑定？<br> 这里的话，有几个考虑，一方面，touchmove触发频率特别快，一直绑定给的话，对资源浪费很大，另一方面，touchmove并不需要实时绑定，因为当touchstart之后，如果此时并不处于最顶端，那么touchmove是完全不需要触发的，基于上述两点，我对touchmove,touchend事件的绑定在touchstart中当检测到用户处于最顶端的时候进行绑定。</li>
@@ -146,7 +159,6 @@ export default pullReload;
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2017/10/13/%E7%A7%8B%E6%8B%9B%E6%80%BB%E7%BB%93/">秋招记录</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -166,19 +178,15 @@ export default pullReload;
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774342"></script>
+    <script src="/js/index.js?v=1783498241080"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774342"></script>
+    <script src="/js/general.js?v=1783498241080"></script>
     
-    <script src="/js/post.js?v=1783490774342"></script>
+    <script src="/js/post.js?v=1783498241080"></script>
     
-    <script src="/js/tag.js?v=1783490774342"></script>
+    <script src="/js/tag.js?v=1783498241080"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

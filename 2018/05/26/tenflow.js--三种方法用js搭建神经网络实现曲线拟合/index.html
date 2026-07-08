@@ -6,15 +6,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>tenflow.js--三种方法用js搭建神经网络实现曲线拟合 - 芋仔的个人博客</title>
+    <meta name="description" content="引言这一段时间研究生生涯已经走进了尾声，也一直忙于论文没有关注前端方面的工作。偶然的机会，在知乎上看到了一篇文章前端人工智能？TensorFlow.js 学会游戏通关。我的内心是很激动的，终于，也能在前端直接搭神经网络，跑分类了。不过该文章，对于tensorflowjs的介绍太少，直观的游戏ai应用确实很好，但是对于初次接触的人，还是从最基础的框架使用开始更好，于是就有了这篇文章。本文抛开了复杂的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tenflow.js--三种方法用js搭建神经网络实现曲线拟合">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2018/05/26/tenflow.js--%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95%E7%94%A8js%E6%90%AD%E5%BB%BA%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E7%8E%B0%E6%9B%B2%E7%BA%BF%E6%8B%9F%E5%90%88/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="引言这一段时间研究生生涯已经走进了尾声，也一直忙于论文没有关注前端方面的工作。偶然的机会，在知乎上看到了一篇文章前端人工智能？TensorFlow.js 学会游戏通关。我的内心是很激动的，终于，也能在前端直接搭神经网络，跑分类了。不过该文章，对于tensorflowjs的介绍太少，直观的游戏ai应用确实很好，但是对于初次接触的人，还是从最基础的框架使用开始更好，于是就有了这篇文章。本文抛开了复杂的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-166b41e7c7bd1952fe6284e543ff970e_720w.jpg">
+<meta property="article:published_time" content="2018-05-26T13:32:00.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic3.zhimg.com/80/v2-166b41e7c7bd1952fe6284e543ff970e_720w.jpg">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241080">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241080">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +78,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2018-05-26</time><span class="post-eyebrow-sep">·</span>约 8993 字<span class="post-eyebrow-sep">·</span>读完约 22 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2018-05-26</time><span class="post-eyebrow-sep">·</span>约 9027 字<span class="post-eyebrow-sep">·</span>读完约 23 分钟</p>
           <h1 class="post-title">tenflow.js--三种方法用js搭建神经网络实现曲线拟合</h1>
         </header>
         <section class="post-content">
@@ -71,7 +86,7 @@
 <span id="more"></span>
 
 <h3 id="目标问题介绍"><a href="#目标问题介绍" class="headerlink" title="目标问题介绍"></a>目标问题介绍</h3><p>本文的目标是实现曲线拟合。直观上，曲线可看成空间质点运动的轨迹，用数学表达式来就是y&#x3D;f(x)，举个例子，y&#x3D;x,y&#x3D;x^2+5……等等，就是曲线。而曲线拟合，用简单的话来说，就是知道一条曲线的某些点，来预测要 y&#x3D;f(x) 的表达式是什么。如下图：</p>
-<p><img src="https://pic3.zhimg.com/80/v2-166b41e7c7bd1952fe6284e543ff970e_720w.jpg" alt="image.png" referrerpolicy="no-referrer"></p>
+<p><img src="https://pic3.zhimg.com/80/v2-166b41e7c7bd1952fe6284e543ff970e_720w.jpg" alt="image.png" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>图中，蓝色点点就是已知曲线中的某些点（本例中数目为100），红色曲线就是拟合出的结果，也就是本文要实现的曲线拟合。</p>
 <h3 id="工具，环境说明"><a href="#工具，环境说明" class="headerlink" title="工具，环境说明"></a>工具，环境说明</h3><p>用到的前端相关的库有：</p>
 <ol>
@@ -81,49 +96,49 @@
 <p>另外由于在代码中使用了class，async等等es6,es7的用法，故在实际使用的时候需要用到babel。本文使用的打包工具是<a target="_blank" rel="noopener" href="http://www.css88.com/doc/parcel/">parcel</a>，号称是零配置的 Web 应用程序打包器，体验了一下，确实好用。</p>
 <p>源码放在了<a target="_blank" rel="noopener" href="https://github.com/yuzai/tensorflow_fit_a_curve">github</a>上，使用说明见README.md。<a target="_blank" rel="noopener" href="http://blog.xiaoboma.com/tensorflow_fit_a_curve/dist/">demo</a>更加直观。</p>
 <h3 id="样本点数产生方法"><a href="#样本点数产生方法" class="headerlink" title="样本点数产生方法"></a>样本点数产生方法</h3><p>在这个问题中，首先需要产生样点。本文设定曲线方程为  y &#x3D; a<em>x^3 + b</em>x^2 + c*x + d，首先随机产生100个x值，再带入方程计算y值。最终产生本文的测试样点，核心代码如下：其中涉及到一些tensorflow的api，会穿插在注释中简单介绍。</p>
-<pre><code class="js">//导入tensorflow
-import * as tf from &#39;@tensorflow/tfjs&#39;;
-/*
-    *输入参数：
-    *num：样点数目
-    *coeff：参数对象&#123;a: , b: , c: , d:  &#125;;
-    *sigma：样点偏移原曲线范围
-    *输出参数：
-    &#123;
-    x: 样点横坐标值
-    y: 样点纵坐标值
-    &#125;
-*/
-export function generateData(num, coeff, sigma = 0.04) &#123;
-    //将代码用tf.tidy包裹，可以清除执行过程中的tensor变量
-    return tf.tidy(() =&gt; &#123;
-        //tf.scalar: 产生一个tensor变量，其值为输入的参数
-        const [a, b, c, d] = [
-            tf.scalar(coeff.a), tf.scalar(coeff.b), tf.scalar(coeff.c),
-            tf.scalar(coeff.d)
+<pre><code class="hljs js"><span class="hljs-comment">//导入tensorflow</span>
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> tf <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@tensorflow/tfjs&#x27;</span>;
+<span class="hljs-comment">/*</span>
+<span class="hljs-comment">    *输入参数：</span>
+<span class="hljs-comment">    *num：样点数目</span>
+<span class="hljs-comment">    *coeff：参数对象&#123;a: , b: , c: , d:  &#125;;</span>
+<span class="hljs-comment">    *sigma：样点偏移原曲线范围</span>
+<span class="hljs-comment">    *输出参数：</span>
+<span class="hljs-comment">    &#123;</span>
+<span class="hljs-comment">    x: 样点横坐标值</span>
+<span class="hljs-comment">    y: 样点纵坐标值</span>
+<span class="hljs-comment">    &#125;</span>
+<span class="hljs-comment">*/</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">generateData</span>(<span class="hljs-params">num, coeff, sigma = <span class="hljs-number">0.04</span></span>) &#123;
+    <span class="hljs-comment">//将代码用tf.tidy包裹，可以清除执行过程中的tensor变量</span>
+    <span class="hljs-keyword">return</span> tf.<span class="hljs-title function_">tidy</span>(<span class="hljs-function">() =&gt;</span> &#123;
+        <span class="hljs-comment">//tf.scalar: 产生一个tensor变量，其值为输入的参数</span>
+        <span class="hljs-keyword">const</span> [a, b, c, d] = [
+            tf.<span class="hljs-title function_">scalar</span>(coeff.<span class="hljs-property">a</span>), tf.<span class="hljs-title function_">scalar</span>(coeff.<span class="hljs-property">b</span>), tf.<span class="hljs-title function_">scalar</span>(coeff.<span class="hljs-property">c</span>),
+            tf.<span class="hljs-title function_">scalar</span>(coeff.<span class="hljs-property">d</span>)
         ]
-        //tf.randomUniform([num],-1,1): 产生-1,1之间的均匀分布的值组成的[num]    
-        //矩阵,此处就是1*100的矩阵, [2,3]表示2*3的矩阵(二维数组)
-        const x = tf.randomUniform([num], -1, 1);
-        //计算a*x^3 + b*x^2 + c*x + d+(0~sigma之间服从正太分布的随机值)
-        const y = a.mul(x.pow(tf.scalar(3)))
-            .add(b.mul(x.square()))
-            .add(c.mul(x))
-            .add(d)
-            .add(tf.randomNormal([num], 0, sigma));
-        //对输出值进行归一化
-        const ymin = y.min();
-        const ymax = y.max();
-        const yrange = ymax.sub(ymin);
-        const yNormalized = y.sub(ymin).div(yrange);
+        <span class="hljs-comment">//tf.randomUniform([num],-1,1): 产生-1,1之间的均匀分布的值组成的[num]    </span>
+        <span class="hljs-comment">//矩阵,此处就是1*100的矩阵, [2,3]表示2*3的矩阵(二维数组)</span>
+        <span class="hljs-keyword">const</span> x = tf.<span class="hljs-title function_">randomUniform</span>([num], -<span class="hljs-number">1</span>, <span class="hljs-number">1</span>);
+        <span class="hljs-comment">//计算a*x^3 + b*x^2 + c*x + d+(0~sigma之间服从正太分布的随机值)</span>
+        <span class="hljs-keyword">const</span> y = a.<span class="hljs-title function_">mul</span>(x.<span class="hljs-title function_">pow</span>(tf.<span class="hljs-title function_">scalar</span>(<span class="hljs-number">3</span>)))
+            .<span class="hljs-title function_">add</span>(b.<span class="hljs-title function_">mul</span>(x.<span class="hljs-title function_">square</span>()))
+            .<span class="hljs-title function_">add</span>(c.<span class="hljs-title function_">mul</span>(x))
+            .<span class="hljs-title function_">add</span>(d)
+            .<span class="hljs-title function_">add</span>(tf.<span class="hljs-title function_">randomNormal</span>([num], <span class="hljs-number">0</span>, sigma));
+        <span class="hljs-comment">//对输出值进行归一化</span>
+        <span class="hljs-keyword">const</span> ymin = y.<span class="hljs-title function_">min</span>();
+        <span class="hljs-keyword">const</span> ymax = y.<span class="hljs-title function_">max</span>();
+        <span class="hljs-keyword">const</span> yrange = ymax.<span class="hljs-title function_">sub</span>(ymin);
+        <span class="hljs-keyword">const</span> yNormalized = y.<span class="hljs-title function_">sub</span>(ymin).<span class="hljs-title function_">div</span>(yrange);
 
-        return &#123;
+        <span class="hljs-keyword">return</span> &#123;
             x,
             yNormalized
         &#125;;
     &#125;)
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>其中，api仅仅介绍了当前情景的功能，其还有一些可选参数没有进行介绍，具体可以查看官方文档，基本上看名字能猜出大概，结合<a target="_blank" rel="noopener" href="https://js.tensorflow.org/api/0.11.2">官方文档</a>不难理解，此处不再过多介绍。</p>
 <p>从上述代码可以看出，TensorFlow 提供了很好的api，包括服从均匀分布，正态分布参数的产生，tensor类型带来的矩阵加减乘除运算，最大最小值计算等功能，以及自带的缓存清理函数tidy。这些方法构成了整个运算的基础，大大方便了使用者。</p>
 <p>这一小节中，通过上述代码，产生num个x，y，构成了本文所述的样本点，为后文曲线拟合做好了样本准备。后续将借助TensorFlow 通过3种不同方法实现对该曲线的拟合。</p>
@@ -141,199 +156,198 @@ export function generateData(num, coeff, sigma = 0.04) &#123;
 <li>fit(inputXs,inputYs，iterations)，进行曲线拟合，多次调用train来完成训练</li>
 </ol>
 <p>根据上述方法，构建了一个简单的线性模型类，代码如下：</p>
-<pre><code class="js">import &#123;Model&#125; from &#39;./model&#39;;
-import * as tf from &#39;@tensorflow/tfjs&#39;;
+<pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123;<span class="hljs-title class_">Model</span>&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./model&#x27;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> tf <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@tensorflow/tfjs&#x27;</span>;
 
-function random()&#123;
-    return (Math.random()-0.5)*2;
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">random</span>(<span class="hljs-params"></span>)&#123;
+    <span class="hljs-keyword">return</span> (<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>()-<span class="hljs-number">0.5</span>)*<span class="hljs-number">2</span>;
 &#125;
 
-export class Linear_Model extends Model&#123;
-    constructor()&#123;
-        super();
-        this.init();
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Linear_Model</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Model</span>&#123;
+    <span class="hljs-title function_">constructor</span>(<span class="hljs-params"></span>)&#123;
+        <span class="hljs-variable language_">super</span>();
+        <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">init</span>();
     &#125;
-    init()&#123;
-        this.weights = [];
-        this.weights[0] = tf.variable(tf.scalar(random()));//对应参数a
-        this.weights[1] = tf.variable(tf.scalar(random()));//对应参数b
-        this.weights[2] = tf.variable(tf.scalar(random()));//对应参数c
-        this.bias = tf.variable(tf.scalar(random()));//对应参数d
+    <span class="hljs-title function_">init</span>(<span class="hljs-params"></span>)&#123;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">weights</span> = [];
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">weights</span>[<span class="hljs-number">0</span>] = tf.<span class="hljs-title function_">variable</span>(tf.<span class="hljs-title function_">scalar</span>(<span class="hljs-title function_">random</span>()));<span class="hljs-comment">//对应参数a</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">weights</span>[<span class="hljs-number">1</span>] = tf.<span class="hljs-title function_">variable</span>(tf.<span class="hljs-title function_">scalar</span>(<span class="hljs-title function_">random</span>()));<span class="hljs-comment">//对应参数b</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">weights</span>[<span class="hljs-number">2</span>] = tf.<span class="hljs-title function_">variable</span>(tf.<span class="hljs-title function_">scalar</span>(<span class="hljs-title function_">random</span>()));<span class="hljs-comment">//对应参数c</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">bias</span> = tf.<span class="hljs-title function_">variable</span>(tf.<span class="hljs-title function_">scalar</span>(<span class="hljs-title function_">random</span>()));<span class="hljs-comment">//对应参数d</span>
 
-        this.learningRate = 0.5;
-        //设置优化器，自动调整参数
-        this.optimizer = tf.train.sgd(0.5);
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">learningRate</span> = <span class="hljs-number">0.5</span>;
+        <span class="hljs-comment">//设置优化器，自动调整参数</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">optimizer</span> = tf.<span class="hljs-property">train</span>.<span class="hljs-title function_">sgd</span>(<span class="hljs-number">0.5</span>);
     &#125;
-    //根据输入样点计算输出
-    predict(inputXs)&#123;
-        return tf.tidy(()=&gt;&#123;
-            //y = weight[0]*x^3+weight[1]*x^2+weight[2]*x+biases
-            return this.weights[0].mul(inputXs.pow(tf.scalar(3)))
-                .add(this.weights[1].mul(inputXs.square()))
-                .add(this.weights[2].mul(inputXs))
-                .add(this.bias);
+    <span class="hljs-comment">//根据输入样点计算输出</span>
+    <span class="hljs-title function_">predict</span>(<span class="hljs-params">inputXs</span>)&#123;
+        <span class="hljs-keyword">return</span> tf.<span class="hljs-title function_">tidy</span>(<span class="hljs-function">()=&gt;</span>&#123;
+            <span class="hljs-comment">//y = weight[0]*x^3+weight[1]*x^2+weight[2]*x+biases</span>
+            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">weights</span>[<span class="hljs-number">0</span>].<span class="hljs-title function_">mul</span>(inputXs.<span class="hljs-title function_">pow</span>(tf.<span class="hljs-title function_">scalar</span>(<span class="hljs-number">3</span>)))
+                .<span class="hljs-title function_">add</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">weights</span>[<span class="hljs-number">1</span>].<span class="hljs-title function_">mul</span>(inputXs.<span class="hljs-title function_">square</span>()))
+                .<span class="hljs-title function_">add</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">weights</span>[<span class="hljs-number">2</span>].<span class="hljs-title function_">mul</span>(inputXs))
+                .<span class="hljs-title function_">add</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">bias</span>);
         &#125;)
     &#125;
-    train(inputXs,inputYs)&#123;
-        //通过优化器的minimize方法来实现对参数的减少
-        this.optimizer.minimize(()=&gt;&#123;
-            //根据输入预测输出
-            const predictedYs = this.predict(inputXs);
-            //计算预测输出与原本的输出差值
-            return this.loss(predictedYs,inputYs);
+    <span class="hljs-title function_">train</span>(<span class="hljs-params">inputXs,inputYs</span>)&#123;
+        <span class="hljs-comment">//通过优化器的minimize方法来实现对参数的减少</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">optimizer</span>.<span class="hljs-title function_">minimize</span>(<span class="hljs-function">()=&gt;</span>&#123;
+            <span class="hljs-comment">//根据输入预测输出</span>
+            <span class="hljs-keyword">const</span> predictedYs = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">predict</span>(inputXs);
+            <span class="hljs-comment">//计算预测输出与原本的输出差值</span>
+            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">loss</span>(predictedYs,inputYs);
         &#125;)
     &#125;
-    //计算差值，此处采用均方误差，就是差值平方再取平均值
-    loss(predictedYs,inputYs)&#123;
-        return predictedYs.sub(inputYs).square().mean();
+    <span class="hljs-comment">//计算差值，此处采用均方误差，就是差值平方再取平均值</span>
+    <span class="hljs-title function_">loss</span>(<span class="hljs-params">predictedYs,inputYs</span>)&#123;
+        <span class="hljs-keyword">return</span> predictedYs.<span class="hljs-title function_">sub</span>(inputYs).<span class="hljs-title function_">square</span>().<span class="hljs-title function_">mean</span>();
     &#125;
-    //多次调用train来调整参数
-    fit(inputXs,inputYs,iterationCount = 100)&#123;
-        for(let i = 0;i&lt;iterationCount;i++)&#123;
-            this.train(inputXs,inputYs);
+    <span class="hljs-comment">//多次调用train来调整参数</span>
+    <span class="hljs-title function_">fit</span>(<span class="hljs-params">inputXs,inputYs,iterationCount = <span class="hljs-number">100</span></span>)&#123;
+        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>;i&lt;iterationCount;i++)&#123;
+            <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">train</span>(inputXs,inputYs);
         &#125;
     &#125;
-&#125;
-</code></pre>
+&#125;</code></pre>
 <p>在上述代码中，用到了tensorflow的tf.train.sgd();方法，这个方法定义了一个优化器，就是通过调整参数来实现loss的不断降低，sgn是梯度下降法，类似的还有adam等。其优化的变量涉及到了inputXs,inputYs,weights(对应之前说的a,b,c,d)，那么它是如何判断哪些参数可以调整，哪些不能调整的呢？答案是tf.variable，在优化器优化的过程中，只能调整涉及到的通过tf.variable定义过的变量，在这个例子中，就只有this.weights。当执行train方法的时候，优化器会根据loss的计算过程，调整variable参数，使得loss往小的方向去走（严格来讲，不一定，和学习率等很多因素有关，但是这里问题比较简单，故不讨论，感兴趣可以看看coursera上吴恩达的机器学习课程）。经过多次train之后，就可以得到合适的参数，此时loss只要足够低，那么使用这些参数得到的结果就与愿结果无限趋近，可以认为实现了曲线的拟合。</p>
 <p>最终调用代码如下：</p>
-<pre><code class="js">import &#123;
-    Linear_Model
-&#125; from &#39;./linear_model&#39;;
-import &#123;
+<pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123;
+    <span class="hljs-title class_">Linear</span>_Model
+&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./linear_model&#x27;</span>;
+<span class="hljs-keyword">import</span> &#123;
     generateData
-&#125; from &#39;./data&#39;;
-import &#123;
+&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./data&#x27;</span>;
+<span class="hljs-keyword">import</span> &#123;
     plotData,
     plotCoeff,
     plotDataAndPredictions
-&#125; from &#39;./ui&#39;
-import * as tf from &#39;@tensorflow/tfjs&#39;;
+&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./ui&#x27;</span>
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> tf <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@tensorflow/tfjs&#x27;</span>;
 
-async function liner_method() &#123;
-    //新建线性预测模型  
-    const linear_model = new Linear_Model();
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">liner_method</span>(<span class="hljs-params"></span>) &#123;
+    <span class="hljs-comment">//新建线性预测模型  </span>
+    <span class="hljs-keyword">const</span> linear_model = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Linear</span>_Model();
 
-    const trueCoefficients = &#123;
-        a: -.8,
-        b: -.2,
-        c: .9,
-        d: .5
+    <span class="hljs-keyword">const</span> trueCoefficients = &#123;
+        <span class="hljs-attr">a</span>: -<span class="hljs-number">.8</span>,
+        <span class="hljs-attr">b</span>: -<span class="hljs-number">.2</span>,
+        <span class="hljs-attr">c</span>: <span class="hljs-number">.9</span>,
+        <span class="hljs-attr">d</span>: <span class="hljs-number">.5</span>
     &#125;;
-    //调用数据产生函数，产生测试样本
-    const trainingData = generateData(100, trueCoefficients);
-    //调用ui层的方法进行样点的绘制，此处ui层不做详细介绍
-    await plotData(&#39;#data .plot&#39;, trainingData.x, trainingData.yNormalized);
-    //先做一次预测，看看初始参数拟合的曲线形状
-    const predictionsBefore = linear_model.predict(trainingData.x);
-    //绘制样点和曲线
-    await plotDataAndPredictions(&#39;#random .plot&#39;, trainingData.x, trainingData.yNormalized, predictionsBefore);
-    //调用fit方法进行训练
-    linear_model.fit(trainingData.x, trainingData.yNormalized);
-    //再次计算曲线，此时参数已经经过训练
-    const predictionsAfter = linear_model.predict(trainingData.x);
-    //绘制曲线
-    await plotDataAndPredictions(&#39;#trained .plot&#39;, trainingData.x, trainingData.yNormalized, predictionsAfter);
-&#125;
-</code></pre>
+    <span class="hljs-comment">//调用数据产生函数，产生测试样本</span>
+    <span class="hljs-keyword">const</span> trainingData = <span class="hljs-title function_">generateData</span>(<span class="hljs-number">100</span>, trueCoefficients);
+    <span class="hljs-comment">//调用ui层的方法进行样点的绘制，此处ui层不做详细介绍</span>
+    <span class="hljs-keyword">await</span> <span class="hljs-title function_">plotData</span>(<span class="hljs-string">&#x27;#data .plot&#x27;</span>, trainingData.<span class="hljs-property">x</span>, trainingData.<span class="hljs-property">yNormalized</span>);
+    <span class="hljs-comment">//先做一次预测，看看初始参数拟合的曲线形状</span>
+    <span class="hljs-keyword">const</span> predictionsBefore = linear_model.<span class="hljs-title function_">predict</span>(trainingData.<span class="hljs-property">x</span>);
+    <span class="hljs-comment">//绘制样点和曲线</span>
+    <span class="hljs-keyword">await</span> <span class="hljs-title function_">plotDataAndPredictions</span>(<span class="hljs-string">&#x27;#random .plot&#x27;</span>, trainingData.<span class="hljs-property">x</span>, trainingData.<span class="hljs-property">yNormalized</span>, predictionsBefore);
+    <span class="hljs-comment">//调用fit方法进行训练</span>
+    linear_model.<span class="hljs-title function_">fit</span>(trainingData.<span class="hljs-property">x</span>, trainingData.<span class="hljs-property">yNormalized</span>);
+    <span class="hljs-comment">//再次计算曲线，此时参数已经经过训练</span>
+    <span class="hljs-keyword">const</span> predictionsAfter = linear_model.<span class="hljs-title function_">predict</span>(trainingData.<span class="hljs-property">x</span>);
+    <span class="hljs-comment">//绘制曲线</span>
+    <span class="hljs-keyword">await</span> <span class="hljs-title function_">plotDataAndPredictions</span>(<span class="hljs-string">&#x27;#trained .plot&#x27;</span>, trainingData.<span class="hljs-property">x</span>, trainingData.<span class="hljs-property">yNormalized</span>, predictionsAfter);
+&#125;</code></pre>
+
 <p>上述代码就是对本文定义的Linear_Model的一个使用方法，最终完成了曲线拟合这个目标。</p>
 <p>这种方法的训练速度快，但是缺点在于需要事先知道模型形状(y &#x3D; a<em>x^3 + b</em>x^2 + c*x + d)，不然不好进行预测。到这里，其实还没有涉及到神经网络的使用，但是所谓神经网络本质上也是参数的不断调整，只是更加复杂一些。加下来将使用底层api构建一个包含一层隐含层的神经网络来解决这个问题。不需要事先知道模型形状也能完成曲线的拟合。</p>
 <h3 id="底层api构建神经网络实现曲线拟合"><a href="#底层api构建神经网络实现曲线拟合" class="headerlink" title="底层api构建神经网络实现曲线拟合"></a>底层api构建神经网络实现曲线拟合</h3><p>神经网络的原理这里就不介绍了，感兴趣可以看coursera上吴恩达或者ufldl的介绍，都比较详细。<br>在这个问题中，由于是线性函数，所以拟合起来并不困难，这里采取1-6-1的结构，第一个1是输入层，这里是一维，所以输入层为1，隐含层选择6，这里其实5，4，7都可以，只是需要训练的次数不同而已。最后一层输出层为1，因为输出就是y值，也是一维的。</p>
 <p>按照上一节抽象出来的过程，也需要手动实现predict，loss等函数。神经网络，与上述不同的地方就在与参数的构建，predict计算方式不同，其它地方其实基本一样。代码如下：</p>
-<pre><code class="js">import &#123;
-    Model
-&#125; from &#39;./model&#39;;
-import * as tf from &#39;@tensorflow/tfjs&#39;;
-export default class NNModel extends Model &#123;
-    constructor(&#123;
-        inputSize = 3,
-        hiddenLayerSize = inputSize * 2,
-        outputSize = 2,
-        learningRate = 0.1
-    &#125; = &#123;&#125;) &#123;
-        super();
-        //定义隐藏层，输入层，输出层，优化器函数
-        this.hiddenLayerSize = hiddenLayerSize;
-        this.inputSize = inputSize;
-        this.outputSize = outputSize;
-        this.optimizer = tf.train.adam(learningRate);
-        this.init();
+<pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123;
+    <span class="hljs-title class_">Model</span>
+&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./model&#x27;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> tf <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@tensorflow/tfjs&#x27;</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">NNModel</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Model</span> &#123;
+    <span class="hljs-title function_">constructor</span>(<span class="hljs-params">&#123;</span>
+<span class="hljs-params">        inputSize = <span class="hljs-number">3</span>,</span>
+<span class="hljs-params">        hiddenLayerSize = inputSize * <span class="hljs-number">2</span>,</span>
+<span class="hljs-params">        outputSize = <span class="hljs-number">2</span>,</span>
+<span class="hljs-params">        learningRate = <span class="hljs-number">0.1</span></span>
+<span class="hljs-params">    &#125; = &#123;&#125;</span>) &#123;
+        <span class="hljs-variable language_">super</span>();
+        <span class="hljs-comment">//定义隐藏层，输入层，输出层，优化器函数</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">hiddenLayerSize</span> = hiddenLayerSize;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">inputSize</span> = inputSize;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">outputSize</span> = outputSize;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">optimizer</span> = tf.<span class="hljs-property">train</span>.<span class="hljs-title function_">adam</span>(learningRate);
+        <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">init</span>();
     &#125;
-    //初始化神经网络参数
-    init() &#123;
-        this.weights = [];
-        this.biases = [];
-        //第一层参数为1*6的矩阵
-        this.weights[0] = tf.variable(
-            tf.randomNormal([this.inputSize, this.hiddenLayerSize])
+    <span class="hljs-comment">//初始化神经网络参数</span>
+    <span class="hljs-title function_">init</span>(<span class="hljs-params"></span>) &#123;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">weights</span> = [];
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">biases</span> = [];
+        <span class="hljs-comment">//第一层参数为1*6的矩阵</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">weights</span>[<span class="hljs-number">0</span>] = tf.<span class="hljs-title function_">variable</span>(
+            tf.<span class="hljs-title function_">randomNormal</span>([<span class="hljs-variable language_">this</span>.<span class="hljs-property">inputSize</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">hiddenLayerSize</span>])
         );
-        //第一层偏置
-        this.biases[0] = tf.variable(tf.scalar(Math.random()));
-        // Output layer
-        //第二层参数为6*1的矩阵
-        this.weights[1] = tf.variable(
-            tf.randomNormal([this.hiddenLayerSize, this.outputSize])
+        <span class="hljs-comment">//第一层偏置</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">biases</span>[<span class="hljs-number">0</span>] = tf.<span class="hljs-title function_">variable</span>(tf.<span class="hljs-title function_">scalar</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>()));
+        <span class="hljs-comment">// Output layer</span>
+        <span class="hljs-comment">//第二层参数为6*1的矩阵</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">weights</span>[<span class="hljs-number">1</span>] = tf.<span class="hljs-title function_">variable</span>(
+            tf.<span class="hljs-title function_">randomNormal</span>([<span class="hljs-variable language_">this</span>.<span class="hljs-property">hiddenLayerSize</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">outputSize</span>])
         );
-        this.biases[1] = tf.variable(tf.scalar(Math.random()));
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">biases</span>[<span class="hljs-number">1</span>] = tf.<span class="hljs-title function_">variable</span>(tf.<span class="hljs-title function_">scalar</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>()));
     &#125;
-    //预测函数，激活函数选择sigmoid，matMux表示矩阵乘法
-    predict(inputXs) &#123;
-        const x = tensor(inputXs);
-        return tf.tidy(()=&gt;&#123;
-            const hiddenLayer = tf.sigmoid(x.matMul(this.weights[0]).add(this.biases[0]));
-            const outputLayer = tf.sigmoid(hiddenLayer.matMul(this.weights[1]).add(this.biases[1]));
-            return outputLayer;
+    <span class="hljs-comment">//预测函数，激活函数选择sigmoid，matMux表示矩阵乘法</span>
+    <span class="hljs-title function_">predict</span>(<span class="hljs-params">inputXs</span>) &#123;
+        <span class="hljs-keyword">const</span> x = <span class="hljs-title function_">tensor</span>(inputXs);
+        <span class="hljs-keyword">return</span> tf.<span class="hljs-title function_">tidy</span>(<span class="hljs-function">()=&gt;</span>&#123;
+            <span class="hljs-keyword">const</span> hiddenLayer = tf.<span class="hljs-title function_">sigmoid</span>(x.<span class="hljs-title function_">matMul</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">weights</span>[<span class="hljs-number">0</span>]).<span class="hljs-title function_">add</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">biases</span>[<span class="hljs-number">0</span>]));
+            <span class="hljs-keyword">const</span> outputLayer = tf.<span class="hljs-title function_">sigmoid</span>(hiddenLayer.<span class="hljs-title function_">matMul</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">weights</span>[<span class="hljs-number">1</span>]).<span class="hljs-title function_">add</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">biases</span>[<span class="hljs-number">1</span>]));
+            <span class="hljs-keyword">return</span> outputLayer;
         &#125;)
     &#125;
-    train(inputXs,inputYs)&#123;
-        this.optimizer.minimize(()=&gt;&#123;
-            const predictedYs = this.predict(inputXs);
-            return  this.loss(predictedYs,inputYs);
+    <span class="hljs-title function_">train</span>(<span class="hljs-params">inputXs,inputYs</span>)&#123;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">optimizer</span>.<span class="hljs-title function_">minimize</span>(<span class="hljs-function">()=&gt;</span>&#123;
+            <span class="hljs-keyword">const</span> predictedYs = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">predict</span>(inputXs);
+            <span class="hljs-keyword">return</span>  <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">loss</span>(predictedYs,inputYs);
         &#125;)
     &#125;
-    loss(predictedYs, inputYs) &#123;
-        const meanSquareError = predictedYs
-          .sub(tensor(inputYs))
-          .square()
-          .mean();
-        return meanSquareError;
+    <span class="hljs-title function_">loss</span>(<span class="hljs-params">predictedYs, inputYs</span>) &#123;
+        <span class="hljs-keyword">const</span> meanSquareError = predictedYs
+          .<span class="hljs-title function_">sub</span>(<span class="hljs-title function_">tensor</span>(inputYs))
+          .<span class="hljs-title function_">square</span>()
+          .<span class="hljs-title function_">mean</span>();
+        <span class="hljs-keyword">return</span> meanSquareError;
       &#125;
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>上述代码中，涉及到了sigmoid函数，也就是神经网络的激活函数，很基础的概念，不多介绍。另外一个就是matMux，相当于矩阵乘法。</p>
 <p>在实际使用时，方法和线性模型几乎一致，此处不贴代码，最终需要进行500多次的训练，才能达到和上述线性模型同样的效果。但是在不知道模型的情况下，还能拟合该曲线，这就是神经网络方法最大的优势。不需要人为构建模型，也能解决问题。</p>
 <p>但是上述的写法存在一个问题，就是现在是1个隐含层，计算可以通过predict中两三行的代码搞定，但是层数多了之后，手动的一次次编写中间代码，实在也是一个体力活，而且容易出错。为了解决这个问题，tensorflow提供了一种更高层次的构建方法，就是下一节要介绍的方法。</p>
 <h3 id="高层次api构建神经网络"><a href="#高层次api构建神经网络" class="headerlink" title="高层次api构建神经网络"></a>高层次api构建神经网络</h3><p>在tensorflow中，有一个高层次的api，tf.sequential()，其用法直接通过实例来解释：</p>
-<pre><code class="js">const model = tf.sequential();
-model.add(tf.layers.dense(&#123;
-    units: 6,
-    inputShape: [1],
-    activation:&#39;sigmoid&#39;
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> model = tf.<span class="hljs-title function_">sequential</span>();
+model.<span class="hljs-title function_">add</span>(tf.<span class="hljs-property">layers</span>.<span class="hljs-title function_">dense</span>(&#123;
+    <span class="hljs-attr">units</span>: <span class="hljs-number">6</span>,
+    <span class="hljs-attr">inputShape</span>: [<span class="hljs-number">1</span>],
+    <span class="hljs-attr">activation</span>:<span class="hljs-string">&#x27;sigmoid&#x27;</span>
 &#125;));
-model.add(tf.layers.dense(&#123;
-    units:1,
-    activation:&#39;sigmoid&#39;
+model.<span class="hljs-title function_">add</span>(tf.<span class="hljs-property">layers</span>.<span class="hljs-title function_">dense</span>(&#123;
+    <span class="hljs-attr">units</span>:<span class="hljs-number">1</span>,
+    <span class="hljs-attr">activation</span>:<span class="hljs-string">&#x27;sigmoid&#x27;</span>
 &#125;));
-model.compile(&#123;
-    optimizer:tf.train.adam(0.1),
-    loss:&#39;meanSquaredError&#39;
-&#125;)
-</code></pre>
+model.<span class="hljs-title function_">compile</span>(&#123;
+    <span class="hljs-attr">optimizer</span>:tf.<span class="hljs-property">train</span>.<span class="hljs-title function_">adam</span>(<span class="hljs-number">0.1</span>),
+    <span class="hljs-attr">loss</span>:<span class="hljs-string">&#x27;meanSquaredError&#x27;</span>
+&#125;)</code></pre>
+
 <p>通过上述的代码，就构建了一个神经网络，该网络有3层，一个是输入层，1维，隐藏层，6维，最后输出层，1维。上述代码中，model.add了两次，这是因为输入层其实就是输入样本，不需要计算，所以不需要添加，只需要在后续层添加的时候指定inputShape即可。其中，activation就是激活函数，这里直接选择signoid，而compile，就是完成模型的构建，需要指定优化器和loss计算方法（可以用字符串也可以传入一个自定义计算的函数）。此时，就完成了一个神经网络的搭建。用法如下：</p>
-<pre><code class="js">//预测样本对应的值
-const predictionsBefore = model.predict(trainingData_nn.x);
-//绘制结果
-await plotDataAndPredictions(&#39;#random3 .plot&#39;, trainingData.x, trainingData.yNormalized, predictionsBefore);
-//进行训练
-const h = await model.fit(trainingData_nn.x,trainingData_nn.yNormalized,&#123;
-      epochs:200,
-      batchSize:100
+<pre><code class="hljs js"><span class="hljs-comment">//预测样本对应的值</span>
+<span class="hljs-keyword">const</span> predictionsBefore = model.<span class="hljs-title function_">predict</span>(trainingData_nn.<span class="hljs-property">x</span>);
+<span class="hljs-comment">//绘制结果</span>
+<span class="hljs-keyword">await</span> <span class="hljs-title function_">plotDataAndPredictions</span>(<span class="hljs-string">&#x27;#random3 .plot&#x27;</span>, trainingData.<span class="hljs-property">x</span>, trainingData.<span class="hljs-property">yNormalized</span>, predictionsBefore);
+<span class="hljs-comment">//进行训练</span>
+<span class="hljs-keyword">const</span> h = <span class="hljs-keyword">await</span> model.<span class="hljs-title function_">fit</span>(trainingData_nn.<span class="hljs-property">x</span>,trainingData_nn.<span class="hljs-property">yNormalized</span>,&#123;
+      <span class="hljs-attr">epochs</span>:<span class="hljs-number">200</span>,
+      <span class="hljs-attr">batchSize</span>:<span class="hljs-number">100</span>
 &#125;)
-//训练结束后再次计算曲线y值
-const predictionsAfter = model.predict(trainingData_nn.x);
-//绘制结果
-await plotDataAndPredictions(&#39;#trained3 .plot&#39;, trainingData.x, trainingData.yNormalized, predictionsAfter);
-</code></pre>
+<span class="hljs-comment">//训练结束后再次计算曲线y值</span>
+<span class="hljs-keyword">const</span> predictionsAfter = model.<span class="hljs-title function_">predict</span>(trainingData_nn.<span class="hljs-property">x</span>);
+<span class="hljs-comment">//绘制结果</span>
+<span class="hljs-keyword">await</span> <span class="hljs-title function_">plotDataAndPredictions</span>(<span class="hljs-string">&#x27;#trained3 .plot&#x27;</span>, trainingData.<span class="hljs-property">x</span>, trainingData.<span class="hljs-property">yNormalized</span>, predictionsAfter);</code></pre>
+
 <p>可以看出，tensorflow提供的model,可以直接使用fit，predict，同时不需要手动指定weights，可以说是很方便了。</p>
 <h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本文算是对官方文档的一个深入，选择最简单的曲线拟合问题入手，从最简单的线性模型到手动搭建神经网络，再到利用高层api来搭建神经网络，解决了曲线拟合的问题。</p>
 <p>总体来说，最好的搭建姿势还是借助高层api，可以很方便快捷的搭建想要的神经网络，十分好用。希望能让后来者少走一些弯路。当然，可能文中也会有些错误，如有发现，还请指出，谢谢🙏。</p>
@@ -347,7 +361,6 @@ await plotDataAndPredictions(&#39;#trained3 .plot&#39;, trainingData.x, training
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2020/07/13/vscode%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%BE%E5%88%B0xxx.jsx%E7%9A%84%EF%BC%9Avscode%E7%82%B9%E5%87%BB%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%ACjsx%E5%AE%9A%E4%B9%89/">vscode是如何找到xxx.jsx的：vscode点击无法跳转jsx定义</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -367,19 +380,15 @@ await plotDataAndPredictions(&#39;#trained3 .plot&#39;, trainingData.x, training
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774342"></script>
+    <script src="/js/index.js?v=1783498241080"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774342"></script>
+    <script src="/js/general.js?v=1783498241080"></script>
     
-    <script src="/js/post.js?v=1783490774342"></script>
+    <script src="/js/post.js?v=1783498241080"></script>
     
-    <script src="/js/tag.js?v=1783490774342"></script>
+    <script src="/js/tag.js?v=1783498241080"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

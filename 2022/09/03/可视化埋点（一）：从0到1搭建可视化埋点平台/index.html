@@ -6,15 +6,37 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>可视化埋点（一）：从0到1搭建可视化埋点平台 - 芋仔的个人博客</title>
+    <meta name="description" content="近期一直在团队内开发可视化埋点平台，目前已经落地并成功在多个复杂业务中落地使用，在其中也踩了不少坑。故写此篇文章，给想要在团队内落地可视化埋点平台做一份参考，也是对笔者自己实现过程的一个记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="可视化埋点（一）：从0到1搭建可视化埋点平台">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2022/09/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BB%8E0%E5%88%B01%E6%90%AD%E5%BB%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="近期一直在团队内开发可视化埋点平台，目前已经落地并成功在多个复杂业务中落地使用，在其中也踩了不少坑。故写此篇文章，给想要在团队内落地可视化埋点平台做一份参考，也是对笔者自己实现过程的一个记录。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e6e275237cbf43ebb4740bcf0dde1bc0~tplv-k3u1fbpfcp-zoom-1.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/64b84bde56234d5888659398e003f638~tplv-k3u1fbpfcp-zoom-1.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dce08a6fb7d04c17beb293f1eefe6764~tplv-k3u1fbpfcp-zoom-1.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8969835e23ba4357b1631a1e4658ecb5~tplv-k3u1fbpfcp-zoom-1.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1c274f965928457aa064a1aaa70d47d1~tplv-k3u1fbpfcp-zoom-1.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1db52c0832944f1696354b1ac521be50~tplv-k3u1fbpfcp-zoom-1.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1a321a9a17fe4cbf97d053464fafee59~tplv-k3u1fbpfcp-zoom-1.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fa4ff8eb991040a18240e6f6fe429c8e~tplv-k3u1fbpfcp-zoom-1.image">
+<meta property="article:published_time" content="2022-09-03T13:29:00.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e6e275237cbf43ebb4740bcf0dde1bc0~tplv-k3u1fbpfcp-zoom-1.image">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241079">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241079">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +85,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2022-09-03</time><span class="post-eyebrow-sep">·</span>约 10535 字<span class="post-eyebrow-sep">·</span>读完约 26 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2022-09-03</time><span class="post-eyebrow-sep">·</span>约 10601 字<span class="post-eyebrow-sep">·</span>读完约 27 分钟</p>
           <h1 class="post-title">可视化埋点（一）：从0到1搭建可视化埋点平台</h1>
         </header>
         <section class="post-content">
@@ -91,13 +113,13 @@
 </li>
 </ol>
 <h2 id="可视化埋点平台的功能介绍"><a href="#可视化埋点平台的功能介绍" class="headerlink" title="可视化埋点平台的功能介绍"></a>可视化埋点平台的功能介绍</h2><p>可视化埋点平台功能上的核心，便是提供用户一个可以方便对元素进行圈选的方案。用户可以对目标页面进行元素的选择，从而实现埋点的录入。大致的效果如下：</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e6e275237cbf43ebb4740bcf0dde1bc0~tplv-k3u1fbpfcp-zoom-1.image" alt="圈选示意" referrerpolicy="no-referrer"></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e6e275237cbf43ebb4740bcf0dde1bc0~tplv-k3u1fbpfcp-zoom-1.image" alt="圈选示意" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>用户通过选择元素，录入名称，即可完成埋点的录入。同时，为了满足一些高级场景，可以顺带提供一颗同浏览器几乎一样的元素选择器，如下图：</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/64b84bde56234d5888659398e003f638~tplv-k3u1fbpfcp-zoom-1.image" alt="dom圈选示意" referrerpolicy="no-referrer"></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/64b84bde56234d5888659398e003f638~tplv-k3u1fbpfcp-zoom-1.image" alt="dom圈选示意" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>与此同时，可视化埋点平台还需要具备反向圈选的能力，以便给使用者一个正向反馈，可以作为一个埋点是否正确的验证能力。如下图：</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dce08a6fb7d04c17beb293f1eefe6764~tplv-k3u1fbpfcp-zoom-1.image" alt="反向圈选示意" referrerpolicy="no-referrer"></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dce08a6fb7d04c17beb293f1eefe6764~tplv-k3u1fbpfcp-zoom-1.image" alt="反向圈选示意" loading="lazy" referrerpolicy="no-referrer"></p>
 <h2 id="可视化埋点平台的架构设计"><a href="#可视化埋点平台的架构设计" class="headerlink" title="可视化埋点平台的架构设计"></a>可视化埋点平台的架构设计</h2><p>整体的架构图如下：</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8969835e23ba4357b1631a1e4658ecb5~tplv-k3u1fbpfcp-zoom-1.image" alt="埋点平台架构" referrerpolicy="no-referrer"></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8969835e23ba4357b1631a1e4658ecb5~tplv-k3u1fbpfcp-zoom-1.image" alt="埋点平台架构" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>图中，共分为4个区域：</p>
 <ol>
 <li>管理后台 + 圈选 sdk：位于图中的左上角部分。承担了可视化埋点项目维度的创建，圈选逻辑的实现，以及数据可视化等等功能，是用户能够看到的页面</li>
@@ -133,45 +155,45 @@
 </ol>
 <h3 id="元素唯一标记"><a href="#元素唯一标记" class="headerlink" title="元素唯一标记"></a>元素唯一标记</h3><p>要实现不人工埋点，那么就需要给每一个 dom 元素进行标记，而这个标记，本文选择的便是 xpath。本质是记录其在整个 dom 树中的位置，这是一项比较久远的知识。说实话，在做可视化埋点平台前，笔者作为一名前端开发，也基本没有听说过 xpath。</p>
 <p>举个 xpath 的实例，如下图，一个元素在 dom 树中的位置如下：</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1c274f965928457aa064a1aaa70d47d1~tplv-k3u1fbpfcp-zoom-1.image" alt="dom示例" referrerpolicy="no-referrer"></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1c274f965928457aa064a1aaa70d47d1~tplv-k3u1fbpfcp-zoom-1.image" alt="dom示例" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>那么可以通过右击 -&gt; 复制 -&gt; 复制xpath&#x2F;复制完整xpath: </p>
-<pre><code class="js">// xpath
-const xpath = &#39;//*[@id=&quot;__next&quot;]/div[1]/div/div/section[1]/article/h1[1]&#39;
-// 完整 xpath
-const fullXpath = &#39;/html/body/div[1]/div[1]/div/div/section[1]/article/h1[1]&#39;
-</code></pre>
+<pre><code class="hljs js"><span class="hljs-comment">// xpath</span>
+<span class="hljs-keyword">const</span> xpath = <span class="hljs-string">&#x27;//*[@id=&quot;__next&quot;]/div[1]/div/div/section[1]/article/h1[1]&#x27;</span>
+<span class="hljs-comment">// 完整 xpath</span>
+<span class="hljs-keyword">const</span> fullXpath = <span class="hljs-string">&#x27;/html/body/div[1]/div[1]/div/div/section[1]/article/h1[1]&#x27;</span></code></pre>
+
 <p>其本质是从当前元素开始，首先确定当前元素处于兄弟节点中同 tag 元素的第几个，比如上图中，其处于 h1 标签的第一个，便是 h1[1]，(如果同级只有一个 h1 元素，那么 chrome 会直接丢弃 [1])。依次往上执行，一直查找到根元素，也就是 html，即可得到元素的完整 xpath。</p>
 <p>但是 chrome 本身没有把这个方法暴露出来，故需要开发者自行实现，一个非常简易的获取元素 xpath 的代码如下：</p>
-<pre><code class="js">function getXpath(ele) &#123;
-    let cur = ele;
-    const path = [];
-    while (cur.nodeType === Node.ELEMENT_NODE) &#123;
-        const currentTag = cur.nodeName.toLowerCase();
-        const nth = findIndex(cur, currentTag);
-        path.push(`$&#123;(cur.tagName).toLowerCase()&#125;$&#123;(nth === 1 ? &#39;&#39; : `[$&#123;nth&#125;]`)&#125;`);
-        cur = cur.parentNode;
-    &#125;
-    return `/$&#123;path.reverse().join(&#39;/&#39;)&#125;`;
+<pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">getXpath</span>(<span class="hljs-params">ele</span>) &#123;
+    <span class="hljs-keyword">let</span> cur = ele;
+    <span class="hljs-keyword">const</span> path = [];
+	<span class="hljs-keyword">while</span> (cur.<span class="hljs-property">nodeType</span> === <span class="hljs-title class_">Node</span>.<span class="hljs-property">ELEMENT_NODE</span>) &#123;
+		<span class="hljs-keyword">const</span> currentTag = cur.<span class="hljs-property">nodeName</span>.<span class="hljs-title function_">toLowerCase</span>();
+		<span class="hljs-keyword">const</span> nth = <span class="hljs-title function_">findIndex</span>(cur, currentTag);
+		path.<span class="hljs-title function_">push</span>(<span class="hljs-string">`<span class="hljs-subst">$&#123;(cur.tagName).toLowerCase()&#125;</span><span class="hljs-subst">$&#123;(nth === <span class="hljs-number">1</span> ? <span class="hljs-string">&#x27;&#x27;</span> : <span class="hljs-string">`[<span class="hljs-subst">$&#123;nth&#125;</span>]`</span>)&#125;</span>`</span>);
+		cur = cur.<span class="hljs-property">parentNode</span>;
+	&#125;
+	<span class="hljs-keyword">return</span> <span class="hljs-string">`/<span class="hljs-subst">$&#123;path.reverse().join(<span class="hljs-string">&#x27;/&#x27;</span>)&#125;</span>`</span>;
 &#125;
 
-// 其中 findIndex 代码如下：
-function findIndex(ele, currentTag) &#123;
-    let nth = 0;
-    while (ele) &#123;
-        if (ele.nodeName.toLowerCase() === currentTag) nth += 1;
-        ele = ele.previousElementSibling;
+<span class="hljs-comment">// 其中 findIndex 代码如下：</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">findIndex</span>(<span class="hljs-params">ele, currentTag</span>) &#123;
+    <span class="hljs-keyword">let</span> nth = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (ele) &#123;
+        <span class="hljs-keyword">if</span> (ele.<span class="hljs-property">nodeName</span>.<span class="hljs-title function_">toLowerCase</span>() === currentTag) nth += <span class="hljs-number">1</span>;
+        ele = ele.<span class="hljs-property">previousElementSibling</span>;
     &#125;
-    return nth;
-&#125;
-</code></pre>
+    <span class="hljs-keyword">return</span> nth;
+&#125;</code></pre>
+
 <p>通过 getXpath 方法，可以拿到元素的唯一标记，此时需要做的，便是根据元素的标记，反选回该元素，浏览器提供了原生的方法，如下：</p>
-<pre><code class="js">function getEleByXpath(xpath) &#123;
-    const doc = document;
-    const result = doc.evaluate(xpath, doc);
-    const item = result.iterateNext();
-    return item;
-&#125;
-</code></pre>
+<pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">getEleByXpath</span>(<span class="hljs-params">xpath</span>) &#123;
+    <span class="hljs-keyword">const</span> doc = <span class="hljs-variable language_">document</span>;
+    <span class="hljs-keyword">const</span> result = doc.<span class="hljs-title function_">evaluate</span>(xpath, doc);
+    <span class="hljs-keyword">const</span> item = result.<span class="hljs-title function_">iterateNext</span>();
+    <span class="hljs-keyword">return</span> item;
+&#125;</code></pre>
+
 <p>上述方法，可以返回匹配到的第一个元素，即可获得目标元素。</p>
 <p>但是在实际的落地过程中，笔者发现了一些有趣的问题：</p>
 <ol>
@@ -188,66 +210,66 @@ function findIndex(ele, currentTag) &#123;
 <p>圈选的本质，便是在用户鼠标移动的时候，在元素上层出现一个同样大小的浮层，以便用户识别。</p>
 <p>获取用户鼠标移动和鼠标移动处的元素，在 <code>body</code> 上监听 <code>mousemove</code> 事件并取其 <code>target</code> 即可获取目标元素，接下来只需要获取元素的 <code>content</code> 大小、<code>padding</code>、<code>margin</code> 大小及元素的位置，然后根据其位置挂载浮层即可。</p>
 <p>获取元素大小及位置的方法很多，本文列举的仅仅是比较常规的方法(有更好的方案可以评论区讨论交流)，如下：</p>
-<pre><code class="js">// 获取元素的位置
-function findPos(ele) &#123;
-    const computedStyle = getComputedStyle(ele);
-    const pos = ele.getBoundingClientRect();
-    // left，right, top 均 不包含 margin
-    // 减去 margin，可以获取元素加上 margin 后，距离左侧和上侧的真实距离
-    const x = pos.left - parseFloat(computedStyle[&#39;margin-left&#39;]);
-    const y = pos.top - parseFloat(computedStyle[&#39;margin-top&#39;]);
-    const r = pos.right - parseFloat(computedStyle[&#39;margin-right&#39;]);
+<pre><code class="hljs js"><span class="hljs-comment">// 获取元素的位置</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">findPos</span>(<span class="hljs-params">ele</span>) &#123;
+    <span class="hljs-keyword">const</span> computedStyle = <span class="hljs-title function_">getComputedStyle</span>(ele);
+    <span class="hljs-keyword">const</span> pos = ele.<span class="hljs-title function_">getBoundingClientRect</span>();
+    <span class="hljs-comment">// left，right, top 均 不包含 margin</span>
+    <span class="hljs-comment">// 减去 margin，可以获取元素加上 margin 后，距离左侧和上侧的真实距离</span>
+    <span class="hljs-keyword">const</span> x = pos.<span class="hljs-property">left</span> - <span class="hljs-built_in">parseFloat</span>(computedStyle[<span class="hljs-string">&#x27;margin-left&#x27;</span>]);
+    <span class="hljs-keyword">const</span> y = pos.<span class="hljs-property">top</span> - <span class="hljs-built_in">parseFloat</span>(computedStyle[<span class="hljs-string">&#x27;margin-top&#x27;</span>]);
+    <span class="hljs-keyword">const</span> r = pos.<span class="hljs-property">right</span> - <span class="hljs-built_in">parseFloat</span>(computedStyle[<span class="hljs-string">&#x27;margin-right&#x27;</span>]);
 
-    return &#123;
-        top: y,
-        left: x,
-        right: r,
+    <span class="hljs-keyword">return</span> &#123;
+        <span class="hljs-attr">top</span>: y,
+        <span class="hljs-attr">left</span>: x,
+        <span class="hljs-attr">right</span>: r,
     &#125;;
 &#125;
 
-// 获取元素大小
-export function getElementInfo(ele) &#123;
-    const result = &#123;&#125;;
-    const requiredValue = [
-        &#39;border-top-width&#39;,
-        &#39;border-right-width&#39;,
-        &#39;border-bottom-width&#39;,
-        &#39;border-left-width&#39;,
-        &#39;margin-top&#39;,
-        &#39;margin-right&#39;,
-        &#39;margin-bottom&#39;,
-        &#39;margin-left&#39;,
-        &#39;padding-top&#39;,
-        &#39;padding-right&#39;,
-        &#39;padding-bottom&#39;,
-        &#39;padding-left&#39;,
-        &#39;z-index&#39;,
+<span class="hljs-comment">// 获取元素大小</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getElementInfo</span>(<span class="hljs-params">ele</span>) &#123;
+    <span class="hljs-keyword">const</span> result = &#123;&#125;;
+    <span class="hljs-keyword">const</span> requiredValue = [
+        <span class="hljs-string">&#x27;border-top-width&#x27;</span>,
+        <span class="hljs-string">&#x27;border-right-width&#x27;</span>,
+        <span class="hljs-string">&#x27;border-bottom-width&#x27;</span>,
+        <span class="hljs-string">&#x27;border-left-width&#x27;</span>,
+        <span class="hljs-string">&#x27;margin-top&#x27;</span>,
+        <span class="hljs-string">&#x27;margin-right&#x27;</span>,
+        <span class="hljs-string">&#x27;margin-bottom&#x27;</span>,
+        <span class="hljs-string">&#x27;margin-left&#x27;</span>,
+        <span class="hljs-string">&#x27;padding-top&#x27;</span>,
+        <span class="hljs-string">&#x27;padding-right&#x27;</span>,
+        <span class="hljs-string">&#x27;padding-bottom&#x27;</span>,
+        <span class="hljs-string">&#x27;padding-left&#x27;</span>,
+        <span class="hljs-string">&#x27;z-index&#x27;</span>,
     ];
 
-    const computedStyle = getComputedStyle(ele);
-    requiredValue.forEach((item) =&gt; &#123;
-        result[item] = parseFloat(computedStyle[item]) || 0;
+    <span class="hljs-keyword">const</span> computedStyle = <span class="hljs-title function_">getComputedStyle</span>(ele);
+    requiredValue.<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> &#123;
+        result[item] = <span class="hljs-built_in">parseFloat</span>(computedStyle[item]) || <span class="hljs-number">0</span>;
     &#125;);
     
-    // 用 offsetWidth 减去元素的 border 和 padding，来获取内容的宽高
-    // 不用clientWidth 是因为内敛元素，该属性为0
-    const width = ele.offsetWidth -
-              result[&#39;border-left-width&#39;] -
-              result[&#39;border-right-width&#39;] -
-              result[&#39;padding-left&#39;] -
-              result[&#39;padding-right&#39;];
+    <span class="hljs-comment">// 用 offsetWidth 减去元素的 border 和 padding，来获取内容的宽高</span>
+    <span class="hljs-comment">// 不用clientWidth 是因为内敛元素，该属性为0</span>
+    <span class="hljs-keyword">const</span> width = ele.<span class="hljs-property">offsetWidth</span> -
+              result[<span class="hljs-string">&#x27;border-left-width&#x27;</span>] -
+              result[<span class="hljs-string">&#x27;border-right-width&#x27;</span>] -
+              result[<span class="hljs-string">&#x27;padding-left&#x27;</span>] -
+              result[<span class="hljs-string">&#x27;padding-right&#x27;</span>];
 
-    const height = ele.offsetHeight -
-              result[&#39;border-top-width&#39;] -
-              result[&#39;border-bottom-width&#39;] -
-              result[&#39;padding-top&#39;] -
-              result[&#39;padding-bottom&#39;];
+    <span class="hljs-keyword">const</span> height = ele.<span class="hljs-property">offsetHeight</span> -
+              result[<span class="hljs-string">&#x27;border-top-width&#x27;</span>] -
+              result[<span class="hljs-string">&#x27;border-bottom-width&#x27;</span>] -
+              result[<span class="hljs-string">&#x27;padding-top&#x27;</span>] -
+              result[<span class="hljs-string">&#x27;padding-bottom&#x27;</span>];
 
-    result.width = width;
-    result.height = height;
-    return result;
-&#125;
-</code></pre>
+    result.<span class="hljs-property">width</span> = width;
+    result.<span class="hljs-property">height</span> = height;
+    <span class="hljs-keyword">return</span> result;
+&#125;</code></pre>
+
 <p>其中，使用 <code>offsetWidth</code> 而不是 <code>clientWidth</code> 是因为 <code>clientWidth</code> 在内联元素中为 0。具体可见 <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/21064101/understanding-offsetwidth-clientwidth-scrollwidth-and-height-respectively">clientWidth vs offsetWidth</a>，而不使用 <code>getBoundingClientRect().width</code> 是因为元素用了 <code>transform</code> 后，该值会随 <code>transform</code> 发生改变，具体可见 <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/43537559/javascript-getboundingclientrect-vs-offsetheight-while-calculate-element-heigh">offsetWidth vs getBoundingClientRect().width</a>。</p>
 <p>当然，上述代码隐藏了 svg 元素的处理，可以使用 <code>getBoundingClientRect().width</code> 或 svg 元素 特有的 <code>getBBox</code> 处理，本文不再赘述。</p>
 <p>计算出元素的位置及宽高后，即可在其位置分别添加：元素内容区、元素 <code>padding</code> 区、元素 <code>border</code> 区、元素 <code>margin</code> 区，以及元素的 tag + 宽高。</p>
@@ -260,117 +282,117 @@ export function getElementInfo(ele) &#123;
 <p>在实际应用中，还需要增加圈选开关来控制圈选器的打开与关闭，以免影响用户的正常点击行为，并可以增加上一次 <code>target</code> 的缓存来减少浮层的销毁与创建的频率等等。</p>
 <h3 id="iframe-通信"><a href="#iframe-通信" class="headerlink" title="iframe 通信"></a>iframe 通信</h3><p>在圈选的过程中，平台侧需要通知 iframe 内目标页面开启圈选模式，而 iframe 中，当用户选中元素后，需要计算元素的 xpath 反向通信给平台侧。此处为了方便，后续将平台侧成为 main，而 iframe 内目标页面称为圈选  sdk。main侧记录埋点后，为了便于验证，也需要在用户 hover 到埋点上，通知圈选 sdk 进行元素反选，从而验可以对录入的埋点进行反向验证。</p>
 <p>下图简单描述了两者之间的一个通信：</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1db52c0832944f1696354b1ac521be50~tplv-k3u1fbpfcp-zoom-1.image" alt="通信示意" referrerpolicy="no-referrer"></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1db52c0832944f1696354b1ac521be50~tplv-k3u1fbpfcp-zoom-1.image" alt="通信示意" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>可以看出，这中间需要频繁的一个 iframe 通信，同时也是一个双端通信，故笔者结合发布订阅模式抽象了一个通用的 iframe 跨域通信类，main 和 圈选sdk 均基于此类进行上层建设。核心代码如下：</p>
-<pre><code class="js">class MsgCenter &#123;
-    constructor(&#123;
-        sender, // 在 main 中 是iframe.contentWindow || 在圈选 sdk 中则是 window.parent
-        receiver, // window in main and iframe
-        source, // current window origin
-        target, // target window origin
-    &#125;) &#123;
-        this.sender = sender;
-        this.receiver = receiver;
-        this.target = target;
-        this.source = source;
-        this.receiver.addEventListener(&#39;message&#39;, this._handleMessage.bind(this));
+<pre><code class="hljs js"><span class="hljs-keyword">class</span> <span class="hljs-title class_">MsgCenter</span> &#123;
+    <span class="hljs-title function_">constructor</span>(<span class="hljs-params">&#123;</span>
+<span class="hljs-params">        sender, // 在 main 中 是iframe.contentWindow || 在圈选 sdk 中则是 <span class="hljs-variable language_">window</span>.parent</span>
+<span class="hljs-params">        receiver, // <span class="hljs-variable language_">window</span> <span class="hljs-keyword">in</span> main and iframe</span>
+<span class="hljs-params">        source, // current <span class="hljs-variable language_">window</span> origin</span>
+<span class="hljs-params">        target, // target <span class="hljs-variable language_">window</span> origin</span>
+<span class="hljs-params">    &#125;</span>) &#123;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">sender</span> = sender;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">receiver</span> = receiver;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">target</span> = target;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">source</span> = source;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">receiver</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;message&#x27;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">_handleMessage</span>.<span class="hljs-title function_">bind</span>(<span class="hljs-variable language_">this</span>));
 
-        this.listeners = &#123;&#125;;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">listeners</span> = &#123;&#125;;
     &#125;
 
-    /*
-    data: &#123;
-        type: &#39;&#39; // must define
-        ext: &#123;&#125; // 用户自定义数据
-        source, // 源页面 origin
-        target, // 目标页面 origin
-    &#125;
-    */
-    sendMessage(type, ext) &#123;
-        if (!this.target) return;
-        this.sender.postMessage(
+    <span class="hljs-comment">/*</span>
+<span class="hljs-comment">    data: &#123;</span>
+<span class="hljs-comment">        type: &#x27;&#x27; // must define</span>
+<span class="hljs-comment">        ext: &#123;&#125; // 用户自定义数据</span>
+<span class="hljs-comment">        source, // 源页面 origin</span>
+<span class="hljs-comment">        target, // 目标页面 origin</span>
+<span class="hljs-comment">    &#125;</span>
+<span class="hljs-comment">    */</span>
+    <span class="hljs-title function_">sendMessage</span>(<span class="hljs-params">type, ext</span>) &#123;
+        <span class="hljs-keyword">if</span> (!<span class="hljs-variable language_">this</span>.<span class="hljs-property">target</span>) <span class="hljs-keyword">return</span>;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">sender</span>.<span class="hljs-title function_">postMessage</span>(
             &#123;
-                source: this.source,
-                target: this.target,
+                <span class="hljs-attr">source</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">source</span>,
+                <span class="hljs-attr">target</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">target</span>,
                 type,
                 ext,
             &#125;,
-            this.target
+            <span class="hljs-variable language_">this</span>.<span class="hljs-property">target</span>
         );
     &#125;
 
-    // 监听type类型消息
-    on(type, callback) &#123;
-        if (this.listeners[type]) &#123;
-            this.listeners[type].push(callback);
-        &#125; else &#123;
-            this.listeners[type] = [callback];
+    <span class="hljs-comment">// 监听type类型消息</span>
+    <span class="hljs-title function_">on</span>(<span class="hljs-params">type, callback</span>) &#123;
+        <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">listeners</span>[type]) &#123;
+            <span class="hljs-variable language_">this</span>.<span class="hljs-property">listeners</span>[type].<span class="hljs-title function_">push</span>(callback);
+        &#125; <span class="hljs-keyword">else</span> &#123;
+            <span class="hljs-variable language_">this</span>.<span class="hljs-property">listeners</span>[type] = [callback];
         &#125;
     &#125;
 
-    // 取消type类型消息的监听
-    off(type, callback) &#123;
-        if (this.listeners[type]) &#123;
-            this.listeners[type].forEach((cb, index) =&gt; &#123;
-                if (cb === callback) &#123;
-                    this.listeners[type].splice(index, 1);
+    <span class="hljs-comment">// 取消type类型消息的监听</span>
+    <span class="hljs-title function_">off</span>(<span class="hljs-params">type, callback</span>) &#123;
+        <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">listeners</span>[type]) &#123;
+            <span class="hljs-variable language_">this</span>.<span class="hljs-property">listeners</span>[type].<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">cb, index</span>) =&gt;</span> &#123;
+                <span class="hljs-keyword">if</span> (cb === callback) &#123;
+                    <span class="hljs-variable language_">this</span>.<span class="hljs-property">listeners</span>[type].<span class="hljs-title function_">splice</span>(index, <span class="hljs-number">1</span>);
                 &#125;
             &#125;);
         &#125;
     &#125;
 
-    // 内部根据type分发消息
-    _handleMessage(event) &#123;
-        const &#123; data, origin &#125; = event;
-        // 判断消息来源是否是来自于目标的页面
-        if (origin === this.target) &#123;
-            if (this.listeners[data.type] &amp;&amp; this.listeners[data.type].length) &#123;
-                this.listeners[data.type].forEach((callback) =&gt; callback(data.ext));
+    <span class="hljs-comment">// 内部根据type分发消息</span>
+    <span class="hljs-title function_">_handleMessage</span>(<span class="hljs-params">event</span>) &#123;
+        <span class="hljs-keyword">const</span> &#123; data, origin &#125; = event;
+        <span class="hljs-comment">// 判断消息来源是否是来自于目标的页面</span>
+        <span class="hljs-keyword">if</span> (origin === <span class="hljs-variable language_">this</span>.<span class="hljs-property">target</span>) &#123;
+            <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">listeners</span>[data.<span class="hljs-property">type</span>] &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">listeners</span>[data.<span class="hljs-property">type</span>].<span class="hljs-property">length</span>) &#123;
+                <span class="hljs-variable language_">this</span>.<span class="hljs-property">listeners</span>[data.<span class="hljs-property">type</span>].<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">callback</span>) =&gt;</span> <span class="hljs-title function_">callback</span>(data.<span class="hljs-property">ext</span>));
             &#125;
         &#125;
     &#125;
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>在上述代码中，借助发布订阅模式，便可简化 main 和圈选 sdk 中的通信流程，具体使用方法如下：</p>
-<pre><code class="js">// 在 main 中
-const msgCenter = new MsgCenter(&#123;
-    target: iframe.origin, // iframe 页面的 origin
-    source: window.location.origin, // 当前页面的 origin
-    receiver: window,
-    sender: iframe.contentWindow, // 指向 iframe 的 window
+<pre><code class="hljs js"><span class="hljs-comment">// 在 main 中</span>
+<span class="hljs-keyword">const</span> msgCenter = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MsgCenter</span>(&#123;
+    <span class="hljs-attr">target</span>: iframe.<span class="hljs-property">origin</span>, <span class="hljs-comment">// iframe 页面的 origin</span>
+    <span class="hljs-attr">source</span>: <span class="hljs-variable language_">window</span>.<span class="hljs-property">location</span>.<span class="hljs-property">origin</span>, <span class="hljs-comment">// 当前页面的 origin</span>
+    <span class="hljs-attr">receiver</span>: <span class="hljs-variable language_">window</span>,
+    <span class="hljs-attr">sender</span>: iframe.<span class="hljs-property">contentWindow</span>, <span class="hljs-comment">// 指向 iframe 的 window</span>
 &#125;);
 
-// 向 iframe 发送消息，比如打开圈选开关等
-msgCenter.sendMessage(&#39;enableSelector&#39;, &#123;
-    /*
-    * 可传递自定义数据
-    */
+<span class="hljs-comment">// 向 iframe 发送消息，比如打开圈选开关等</span>
+msgCenter.<span class="hljs-title function_">sendMessage</span>(<span class="hljs-string">&#x27;enableSelector&#x27;</span>, &#123;
+    <span class="hljs-comment">/*</span>
+<span class="hljs-comment">    * 可传递自定义数据</span>
+<span class="hljs-comment">    */</span>
 &#125;);
 
-// 监听来自 iframe 消息
-function receiveXpath(data) &#123;
-    console.log(data.xpath);
+<span class="hljs-comment">// 监听来自 iframe 消息</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">receiveXpath</span>(<span class="hljs-params">data</span>) &#123;
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(data.<span class="hljs-property">xpath</span>);
 &#125;
 
-msgCenter.on(&#39;targetSelect&#39;, receiveXpath);
+msgCenter.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;targetSelect&#x27;</span>, receiveXpath);
 
-// 移除监听
-msgCenter.off(&#39;targetSelect&#39;, receiveXpath);
-</code></pre>
+<span class="hljs-comment">// 移除监听</span>
+msgCenter.<span class="hljs-title function_">off</span>(<span class="hljs-string">&#x27;targetSelect&#x27;</span>, receiveXpath);</code></pre>
+
 <p>而圈选 sdk，无非就是 sender 不同，使用伪代码如下：</p>
-<pre><code class="js">// 在 iframe 中
-const msgCenter = new MsgCenter(&#123;
-    target: main.origin, // 圈选平台 页面的 origin
-    source: window.location.origin, // 当前页面的 origin
-    receiver: window,
-    sender: window.parent, // 指向圈选平台 main 的 window
-&#125;);
-</code></pre>
+<pre><code class="hljs js"><span class="hljs-comment">// 在 iframe 中</span>
+<span class="hljs-keyword">const</span> msgCenter = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MsgCenter</span>(&#123;
+    <span class="hljs-attr">target</span>: main.<span class="hljs-property">origin</span>, <span class="hljs-comment">// 圈选平台 页面的 origin</span>
+    <span class="hljs-attr">source</span>: <span class="hljs-variable language_">window</span>.<span class="hljs-property">location</span>.<span class="hljs-property">origin</span>, <span class="hljs-comment">// 当前页面的 origin</span>
+    <span class="hljs-attr">receiver</span>: <span class="hljs-variable language_">window</span>,
+    <span class="hljs-attr">sender</span>: <span class="hljs-variable language_">window</span>.<span class="hljs-property">parent</span>, <span class="hljs-comment">// 指向圈选平台 main 的 window</span>
+&#125;);</code></pre>
+
 <p>有了上述方法，可以大大简化代码中关于 iframe 双工通信的监听与取消。</p>
 <p>至此，整个圈选流程的核心模块即可跑通：</p>
 <p>开启圈选时，平台侧 main 向 目标页面 iframe 发送开启圈选消息，iframe 侧收到消息，开启元素圈选功能，选中后，再传递给平台侧，完成元素埋点的录入。同时平台侧 main，在埋点列表被 hover 时，也可向 iframe 发送选中元素消息，iframe 中收到消息，选择对应元素，以便验证埋点对应的元素是否可识别。</p>
 <h3 id="采集侧埋点匹配"><a href="#采集侧埋点匹配" class="headerlink" title="采集侧埋点匹配"></a>采集侧埋点匹配</h3><p>埋点一共两种类型，元素的曝光和点击，下图是其基本流程：</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1a321a9a17fe4cbf97d053464fafee59~tplv-k3u1fbpfcp-zoom-1.image" alt="采集侧逻辑" referrerpolicy="no-referrer"></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1a321a9a17fe4cbf97d053464fafee59~tplv-k3u1fbpfcp-zoom-1.image" alt="采集侧逻辑" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>下面分别对其进行介绍：</p>
 <p>首先是元素的曝光，目前基本都采用 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API">intersectionObserver</a>，该 api <a target="_blank" rel="noopener" href="https://caniuse.com/?search=intersection">兼容性</a>也已经很高，同时也有 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/intersection-observer">polyfill</a>，基本上使用无虞。</p>
 <p>对于元素的曝光埋点，理论上仅遍历一次埋点列表的 xpath，通过前文元素唯一标识介绍的方法 <code>getEleByXpath</code>，找到对应的元素并使用 <code>intersectionObserver</code> 进行监听即可。</p>
@@ -391,7 +413,7 @@ const msgCenter = new MsgCenter(&#123;
 <p>同时根据发布订阅模式，抽象了圈选平台页面和 iframe 页面的通信环节，为平台和 圈选 sdk 频繁通信打下基础。</p>
 <p>最后介绍了采集侧匹配的方案，从而走通整个可视化埋点的核心链路。</p>
 <h2 id="可视化埋点平台系统链路"><a href="#可视化埋点平台系统链路" class="headerlink" title="可视化埋点平台系统链路"></a>可视化埋点平台系统链路</h2><p>上文介绍了整体的架构和圈选部分核心的细节，本章主要对整个系统的链路进行串联，以便更好的描述整个平台的逻辑。整体结构如下图：</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fa4ff8eb991040a18240e6f6fe429c8e~tplv-k3u1fbpfcp-zoom-1.image" alt="整体链路" referrerpolicy="no-referrer"></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fa4ff8eb991040a18240e6f6fe429c8e~tplv-k3u1fbpfcp-zoom-1.image" alt="整体链路" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>平台侧的埋点录入页面，配合圈选 sdk，完成埋点的录入及验证(反向圈选)，采集侧 sdk 通过对埋点进行匹配，对埋点数据进行收集，最终通过 node 服务对数据聚合后，在埋点平台进行可视化的数据呈现。</p>
 <h2 id="还有什么能做的"><a href="#还有什么能做的" class="headerlink" title="还有什么能做的"></a>还有什么能做的</h2><p>如上文所述，笔者可视化埋点平台的核心，便在于元素的唯一标记 xpath、iframe 通信及圈选器能力。</p>
 <p>该方案能够实现预期的效果，对于大部分的场景，都能够满足，但是也存在一些边界问题：</p>
@@ -414,7 +436,6 @@ const msgCenter = new MsgCenter(&#123;
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2023/01/02/2022%20%E5%B9%B4%E7%BB%88%E9%9A%8F%E7%AC%94%20--%20%E4%BB%8A%E5%B9%B4%E5%8D%87%E8%81%8C%E5%95%A6/">2022 年终随笔 -- 今年升职啦</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -434,19 +455,15 @@ const msgCenter = new MsgCenter(&#123;
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774342"></script>
+    <script src="/js/index.js?v=1783498241079"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774342"></script>
+    <script src="/js/general.js?v=1783498241079"></script>
     
-    <script src="/js/post.js?v=1783490774342"></script>
+    <script src="/js/post.js?v=1783498241079"></script>
     
-    <script src="/js/tag.js?v=1783490774342"></script>
+    <script src="/js/tag.js?v=1783498241079"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

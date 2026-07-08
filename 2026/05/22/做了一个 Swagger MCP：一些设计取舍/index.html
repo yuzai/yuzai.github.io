@@ -6,15 +6,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>做了一个 Swagger MCP：一些设计取舍 - 芋仔的个人博客</title>
+    <meta name="description" content="我们想试一件事：能不能让 AI 直接通过 Swagger 调用后端接口，按需做数据分析。 理论上是通的——Swagger 里有完整的接口定义，AI 看得懂；拉数据、交叉计算、给出结论这种事 AI 也不缺能力；两边接起来，产品&#x2F;运营想看某个数据、临时排查一次异常、想跨几个接口交叉算一下，直接跟 AI 对话就行，不用提需求等开发拉数。能跑通的话，「临时性数据问题」这种长尾就有机会从开发的工作">
+<meta property="og:type" content="article">
+<meta property="og:title" content="做了一个 Swagger MCP：一些设计取舍">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2026/05/22/%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%20Swagger%20MCP%EF%BC%9A%E4%B8%80%E4%BA%9B%E8%AE%BE%E8%AE%A1%E5%8F%96%E8%88%8D/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="我们想试一件事：能不能让 AI 直接通过 Swagger 调用后端接口，按需做数据分析。 理论上是通的——Swagger 里有完整的接口定义，AI 看得懂；拉数据、交叉计算、给出结论这种事 AI 也不缺能力；两边接起来，产品&#x2F;运营想看某个数据、临时排查一次异常、想跨几个接口交叉算一下，直接跟 AI 对话就行，不用提需求等开发拉数。能跑通的话，「临时性数据问题」这种长尾就有机会从开发的工作">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-22T06:04:00.000Z">
+<meta property="article:modified_time" content="2026-05-22T07:02:11.000Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774341">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774341">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241075">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241075">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +76,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2026-05-22</time><span class="post-eyebrow-sep">·</span>约 3374 字<span class="post-eyebrow-sep">·</span>读完约 8 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2026-05-22</time><span class="post-eyebrow-sep">·</span>约 3392 字<span class="post-eyebrow-sep">·</span>读完约 8 分钟</p>
           <h1 class="post-title">做了一个 Swagger MCP：一些设计取舍</h1>
         </header>
         <section class="post-content">
@@ -80,14 +93,14 @@
 </ul>
 <p>十万 tokens 是个尴尬的数字——主流模型的预算就二十万左右，光接口列表就吃掉一半，剩下的要装调用结果、中间计算、对话历史、思考过程，很快爆掉。</p>
 <p>最后做成了 4 个独立工具，<strong>把每一步显式暴露给模型</strong>，让 AI 自己决定走几步、走哪一步：</p>
-<pre><code>list_services()                  列出有哪些服务
+<pre><code class="hljs plaintext">list_services()                  列出有哪些服务
   ↓
 search_api(&#123; query &#125;)            按关键词检索接口
   ↓
 get_api(&#123; service, name &#125;)       拿完整 schema
   ↓
-call_api(&#123; service, name, ... &#125;) 实际调用
-</code></pre>
+call_api(&#123; service, name, ... &#125;) 实际调用</code></pre>
+
 <p>不藏在一个万能函数里，是为了让 AI 在每个节点都有判断权：search 出来五六个候选，AI 自己看 summary 和 tag 挑一个；schema 长什么样，AI 自己看；要不要发起调用，AI 自己定。哪一步出错，AI 也能定位是哪一步的问题再重试。</p>
 <p>这样设计下来 AI 每次只为真正要用的那一两个接口付 token 成本，目录从不进 context。</p>
 <p><strong>要强调一下：这不是省钱，是可行性问题</strong>——10 万级别的目录、几十万级别的全量 schema 直接进 context，模型干活的空间就被挤没了。怎么装下接口返回的数据？怎么思考多接口的调用顺序？怎么读用户聊到一半的追问？所以”全量注入”不是更贵的方案，是根本走不通的方案，按需查询是唯一能跑的形态。</p>
@@ -100,11 +113,11 @@ call_api(&#123; service, name, ... &#125;) 实际调用
 <li>配置项一多，使用门槛就高，团队推广不动</li>
 </ul>
 <p><strong>v2</strong> 是现在的方案：用 Playwright + 真 Chrome 持久化 profile。</p>
-<pre><code class="ts">const ctx = await chromium.launchPersistentContext(USER_DATA_DIR, &#123;
-  channel: &#39;chrome&#39;, // 用系统装的 Chrome，不下载 Chromium
-  headless: false, // 第一次需要让用户看到弹窗登录
-&#125;)
-</code></pre>
+<pre><code class="hljs ts"><span class="hljs-keyword">const</span> ctx = <span class="hljs-keyword">await</span> chromium.<span class="hljs-title function_">launchPersistentContext</span>(<span class="hljs-variable constant_">USER_DATA_DIR</span>, &#123;
+  <span class="hljs-attr">channel</span>: <span class="hljs-string">&#x27;chrome&#x27;</span>, <span class="hljs-comment">// 用系统装的 Chrome，不下载 Chromium</span>
+  <span class="hljs-attr">headless</span>: <span class="hljs-literal">false</span>, <span class="hljs-comment">// 第一次需要让用户看到弹窗登录</span>
+&#125;)</code></pre>
+
 <p>第一次调接口时弹一个 Chrome 窗口，指向登录页，用户该输密码输密码，该过 2FA 过 2FA。登录完成后 cookie 落到 <code>mcp/.session/</code>，之后所有调用都从这里读 cookie，对 AI 完全无感。</p>
 <p>这个方案的核心是：<strong>把鉴权的复杂性还给用户的浏览器</strong>。我们自己不存任何密钥，不感知 2FA 算法，不写 SSO 客户端。用户的浏览器已经会处理这些事，凭什么我们要重做一遍？</p>
 <hr>
@@ -113,12 +126,12 @@ call_api(&#123; service, name, ... &#125;) 实际调用
 <p>加了 <strong>滑窗分词</strong>：四字查询拆成连续的二字片段（比如 <code>AB</code>&#x2F;<code>BC</code>&#x2F;<code>CD</code>），任一命中都加分。打分从硬 AND 改为软加权，召回上来了。</p>
 <p>第二个问题更隐蔽：用户用概念性中文表达查询时命中率低。比如查询动词是中文（”修改”、”查询”），swagger 里用的是英文（<code>update</code>、<code>query</code>），词面没有交集。</p>
 <p>解法是加一份<strong>同义词表</strong>（<code>synonyms.ts</code>），手工维护 CN↔EN 高频映射：</p>
-<pre><code class="ts">&#123;
-  &#39;修改&#39;: [&#39;update&#39;, &#39;edit&#39;, &#39;modify&#39;],
-  &#39;查询&#39;: [&#39;query&#39;, &#39;list&#39;, &#39;get&#39;],
-  // ... 业务名词同样维护一份对照
-&#125;
-</code></pre>
+<pre><code class="hljs ts">&#123;
+  <span class="hljs-string">&#x27;修改&#x27;</span>: [<span class="hljs-string">&#x27;update&#x27;</span>, <span class="hljs-string">&#x27;edit&#x27;</span>, <span class="hljs-string">&#x27;modify&#x27;</span>],
+  <span class="hljs-string">&#x27;查询&#x27;</span>: [<span class="hljs-string">&#x27;query&#x27;</span>, <span class="hljs-string">&#x27;list&#x27;</span>, <span class="hljs-string">&#x27;get&#x27;</span>],
+  <span class="hljs-comment">// ... 业务名词同样维护一份对照</span>
+&#125;</code></pre>
+
 <p>匹配时把查询词通过同义词表扩展，扩展项以 0.6 权重（低于原词）加入 token 池，中文查询就能对上英文。</p>
 <p>中间认真考虑过上 embedding 做向量检索，最后没做。原因是：</p>
 <ul>
@@ -158,7 +171,6 @@ call_api(&#123; service, name, ... &#125;) 实际调用
             <p class="post-neighbor-item is-empty"><span class="post-neighbor-label">下一篇</span><span>没有了</span></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -178,19 +190,15 @@ call_api(&#123; service, name, ... &#125;) 实际调用
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774341"></script>
+    <script src="/js/index.js?v=1783498241075"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774341"></script>
+    <script src="/js/general.js?v=1783498241075"></script>
     
-    <script src="/js/post.js?v=1783490774341"></script>
+    <script src="/js/post.js?v=1783498241075"></script>
     
-    <script src="/js/tag.js?v=1783490774341"></script>
+    <script src="/js/tag.js?v=1783498241075"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

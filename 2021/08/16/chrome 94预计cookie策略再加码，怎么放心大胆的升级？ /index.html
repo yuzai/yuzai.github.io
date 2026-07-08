@@ -6,15 +6,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>chrome 94预计cookie策略再加码，怎么放心大胆的升级？ - 芋仔的个人博客</title>
+    <meta name="description" content="chrome 94之后，将禁用命令行参数对SameSiteByDefaultCookies提供，届时，本地localhost下，直接访问测试环境接口将成为问题。本文先介绍这一策略的历史及曾经的解决方案，并会针对此问题，提出一个chrome 94之后的解决方案作为参考。让大家尽量少走弯路，放心大胆的升级chrome。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="chrome 94预计cookie策略再加码，怎么放心大胆的升级？">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2021/08/16/chrome%2094%E9%A2%84%E8%AE%A1cookie%E7%AD%96%E7%95%A5%E5%86%8D%E5%8A%A0%E7%A0%81%EF%BC%8C%E6%80%8E%E4%B9%88%E6%94%BE%E5%BF%83%E5%A4%A7%E8%83%86%E7%9A%84%E5%8D%87%E7%BA%A7%EF%BC%9F%20/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="chrome 94之后，将禁用命令行参数对SameSiteByDefaultCookies提供，届时，本地localhost下，直接访问测试环境接口将成为问题。本文先介绍这一策略的历史及曾经的解决方案，并会针对此问题，提出一个chrome 94之后的解决方案作为参考。让大家尽量少走弯路，放心大胆的升级chrome。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gthwlwdfkuj60i50hdt9o02.jpg">
+<meta property="article:published_time" content="2021-08-16T07:25:00.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gthwlwdfkuj60i50hdt9o02.jpg">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241080">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241080">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -97,7 +112,7 @@
 <p>由于笔者自己比较熟悉charles，此处以charles为例。</p>
 <p>step1: 安装charles，然后安装证书（不安装证书无法进行https信息的查看），google or baidu即可，此处不做赘述。</p>
 <p>step2: 点击tools -&gt; Map Remote -&gt; add, 进行如下配置（假设端口是3000），并保存，并勾选enable map remote即可。</p>
-<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gthwlwdfkuj60i50hdt9o02.jpg" alt="image-20210815234502383" referrerpolicy="no-referrer"></p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gthwlwdfkuj60i50hdt9o02.jpg" alt="image-20210815234502383" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>上述配置，便将x x x.163.com下的请求，转发到了127.0.0.1:3000端口下，浏览器直接打开xxx.163.com即可返回本地3000端口下的页面。此处，163.com仅仅是笔者自己的域名，实际配置时，保证想要访问的接口的二级域名相同即可。由于cookie的跨域判断只到二级域名。另外还要注意http 和https，两者不同，也是会被判定为跨域，不会携带cookie。</p>
 <h2 id="WebIDE-or-CloudIDE"><a href="#WebIDE-or-CloudIDE" class="headerlink" title="WebIDE or CloudIDE"></a>WebIDE or CloudIDE</h2><p> 一般来讲，公司自己搭建的WEBIDE，都基本与想要访问的接口同域，那么在开发时，由于本身就是同域，自然不存在跨域后cookie无法携带导致登录不上的问题。</p>
 <p>当然，webide的建设也需要一定的积累。感兴趣的小伙伴私信加入我们团队（云音乐直播团队），一起建设webide喽。</p>
@@ -115,7 +130,6 @@
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2021/09/16/%E5%A6%82%E4%BD%95%E5%9C%A8%E5%9B%A2%E9%98%9F%E5%86%85%E5%BF%AB%E9%80%9F%E8%90%BD%E5%9C%B0WebIDE/">如何在团队内快速落地WebIDE</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -135,19 +149,15 @@
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774342"></script>
+    <script src="/js/index.js?v=1783498241080"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774342"></script>
+    <script src="/js/general.js?v=1783498241080"></script>
     
-    <script src="/js/post.js?v=1783490774342"></script>
+    <script src="/js/post.js?v=1783498241080"></script>
     
-    <script src="/js/tag.js?v=1783490774342"></script>
+    <script src="/js/tag.js?v=1783498241080"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

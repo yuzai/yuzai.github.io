@@ -6,15 +6,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>可视化埋点（三）：元素圈选器实现 - 芋仔的个人博客</title>
+    <meta name="description" content="在实现可视化埋点的过程中，元素圈选是其功能中不可或缺的一环，其能力具备一定的通用性，故将其逻辑从 可视化埋点平台 中剥离出来，单独作为一个独立的工具方法暴露出来，源代码及演示可直接在 github仓库中 查看。本文主要是对其实现的拆解和其中关键点的记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="可视化埋点（三）：元素圈选器实现">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2023/01/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%85%83%E7%B4%A0%E5%9C%88%E9%80%89%E5%99%A8%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="在实现可视化埋点的过程中，元素圈选是其功能中不可或缺的一环，其能力具备一定的通用性，故将其逻辑从 可视化埋点平台 中剥离出来，单独作为一个独立的工具方法暴露出来，源代码及演示可直接在 github仓库中 查看。本文主要是对其实现的拆解和其中关键点的记录。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-03T10:18:00.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241079">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241079">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -70,7 +83,7 @@
             <p>在实现可视化埋点的过程中，元素圈选是其功能中不可或缺的一环，其能力具备一定的通用性，故将其逻辑从 可视化埋点平台 中剥离出来，单独作为一个独立的工具方法暴露出来，源代码及演示可直接在 <a target="_blank" rel="noopener" href="https://github.com/yuzai/dom-inspector-pro">github仓库中</a> 查看。本文主要是对其实现的拆解和其中关键点的记录。</p>
 <span id="more"></span>
 
-<h2 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h2><p>整体的 <a target="_blank" rel="noopener" href="https://blog.maxiaobo.com.cn/dom-inspector-pro/demo/index.html">demo</a> 可以在此处查看。</p>
+<h2 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h2><p>整体的 <a href="https://blog.maxiaobo.com.cn/dom-inspector-pro/demo/index.html">demo</a> 可以在此处查看。</p>
 <p>整体来讲，圈选器的功能在于：</p>
 <p>enable 前，用户可自由交互，此时点击、移动并不会被阻碍。</p>
 <p>而 enable 后，当用户移动鼠标&#x2F;移动端移动手指，便会高亮当前选择的元素的大小、padding 及 margin 等。</p>
@@ -118,11 +131,11 @@
 <p>而另一方面，圈选结束的时机在 mobile 端丢失。原本 pc 端通过 body 上捕获阶段的点击事件进行圈选结束的判定，而 mobile 端，由于 click 事件在 touchmove 后不会触发，故需要在 touchend 中创建自定义事件，触发 body 上的点击。</p>
 <p>除此之外，mobile 端还存在移动触发页面滚动的情况，此处本文采用了对所有元素增加 touch-action: none 的方法，避免了移动端手指滚动时对全局页面的影响。</p>
 <p>同时，移动端 touchmove 的 target 并不会指向当前 move 的元素，需要使用一些 api 进行当前元素的获取，伪代码如下：</p>
-<pre><code class="js">if (e instanceof TouchEvent &amp;&amp; e.touches) &#123;
-    const changedTouch = e.changedTouches[0];
-    return document.elementFromPoint(changedTouch.clientX, changedTouch.clientY);
-&#125;
-</code></pre>
+<pre><code class="hljs js"><span class="hljs-keyword">if</span> (e <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">TouchEvent</span> &amp;&amp; e.<span class="hljs-property">touches</span>) &#123;
+    <span class="hljs-keyword">const</span> changedTouch = e.<span class="hljs-property">changedTouches</span>[<span class="hljs-number">0</span>];
+    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">elementFromPoint</span>(changedTouch.<span class="hljs-property">clientX</span>, changedTouch.<span class="hljs-property">clientY</span>);
+&#125;</code></pre>
+
 <p>同时，由于该方案回获取当前位置的元素，也就是说如果手指下方的元素是蒙层元素，那么也会被选中，所以需要对 蒙层等无关元素增加 touch-action: none 来避免被选中。</p>
 <p>至此，便完成了 mobile 端的兼容。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>整体来讲，圈选器的实现并不复杂，麻烦的点主要集中在特殊场景的处理及 dom 的操作上。</p>
@@ -140,7 +153,6 @@
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2023/01/06/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E5%A6%82%E4%BD%95%E7%BB%B4%E6%8C%81%20Xpath%20%E7%A8%B3%E5%AE%9A%E6%80%A7/">可视化埋点（四）：如何维持 Xpath 稳定性</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -160,19 +172,15 @@
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774342"></script>
+    <script src="/js/index.js?v=1783498241079"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774342"></script>
+    <script src="/js/general.js?v=1783498241079"></script>
     
-    <script src="/js/post.js?v=1783490774342"></script>
+    <script src="/js/post.js?v=1783498241079"></script>
     
-    <script src="/js/tag.js?v=1783490774342"></script>
+    <script src="/js/tag.js?v=1783498241079"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

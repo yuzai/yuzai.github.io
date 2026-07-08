@@ -6,15 +6,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>如何打造轻量级 WebIDE - 芋仔的个人博客</title>
+    <meta name="description" content="之前在团队中基于 theia，搭建了一套 CloudIDE（其相关介绍见此文章），其本质是将 IDE 的前端运行在浏览器 or 本地 electron，而文件系统，多语言服务等，运行在远端容器侧，中间通过 rpc 进行通信从而完成整个 IDE 的云端化。 而目前团队在低代码平台的建设中，发现还是需要一些简单的 IDE 场景，如果采用容器化的方案，那么每一个 IDE 可能就需要一个容器，不论是启动速">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何打造轻量级 WebIDE">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2022/02/22/%E6%89%93%E9%80%A0%E8%BD%BB%E9%87%8F%E7%BA%A7WebIDE%EF%BC%8C%E7%9C%8B%E8%BF%99%E4%B8%80%E7%AF%87%E4%B8%87%E5%AD%97%E9%95%BF%E6%96%87%E5%B0%B1%E5%A4%9F%E5%95%A6/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="之前在团队中基于 theia，搭建了一套 CloudIDE（其相关介绍见此文章），其本质是将 IDE 的前端运行在浏览器 or 本地 electron，而文件系统，多语言服务等，运行在远端容器侧，中间通过 rpc 进行通信从而完成整个 IDE 的云端化。 而目前团队在低代码平台的建设中，发现还是需要一些简单的 IDE 场景，如果采用容器化的方案，那么每一个 IDE 可能就需要一个容器，不论是启动速">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-22T14:53:00.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241079">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241079">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +76,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2022-02-22</time><span class="post-eyebrow-sep">·</span>约 12555 字<span class="post-eyebrow-sep">·</span>读完约 31 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2022-02-22</time><span class="post-eyebrow-sep">·</span>约 12617 字<span class="post-eyebrow-sep">·</span>读完约 32 分钟</p>
           <h1 class="post-title">如何打造轻量级 WebIDE</h1>
         </header>
         <section class="post-content">
@@ -74,7 +87,7 @@
 
 <p>对于依赖容器化技术，能够提供完整终端能力的 IDE，在本文中，称之为 CloudIDE，而仅仅依赖浏览器能力的 IDE，本文称之为 WebIDE。本文想要分享的 IDE 属于后者。</p>
 <p>得益于 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/">monaco-editor</a> 的强大，使用 monaco-editor 去搭建一个简单的 WebIDE 非常容易，但是要把多文件支持、<a target="_blank" rel="noopener" href="https://eslint.org/">ESLint</a>、<a target="_blank" rel="noopener" href="https://prettier.io/">Prettier</a>、代码补全等功能加进去，并不是一件容易的事情。</p>
-<p>本文意在分享我在建设 WebIDE 中学到的一些经验，以及一些解决方案，希望能够帮助到有同样需求的同学。同时，这不是一篇手把手的文章，仅仅是介绍一些决策的思路及示例代码。完整的代码见 <a target="_blank" rel="noopener" href="https://github.com/yuzai/base-editor">github</a>，同时也搭建了一个 <a target="_blank" rel="noopener" href="https://blog.maxiaobo.com.cn/base-editor/build/index.html">demo</a> 可以体验(demo 依赖不少静态文件，部署在 github pages 上，访问速度过慢可能无法正常加载，可以clone后run dev查看，移动端也建议通过chrome打开)，也提供了一个 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/yuzai-base-editor">npm 组件</a>可以当作 react 组件直接使用。</p>
+<p>本文意在分享我在建设 WebIDE 中学到的一些经验，以及一些解决方案，希望能够帮助到有同样需求的同学。同时，这不是一篇手把手的文章，仅仅是介绍一些决策的思路及示例代码。完整的代码见 <a target="_blank" rel="noopener" href="https://github.com/yuzai/base-editor">github</a>，同时也搭建了一个 <a href="https://blog.maxiaobo.com.cn/base-editor/build/index.html">demo</a> 可以体验(demo 依赖不少静态文件，部署在 github pages 上，访问速度过慢可能无法正常加载，可以clone后run dev查看，移动端也建议通过chrome打开)，也提供了一个 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/yuzai-base-editor">npm 组件</a>可以当作 react 组件直接使用。</p>
 <h2 id="引入monaco-editor"><a href="#引入monaco-editor" class="headerlink" title="引入monaco-editor"></a>引入monaco-editor</h2><p>引入 monaco-editor 的方式主要是两种，amd 或者 esm。</p>
 <p>两者接入方式都比较容易，我均有尝试。</p>
 <p>相对来讲，起初更偏向于 esm 方式，但是由于 <a target="_blank" rel="noopener" href="https://github.com/microsoft/monaco-editor/issues/2671">issue</a> 问题，导致打包后，在当前项目中可以正常使用，但是当把它作为 npm 包发布后，他人使用时，打包会出错。</p>
@@ -83,146 +96,146 @@
 <p>多文件处理主要涉及到的就是 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/modules/monaco.editor.html#create">monaco.editor.create</a> 以及 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/modules/monaco.editor.html#createModel">monaco.editor.createModel</a> 两个api。</p>
 <p>其中，createModel 就是多文件处理的核心 api。根据文件路径创建不同的 model，在需要切换时，通过调用 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.IStandaloneCodeEditor.html#setModel">editor.setModel</a> 即可实现多文件的切换</p>
 <p>创建多文件并切换的一般的伪代码如下：</p>
-<pre><code class="js">const files = &#123;
-    &#39;/test.js&#39;: &#39;xxx&#39;,
-    &#39;/app/test.js&#39;: &#39;xxx2&#39;,
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> files = &#123;
+    <span class="hljs-string">&#x27;/test.js&#x27;</span>: <span class="hljs-string">&#x27;xxx&#x27;</span>,
+    <span class="hljs-string">&#x27;/app/test.js&#x27;</span>: <span class="hljs-string">&#x27;xxx2&#x27;</span>,
 &#125;
 
-const editor = monaco.editor.create(domNode, &#123;
+<span class="hljs-keyword">const</span> editor = monaco.<span class="hljs-property">editor</span>.<span class="hljs-title function_">create</span>(domNode, &#123;
     ...options,
-    model: null, // 此处model设为null，是阻止默认创建的空model
+    <span class="hljs-attr">model</span>: <span class="hljs-literal">null</span>, <span class="hljs-comment">// 此处model设为null，是阻止默认创建的空model</span>
 &#125;);
 
-Object.keys(files).forEach((path) =&gt;
-    monaco.editor.createModel(
+<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">keys</span>(files).<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">path</span>) =&gt;</span>
+    monaco.<span class="hljs-property">editor</span>.<span class="hljs-title function_">createModel</span>(
         files[path],
-        &#39;javascript&#39;,
-        new monaco.Uri().with(&#123; path &#125;)
+        <span class="hljs-string">&#x27;javascript&#x27;</span>,
+        <span class="hljs-keyword">new</span> monaco.<span class="hljs-title class_">Uri</span>().<span class="hljs-title function_">with</span>(&#123; path &#125;)
     )
 );
 
-function openFile(path) &#123;
-    const model = monaco.editor.getModels().find(model =&gt; model.uri.path === path);
-    editor.setModel(model);
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">openFile</span>(<span class="hljs-params">path</span>) &#123;
+    <span class="hljs-keyword">const</span> model = monaco.<span class="hljs-property">editor</span>.<span class="hljs-title function_">getModels</span>().<span class="hljs-title function_">find</span>(<span class="hljs-function"><span class="hljs-params">model</span> =&gt;</span> model.<span class="hljs-property">uri</span>.<span class="hljs-property">path</span> === path);
+    editor.<span class="hljs-title function_">setModel</span>(model);
 &#125;
 
-openFile(&#39;/test.js&#39;);
-</code></pre>
+<span class="hljs-title function_">openFile</span>(<span class="hljs-string">&#x27;/test.js&#x27;</span>);</code></pre>
+
 <p>通过再编写一定的 ui 代码，可以非常轻易的实现多文件的切换。</p>
 <h3 id="保留切换之前状态"><a href="#保留切换之前状态" class="headerlink" title="保留切换之前状态"></a>保留切换之前状态</h3><p>通过上述方法，可以实现多文件切换，但是在文件切换前后，会发现鼠标滚动的位置，文字的选中态均发生丢失的问题。</p>
 <p>此时可以通过创建一个 map 来存储不同文件在切换前的状态，核心代码如下：</p>
-<pre><code class="js">const editorStatus = new Map();
-const preFilePath = &#39;&#39;;
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> editorStatus = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Map</span>();
+<span class="hljs-keyword">const</span> preFilePath = <span class="hljs-string">&#x27;&#x27;</span>;
 
-const editor = monaco.editor.create(domNode, &#123;
+<span class="hljs-keyword">const</span> editor = monaco.<span class="hljs-property">editor</span>.<span class="hljs-title function_">create</span>(domNode, &#123;
     ...options,
-    model: null,
+    <span class="hljs-attr">model</span>: <span class="hljs-literal">null</span>,
 &#125;);
 
-function openFile(path) &#123;
-    const model = monaco.editor
-        .getModels()
-        .find(model =&gt; model.uri.path === path);
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">openFile</span>(<span class="hljs-params">path</span>) &#123;
+    <span class="hljs-keyword">const</span> model = monaco.<span class="hljs-property">editor</span>
+        .<span class="hljs-title function_">getModels</span>()
+        .<span class="hljs-title function_">find</span>(<span class="hljs-function"><span class="hljs-params">model</span> =&gt;</span> model.<span class="hljs-property">uri</span>.<span class="hljs-property">path</span> === path);
         
-    if (path !== preFilePath) &#123;
-        // 储存上一个path的编辑器的状态
-        editorStatus.set(preFilePath, editor.saveViewState());
+    <span class="hljs-keyword">if</span> (path !== preFilePath) &#123;
+        <span class="hljs-comment">// 储存上一个path的编辑器的状态</span>
+        editorStatus.<span class="hljs-title function_">set</span>(preFilePath, editor.<span class="hljs-title function_">saveViewState</span>());
     &#125;
-    // 切换到新的model
-    editor.setModel(model);
-    const editorState = editorStates.get(path);
-    if (editorState) &#123;
-        // 恢复编辑器的状态
-        editor.restoreViewState(editorState);
+    <span class="hljs-comment">// 切换到新的model</span>
+    editor.<span class="hljs-title function_">setModel</span>(model);
+    <span class="hljs-keyword">const</span> editorState = editorStates.<span class="hljs-title function_">get</span>(path);
+    <span class="hljs-keyword">if</span> (editorState) &#123;
+        <span class="hljs-comment">// 恢复编辑器的状态</span>
+        editor.<span class="hljs-title function_">restoreViewState</span>(editorState);
     &#125;
-    // 聚焦编辑器
-    editor.focus();
+    <span class="hljs-comment">// 聚焦编辑器</span>
+    editor.<span class="hljs-title function_">focus</span>();
     preFilePath = path;
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>核心便是借助editor实例的 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.IStandaloneCodeEditor.html#saveViewState">saveViewState</a> 方法实现编辑器状态的存储，通过 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.IStandaloneCodeEditor.html#restoreViewState">restoreViewState</a> 方法进行恢复。</p>
 <h3 id="go-to-definition"><a href="#go-to-definition" class="headerlink" title="go to definition"></a>go to definition</h3><p>monaco-editor 作为一款优秀的编辑器，其本身是能够感知到其他model的存在，并进行相关代码补全的提示。但是我们最常用的 cmd + 点击，默认是不能够跳转的。虽然 hover 上去能看到相关信息，但是默认不能跳转。</p>
 <p>这一条也算是比较常见的问题了，详细的原因及解决方案可以查看此 <a target="_blank" rel="noopener" href="https://github.com/microsoft/monaco-editor/issues/2000">issue</a>。</p>
 <p>简单来说，库本身没有实现这个打开，是因为如果允许跳转，那么用户没有很明显的方法可以再跳转回去。</p>
 <p>实际中，可以通过覆盖 openCodeEditor 的方式来解决，在没有找到跳转结果的情况下，自己实现 model 切换</p>
-<pre><code class="js">    const editorService = editor._codeEditorService;
-    const openEditorBase = editorService.openCodeEditor.bind(editorService);
-    editorService.openCodeEditor = async (input, source) =&gt;  &#123;
-        const result = await openEditorBase(input, source);
-        if (result === null) &#123;
-            const fullPath = input.resource.path;
-            // 跳转到对应的model
-            source.setModel(monaco.editor.getModel(input.resource));
-            // 此处还可以自行添加文件选中态等处理
-        
-            // 设置选中区以及聚焦的行数
-            source.setSelection(input.options.selection);
-            source.revealLine(input.options.selection.startLineNumber);
-        &#125;
-        return result; // always return the base result
-    &#125;;
-</code></pre>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> editorService = editor.<span class="hljs-property">_codeEditorService</span>;
+<span class="hljs-keyword">const</span> openEditorBase = editorService.<span class="hljs-property">openCodeEditor</span>.<span class="hljs-title function_">bind</span>(editorService);
+editorService.<span class="hljs-property">openCodeEditor</span> = <span class="hljs-title function_">async</span> (input, source) =&gt;  &#123;
+    <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> <span class="hljs-title function_">openEditorBase</span>(input, source);
+    <span class="hljs-keyword">if</span> (result === <span class="hljs-literal">null</span>) &#123;
+        <span class="hljs-keyword">const</span> fullPath = input.<span class="hljs-property">resource</span>.<span class="hljs-property">path</span>;
+        <span class="hljs-comment">// 跳转到对应的model</span>
+        source.<span class="hljs-title function_">setModel</span>(monaco.<span class="hljs-property">editor</span>.<span class="hljs-title function_">getModel</span>(input.<span class="hljs-property">resource</span>));
+        <span class="hljs-comment">// 此处还可以自行添加文件选中态等处理</span>
+    
+        <span class="hljs-comment">// 设置选中区以及聚焦的行数</span>
+        source.<span class="hljs-title function_">setSelection</span>(input.<span class="hljs-property">options</span>.<span class="hljs-property">selection</span>);
+        source.<span class="hljs-title function_">revealLine</span>(input.<span class="hljs-property">options</span>.<span class="hljs-property">selection</span>.<span class="hljs-property">startLineNumber</span>);
+    &#125;
+    <span class="hljs-keyword">return</span> result; <span class="hljs-comment">// always return the base result</span>
+&#125;;</code></pre>
+
 <h3 id="受控"><a href="#受控" class="headerlink" title="受控"></a>受控</h3><p>在实际编写 react 组件中，往往还需要对文件内容进行受控的操作，这就需要编辑器在内容变化时通知外界，同时也允许外界直接修改文本内容。</p>
 <p>先说内容变化的监听，monaco-editor 的每个 model 都提供了 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ITextModel.html#onDidChangeContent">onDidChangeContent</a> 这样的方法来监听文件改变，可以继续改造我们的 openFile 函数。</p>
-<pre><code class="js">
-let listener = null;
+<pre><code class="hljs js">
+<span class="hljs-keyword">let</span> listener = <span class="hljs-literal">null</span>;
 
-function openFile(path) &#123;
-    const model = monaco.editor
-        .getModels()
-        .find(model =&gt; model.uri.path === path);
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">openFile</span>(<span class="hljs-params">path</span>) &#123;
+    <span class="hljs-keyword">const</span> model = monaco.<span class="hljs-property">editor</span>
+        .<span class="hljs-title function_">getModels</span>()
+        .<span class="hljs-title function_">find</span>(<span class="hljs-function"><span class="hljs-params">model</span> =&gt;</span> model.<span class="hljs-property">uri</span>.<span class="hljs-property">path</span> === path);
         
-    if (path !== preFilePath) &#123;
-        // 储存上一个path的编辑器的状态
-        editorStatus.set(preFilePath, editor.saveViewState());
+    <span class="hljs-keyword">if</span> (path !== preFilePath) &#123;
+        <span class="hljs-comment">// 储存上一个path的编辑器的状态</span>
+        editorStatus.<span class="hljs-title function_">set</span>(preFilePath, editor.<span class="hljs-title function_">saveViewState</span>());
     &#125;
-    // 切换到新的model
-    editor.setModel(model);
-    const editorState = editorStates.get(path);
-    if (editorState) &#123;
-        // 恢复编辑器的状态
-        editor.restoreViewState(editorState);
+    <span class="hljs-comment">// 切换到新的model</span>
+    editor.<span class="hljs-title function_">setModel</span>(model);
+    <span class="hljs-keyword">const</span> editorState = editorStates.<span class="hljs-title function_">get</span>(path);
+    <span class="hljs-keyword">if</span> (editorState) &#123;
+        <span class="hljs-comment">// 恢复编辑器的状态</span>
+        editor.<span class="hljs-title function_">restoreViewState</span>(editorState);
     &#125;
-    // 聚焦编辑器
-    editor.focus();
+    <span class="hljs-comment">// 聚焦编辑器</span>
+    editor.<span class="hljs-title function_">focus</span>();
     preFilePath = path;
     
-    if (listener) &#123;
-        // 取消上一次的监听
-        listener.dispose();
+    <span class="hljs-keyword">if</span> (listener) &#123;
+        <span class="hljs-comment">// 取消上一次的监听</span>
+        listener.<span class="hljs-title function_">dispose</span>();
     &#125;
     
-    // 监听文件的变更
-    listener = model.onDidChangeContent(() =&gt; &#123;
-        const v = model.getValue();
-        if (props.onChange) &#123;
-            props.onChange(&#123;
-                value: v,
+    <span class="hljs-comment">// 监听文件的变更</span>
+    listener = model.<span class="hljs-title function_">onDidChangeContent</span>(<span class="hljs-function">() =&gt;</span> &#123;
+        <span class="hljs-keyword">const</span> v = model.<span class="hljs-title function_">getValue</span>();
+        <span class="hljs-keyword">if</span> (props.<span class="hljs-property">onChange</span>) &#123;
+            props.<span class="hljs-title function_">onChange</span>(&#123;
+                <span class="hljs-attr">value</span>: v,
                 path,
             &#125;)
         &#125;
     &#125;)
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>解决了内部改动对外界的通知，外界想要直接修改文件的值，可以直接通过 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ITextModel.html#setValue">model.setValue</a> 进行修改，但是这样直接操作，就会丢失编辑器 undo 的堆栈，想要保留 undo，可以通过 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ITextModel.html#pushEditOperations">model.pushEditOperations</a> 来实现替换，具体代码如下：</p>
-<pre><code class="js">function updateModel(path, value) &#123;
-    let model = monaco.editor.getModels().find(model =&gt; model.uri.path === path);
+<pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">updateModel</span>(<span class="hljs-params">path, value</span>) &#123;
+    <span class="hljs-keyword">let</span> model = monaco.<span class="hljs-property">editor</span>.<span class="hljs-title function_">getModels</span>().<span class="hljs-title function_">find</span>(<span class="hljs-function"><span class="hljs-params">model</span> =&gt;</span> model.<span class="hljs-property">uri</span>.<span class="hljs-property">path</span> === path);
     
-    if (model &amp;&amp; model.getValue() !== value) &#123;
-        // 通过该方法，可以实现undo堆栈的保留
-        model.pushEditOperations(
+    <span class="hljs-keyword">if</span> (model &amp;&amp; model.<span class="hljs-title function_">getValue</span>() !== value) &#123;
+        <span class="hljs-comment">// 通过该方法，可以实现undo堆栈的保留</span>
+        model.<span class="hljs-title function_">pushEditOperations</span>(
             [],
             [
                 &#123;
-                    range: model.getFullModelRange(),
-                    text: value
+                    <span class="hljs-attr">range</span>: model.<span class="hljs-title function_">getFullModelRange</span>(),
+                    <span class="hljs-attr">text</span>: value
                 &#125;
             ],
-            () =&gt; &#123;&#125;,
+            <span class="hljs-function">() =&gt;</span> &#123;&#125;,
         )
     &#125;
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>通过上述的 monaco-editor 提供的 api，基本就可以完成整个多文件的支持。</p>
 <p>当然，具体到实现还有挺多的工作，文件树列表，顶部 tab，未保存态，文件的导航等等。不过这部分属于我们大部分前端的日常工作，工作量虽然不小但是实现起来并不复杂，此处不再赘述。</p>
 <h2 id="ESLint支持"><a href="#ESLint支持" class="headerlink" title="ESLint支持"></a>ESLint支持</h2><p>monaco-editor 本身是有语法分析的，但是自带的仅仅只有语法错误的检查，并没有代码风格的检查，当然，也不应该有代码风格的检查。</p>
@@ -230,23 +243,23 @@ function openFile(path) &#123;
 <p>ESLint 的原理，是遍历语法树然后检验，其核心的 Linter，是不依赖 node 环境的，并且官方也进行了单独的打包输出，具体可以通过 clone<a target="_blank" rel="noopener" href="https://github.com/ESLint/ESLint">官方代码</a> 后，执行 npm run webpack 拿到核心的打包后的 ESLint.js。其本质是对 <a target="_blank" rel="noopener" href="https://github.com/ESLint/ESLint/blob/main/lib/linter/linter.js">linter.js</a> 文件的打包。</p>
 <p>同时官方也基于该打包产物，提供了 ESLint 的官方 <a target="_blank" rel="noopener" href="https://eslint.org/demo">demo</a>。</p>
 <p>该 linter 的使用方法如下：</p>
-<pre><code class="js">import &#123; Linter &#125; from &#39;path/to/bundled/ESLint.js&#39;;
+<pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Linter</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;path/to/bundled/ESLint.js&#x27;</span>;
 
-const linter = new Linter();
+<span class="hljs-keyword">const</span> linter = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Linter</span>();
 
-// 定义新增的规则，比如react/hooks, react特殊的一些规则
-// linter中已经定义了包含了ESLint的所有基本规则，此处更多的是一些插件的规则的定义。
-linter.defineRule(ruleName, ruleImpl)；
+<span class="hljs-comment">// 定义新增的规则，比如react/hooks, react特殊的一些规则</span>
+<span class="hljs-comment">// linter中已经定义了包含了ESLint的所有基本规则，此处更多的是一些插件的规则的定义。</span>
+linter.<span class="hljs-title function_">defineRule</span>(ruleName, ruleImpl)；
 
-linter.verify(text, &#123;
-    rules: &#123;
-        &#39;some rules you want&#39;: &#39;off or warn&#39;,
+linter.<span class="hljs-title function_">verify</span>(text, &#123;
+    <span class="hljs-attr">rules</span>: &#123;
+        <span class="hljs-string">&#x27;some rules you want&#x27;</span>: <span class="hljs-string">&#x27;off or warn&#x27;</span>,
     &#125;,
-    settings: &#123;&#125;,
-    parserOptions: &#123;&#125;,
-    env: &#123;&#125;,
-&#125;)
-</code></pre>
+    <span class="hljs-attr">settings</span>: &#123;&#125;,
+    <span class="hljs-attr">parserOptions</span>: &#123;&#125;,
+    <span class="hljs-attr">env</span>: &#123;&#125;,
+&#125;)</code></pre>
+
 <p>如果只使用上述 linter 提供的方法，存在几个问题：</p>
 <ol>
 <li>规则太多，一一编写太累且不一定符合团队规范</li>
@@ -275,97 +288,97 @@ linter.verify(text, &#123;
 <li>通过 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ITextModel.html#getVersionId">model.getVersionId</a>，拿到当前 id，来避免延迟过久导致结果对不上的问题</li>
 </ol>
 <p>主进程核心的代码如下：</p>
-<pre><code class="js">// 监听ESLint web worker 的返回
-worker.onmessage = function (event) &#123;
-    const &#123; markers, version &#125; = event.data;
-    const model = editor.getModel();
-    // 判断当前model的versionId与请求时是否一致
-    if (model &amp;&amp; model.getVersionId() === version) &#123;
-        window.monaco.editor.setModelMarkers(model, &#39;ESLint&#39;, markers);
+<pre><code class="hljs js"><span class="hljs-comment">// 监听ESLint web worker 的返回</span>
+worker.<span class="hljs-property">onmessage</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) &#123;
+    <span class="hljs-keyword">const</span> &#123; markers, version &#125; = event.<span class="hljs-property">data</span>;
+    <span class="hljs-keyword">const</span> model = editor.<span class="hljs-title function_">getModel</span>();
+    <span class="hljs-comment">// 判断当前model的versionId与请求时是否一致</span>
+    <span class="hljs-keyword">if</span> (model &amp;&amp; model.<span class="hljs-title function_">getVersionId</span>() === version) &#123;
+        <span class="hljs-variable language_">window</span>.<span class="hljs-property">monaco</span>.<span class="hljs-property">editor</span>.<span class="hljs-title function_">setModelMarkers</span>(model, <span class="hljs-string">&#x27;ESLint&#x27;</span>, markers);
     &#125;
 &#125;;
 
-let timer = null;
-// model内容变更时通知ESLint worker
-model.onDidChangeContent(() =&gt; &#123;
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() =&gt; &#123;
-        timer = null;
-        worker.postMessage(&#123;
-            code: model.getValue(),
-            // 发起通知时携带versionId
-            version: model.getVersionId(),
+<span class="hljs-keyword">let</span> timer = <span class="hljs-literal">null</span>;
+<span class="hljs-comment">// model内容变更时通知ESLint worker</span>
+model.<span class="hljs-title function_">onDidChangeContent</span>(<span class="hljs-function">() =&gt;</span> &#123;
+    <span class="hljs-keyword">if</span> (timer) <span class="hljs-built_in">clearTimeout</span>(timer);
+    timer = <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
+        timer = <span class="hljs-literal">null</span>;
+        worker.<span class="hljs-title function_">postMessage</span>(&#123;
+            <span class="hljs-attr">code</span>: model.<span class="hljs-title function_">getValue</span>(),
+            <span class="hljs-comment">// 发起通知时携带versionId</span>
+            <span class="hljs-attr">version</span>: model.<span class="hljs-title function_">getVersionId</span>(),
             path,
         &#125;);
-    &#125;, 500);
-&#125;);
-</code></pre>
+    &#125;, <span class="hljs-number">500</span>);
+&#125;);</code></pre>
+
 <p>worker 内核心代码如下：</p>
-<pre><code class="js">// 引入ESLint，内部结构如下：
-/*
-&#123;
-    esLinter, // 已经实例化，并且补充了react, react/hooks规则定义的实例
-    // 合并了airbnb-config的规则配置
-    config: &#123;
-        rules,
-        parserOptions: &#123;
-            ecmaVersion: &#39;latest&#39;,
-            sourceType: &#39;module&#39;,
-            ecmaFeatures: &#123;
-                jsx: true
-            &#125;
-        &#125;,
-        env: &#123;
-            browser: true
-        &#125;,
-    &#125;
-&#125;
-*/
-importScripts(&#39;path/to/bundled/ESLint/and/ESLint-airbnbconfig.js&#39;);
+<pre><code class="hljs js"><span class="hljs-comment">// 引入ESLint，内部结构如下：</span>
+<span class="hljs-comment">/*</span>
+<span class="hljs-comment">&#123;</span>
+<span class="hljs-comment">    esLinter, // 已经实例化，并且补充了react, react/hooks规则定义的实例</span>
+<span class="hljs-comment">    // 合并了airbnb-config的规则配置</span>
+<span class="hljs-comment">    config: &#123;</span>
+<span class="hljs-comment">        rules,</span>
+<span class="hljs-comment">        parserOptions: &#123;</span>
+<span class="hljs-comment">            ecmaVersion: &#x27;latest&#x27;,</span>
+<span class="hljs-comment">            sourceType: &#x27;module&#x27;,</span>
+<span class="hljs-comment">            ecmaFeatures: &#123;</span>
+<span class="hljs-comment">                jsx: true</span>
+<span class="hljs-comment">            &#125;</span>
+<span class="hljs-comment">        &#125;,</span>
+<span class="hljs-comment">        env: &#123;</span>
+<span class="hljs-comment">            browser: true</span>
+<span class="hljs-comment">        &#125;,</span>
+<span class="hljs-comment">    &#125;</span>
+<span class="hljs-comment">&#125;</span>
+<span class="hljs-comment">*/</span>
+<span class="hljs-title function_">importScripts</span>(<span class="hljs-string">&#x27;path/to/bundled/ESLint/and/ESLint-airbnbconfig.js&#x27;</span>);
 
-// 更详细的config, 参考ESLint linter源码中关于config的定义: https://github.com/ESLint/ESLint/blob/main/lib/linter/linter.js#L1441
-const config = &#123;
-    ...self.linter.config,
-    rules: &#123;
-        ...self.linter.config.rules,
-        // 可以自定义覆盖原本的rules
+<span class="hljs-comment">// 更详细的config, 参考ESLint linter源码中关于config的定义: https://github.com/ESLint/ESLint/blob/main/lib/linter/linter.js#L1441</span>
+<span class="hljs-keyword">const</span> config = &#123;
+    ...self.<span class="hljs-property">linter</span>.<span class="hljs-property">config</span>,
+    <span class="hljs-attr">rules</span>: &#123;
+        ...self.<span class="hljs-property">linter</span>.<span class="hljs-property">config</span>.<span class="hljs-property">rules</span>,
+        <span class="hljs-comment">// 可以自定义覆盖原本的rules</span>
     &#125;,
-    settings: &#123;&#125;,
+    <span class="hljs-attr">settings</span>: &#123;&#125;,
 &#125;
 
-// monaco的定义可以参考：https://microsoft.github.io/monaco-editor/api/enums/monaco.MarkerSeverity.html
-const severityMap = &#123;
-    2: 8, // 2 for ESLint is error
-    1: 4, // 1 for ESLint is warning
+<span class="hljs-comment">// monaco的定义可以参考：https://microsoft.github.io/monaco-editor/api/enums/monaco.MarkerSeverity.html</span>
+<span class="hljs-keyword">const</span> severityMap = &#123;
+    <span class="hljs-number">2</span>: <span class="hljs-number">8</span>, <span class="hljs-comment">// 2 for ESLint is error</span>
+    <span class="hljs-number">1</span>: <span class="hljs-number">4</span>, <span class="hljs-comment">// 1 for ESLint is warning</span>
 &#125;
 
-self.addEventListener(&#39;message&#39;, function (e) &#123;
-    const &#123; code, version, path &#125; = e.data;
-    const extName = getExtName(path);
-    // 对于非js, jsx代码，不做校验
-    if ([&#39;js&#39;, &#39;jsx&#39;].indexOf(extName) === -1) &#123;
-        self.postMessage(&#123; markers: [], version &#125;);
-        return;
+self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;message&#x27;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">e</span>) &#123;
+    <span class="hljs-keyword">const</span> &#123; code, version, path &#125; = e.<span class="hljs-property">data</span>;
+    <span class="hljs-keyword">const</span> extName = <span class="hljs-title function_">getExtName</span>(path);
+    <span class="hljs-comment">// 对于非js, jsx代码，不做校验</span>
+    <span class="hljs-keyword">if</span> ([<span class="hljs-string">&#x27;js&#x27;</span>, <span class="hljs-string">&#x27;jsx&#x27;</span>].<span class="hljs-title function_">indexOf</span>(extName) === -<span class="hljs-number">1</span>) &#123;
+        self.<span class="hljs-title function_">postMessage</span>(&#123; <span class="hljs-attr">markers</span>: [], version &#125;);
+        <span class="hljs-keyword">return</span>;
     &#125;
-    const errs = self.linter.esLinter.verify(code, config);
-    const markers = errs.map(err =&gt; (&#123;
-        code: &#123;
-            value: err.ruleId,
-            target: ruleDefines.get(err.ruleId).meta.docs.url,
+    <span class="hljs-keyword">const</span> errs = self.<span class="hljs-property">linter</span>.<span class="hljs-property">esLinter</span>.<span class="hljs-title function_">verify</span>(code, config);
+    <span class="hljs-keyword">const</span> markers = errs.<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> (&#123;
+        <span class="hljs-attr">code</span>: &#123;
+            <span class="hljs-attr">value</span>: err.<span class="hljs-property">ruleId</span>,
+            <span class="hljs-attr">target</span>: ruleDefines.<span class="hljs-title function_">get</span>(err.<span class="hljs-property">ruleId</span>).<span class="hljs-property">meta</span>.<span class="hljs-property">docs</span>.<span class="hljs-property">url</span>,
         &#125;,
-        startLineNumber: err.line,
-        endLineNumber: err.endLine,
-        startColumn: err.column,
-        endColumn: err.endColumn,
-        message: err.message,
-        // 设置错误的等级，此处ESLint与monaco的存在差异，做一层映射
-        severity: severityMap[err.severity],
-        source: &#39;ESLint&#39;,
+        <span class="hljs-attr">startLineNumber</span>: err.<span class="hljs-property">line</span>,
+        <span class="hljs-attr">endLineNumber</span>: err.<span class="hljs-property">endLine</span>,
+        <span class="hljs-attr">startColumn</span>: err.<span class="hljs-property">column</span>,
+        <span class="hljs-attr">endColumn</span>: err.<span class="hljs-property">endColumn</span>,
+        <span class="hljs-attr">message</span>: err.<span class="hljs-property">message</span>,
+        <span class="hljs-comment">// 设置错误的等级，此处ESLint与monaco的存在差异，做一层映射</span>
+        <span class="hljs-attr">severity</span>: severityMap[err.<span class="hljs-property">severity</span>],
+        <span class="hljs-attr">source</span>: <span class="hljs-string">&#x27;ESLint&#x27;</span>,
     &#125;));
-    // 发回主进程
-    self.postMessage(&#123; markers, version &#125;);
-&#125;);
-</code></pre>
+    <span class="hljs-comment">// 发回主进程</span>
+    self.<span class="hljs-title function_">postMessage</span>(&#123; markers, version &#125;);
+&#125;);</code></pre>
+
 <p>主进程监听文本变化，消抖后传递给 worker 进行 linter，同时携带 versionId 作为返回的比对标记，linter 验证后将 markers 返回给主进程，主进程设置 markers。</p>
 <p>以上，便是整个 ESLint 的完整流程。</p>
 <p>当然，由于时间关系，目前只处理了 js，jsx，并未对ts,tsx文件进行处理。支持 ts 需要调用 linter 的 defineParser 修改语法树的解析器，相对来讲稍微麻烦，目前还未做尝试，后续有动静会在 github 仓库 <a target="_blank" rel="noopener" href="https://github.com/yuzai/ESLint-browser">yuzai&#x2F;ESLint-browser</a> 进行修改同步。</p>
@@ -378,73 +391,73 @@ self.addEventListener(&#39;message&#39;, function (e) &#123;
 <li>typescript: 处理 ts</li>
 </ol>
 <p>其区别可以参考<a target="_blank" rel="noopener" href="https://prettier.io/docs/en/options.html#parser">官方文档</a>，此处不赘述。一个非常简单的使用代码如下：</p>
-<pre><code class="js">const text = Prettier.format(model.getValue(), &#123;
-    // 指定文件路径
-    filepath: model.uri.path,
-    // parser集合
-    plugins: PrettierPlugins,
-    // 更多的options见：https://Prettier.io/docs/en/options.html
-    singleQuote: true,
-    tabWidth: 4,
-&#125;);
-</code></pre>
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> text = <span class="hljs-title class_">Prettier</span>.<span class="hljs-title function_">format</span>(model.<span class="hljs-title function_">getValue</span>(), &#123;
+    <span class="hljs-comment">// 指定文件路径</span>
+    <span class="hljs-attr">filepath</span>: model.<span class="hljs-property">uri</span>.<span class="hljs-property">path</span>,
+    <span class="hljs-comment">// parser集合</span>
+    <span class="hljs-attr">plugins</span>: <span class="hljs-title class_">PrettierPlugins</span>,
+    <span class="hljs-comment">// 更多的options见：https://Prettier.io/docs/en/options.html</span>
+    <span class="hljs-attr">singleQuote</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">tabWidth</span>: <span class="hljs-number">4</span>,
+&#125;);</code></pre>
+
 <p>在上述配置中，有一个配置需要注意：filepath。</p>
 <p>该配置是用来来告知 Prettier 当前是哪种文件，需要调用什么解析器进行处理。在当前WebIDE场景下，将文件路径传递即可，当然，也可以自行根据文件后缀计算后使用 parser 字段指定用哪个解析器。</p>
 <p>在和 monaco-editor 结合时，需要监听 cmd + s 快捷键来实现保存时，便进行格式化代码。</p>
 <p>考虑到 monaco-editor 本身也提供了格式化的指令，可以通过⇧ + ⌥ + F进行格式化。</p>
 <p>故相比于 cmd + s 时，执行自定义的函数，不如直接覆盖掉自带的格式化指令，在 cmd + s 时直接执行指令来完成格式化来的优雅。</p>
 <p>覆盖主要通过 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/modules/monaco.languages.html#registerDocumentFormattingEditProvider">languages.registerDocumentFormattingEditProvider</a> 方法，具体用法如下：</p>
-<pre><code class="js">function provideDocumentFormattingEdits(model: any) &#123;
-    const p = window.require(&#39;Prettier&#39;);
-    const text = p.Prettier.format(model.getValue(), &#123;
-        filepath: model.uri.path,
-        plugins: p.PrettierPlugins,
-        singleQuote: true,
-        tabWidth: 4,
+<pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">provideDocumentFormattingEdits</span>(<span class="hljs-params">model: any</span>) &#123;
+    <span class="hljs-keyword">const</span> p = <span class="hljs-variable language_">window</span>.<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;Prettier&#x27;</span>);
+    <span class="hljs-keyword">const</span> text = p.<span class="hljs-property">Prettier</span>.<span class="hljs-title function_">format</span>(model.<span class="hljs-title function_">getValue</span>(), &#123;
+        <span class="hljs-attr">filepath</span>: model.<span class="hljs-property">uri</span>.<span class="hljs-property">path</span>,
+        <span class="hljs-attr">plugins</span>: p.<span class="hljs-property">PrettierPlugins</span>,
+        <span class="hljs-attr">singleQuote</span>: <span class="hljs-literal">true</span>,
+        <span class="hljs-attr">tabWidth</span>: <span class="hljs-number">4</span>,
     &#125;);
 
-    return [
+    <span class="hljs-keyword">return</span> [
         &#123;
-            range: model.getFullModelRange(),
+            <span class="hljs-attr">range</span>: model.<span class="hljs-title function_">getFullModelRange</span>(),
             text,
         &#125;,
     ];
 &#125;
 
-monaco.languages.registerDocumentFormattingEditProvider(&#39;javascript&#39;, &#123;
+monaco.<span class="hljs-property">languages</span>.<span class="hljs-title function_">registerDocumentFormattingEditProvider</span>(<span class="hljs-string">&#x27;javascript&#x27;</span>, &#123;
     provideDocumentFormattingEdits
 &#125;);
-monaco.languages.registerDocumentFormattingEditProvider(&#39;css&#39;, &#123;
+monaco.<span class="hljs-property">languages</span>.<span class="hljs-title function_">registerDocumentFormattingEditProvider</span>(<span class="hljs-string">&#x27;css&#x27;</span>, &#123;
     provideDocumentFormattingEdits
 &#125;);
-monaco.languages.registerDocumentFormattingEditProvider(&#39;less&#39;, &#123;
+monaco.<span class="hljs-property">languages</span>.<span class="hljs-title function_">registerDocumentFormattingEditProvider</span>(<span class="hljs-string">&#x27;less&#x27;</span>, &#123;
     provideDocumentFormattingEdits
-&#125;);
-</code></pre>
+&#125;);</code></pre>
+
 <p>上述代码中 window.require，是 amd 的方式，由于本文在选择引入 monaco-editor 时，采用了 amd 的方式，所以此处 Prettier 也顺带采用了 amd 的方式，并从 cdn 引入来减少包的体积，具体代码如下：</p>
-<pre><code class="js">window.define(&#39;Prettier&#39;, [
-        &#39;https://unpkg.com/Prettier@2.5.1/standalone.js&#39;,
-        &#39;https://unpkg.com/Prettier@2.5.1/parser-babel.js&#39;,
-        &#39;https://unpkg.com/Prettier@2.5.1/parser-html.js&#39;,
-        &#39;https://unpkg.com/Prettier@2.5.1/parser-postcss.js&#39;,
-        &#39;https://unpkg.com/Prettier@2.5.1/parser-typescript.js&#39;
-    ], (Prettier: any, ...args: any[]) =&gt; &#123;
-    const PrettierPlugins = &#123;
-        babel: args[0],
-        html: args[1],
-        postcss: args[2],
-        typescript: args[3],
+<pre><code class="hljs js"><span class="hljs-variable language_">window</span>.<span class="hljs-title function_">define</span>(<span class="hljs-string">&#x27;Prettier&#x27;</span>, [
+        <span class="hljs-string">&#x27;https://unpkg.com/Prettier@2.5.1/standalone.js&#x27;</span>,
+        <span class="hljs-string">&#x27;https://unpkg.com/Prettier@2.5.1/parser-babel.js&#x27;</span>,
+        <span class="hljs-string">&#x27;https://unpkg.com/Prettier@2.5.1/parser-html.js&#x27;</span>,
+        <span class="hljs-string">&#x27;https://unpkg.com/Prettier@2.5.1/parser-postcss.js&#x27;</span>,
+        <span class="hljs-string">&#x27;https://unpkg.com/Prettier@2.5.1/parser-typescript.js&#x27;</span>
+    ], <span class="hljs-function">(<span class="hljs-params">Prettier: any, ...args: any[]</span>) =&gt;</span> &#123;
+    <span class="hljs-keyword">const</span> <span class="hljs-title class_">PrettierPlugins</span> = &#123;
+        <span class="hljs-attr">babel</span>: args[<span class="hljs-number">0</span>],
+        <span class="hljs-attr">html</span>: args[<span class="hljs-number">1</span>],
+        <span class="hljs-attr">postcss</span>: args[<span class="hljs-number">2</span>],
+        <span class="hljs-attr">typescript</span>: args[<span class="hljs-number">3</span>],
     &#125;
-    return &#123;
-        Prettier,
-        PrettierPlugins,
+    <span class="hljs-keyword">return</span> &#123;
+        <span class="hljs-title class_">Prettier</span>,
+        <span class="hljs-title class_">PrettierPlugins</span>,
     &#125;
-&#125;);
-</code></pre>
+&#125;);</code></pre>
+
 <p>在完成 Prettier 的引入，提供格式化的 provider 之后，此时，执行⇧ + ⌥ + F即可实现格式化，最后一步便是在用户 cmd + s 时执行该指令即可，使用 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.IStandaloneCodeEditor.html#getAction">editor.getAction</a> 方法即可，伪代码如下：</p>
-<pre><code class="js">// editor为create方法创建的editor实例
-editor.getAction(&#39;editor.action.formatDocument&#39;).run()
-</code></pre>
+<pre><code class="hljs js"><span class="hljs-comment">// editor为create方法创建的editor实例</span>
+editor.<span class="hljs-title function_">getAction</span>(<span class="hljs-string">&#x27;editor.action.formatDocument&#x27;</span>).<span class="hljs-title function_">run</span>()</code></pre>
+
 <p>至此，整个 Prettier 的流程便已完成，整理如下：</p>
 <ol>
 <li>amd 方式引入</li>
@@ -463,11 +476,11 @@ editor.getAction(&#39;editor.action.formatDocument&#39;).run()
 <p>体验及成本远远优于方案一。</p>
 <p>方案二的问题在于未知第三方包的解析，目前看，stackbliz 也仅仅只是对直系 npm 依赖进行了 .d.ts 的解析。相关依赖并无后续进行。实际也能理解，在不经过二次解析 .d.ts 的情况下，是不会对二次引入的依赖进行解析。故当前版本也不做 index.d.ts 的解析，仅提供直接依赖的代码补全及跳转。不过 ts 本身提供了 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/@typescript/ata">types分析</a> 的能力，后期接入会在 github 中同步。</p>
 <p>故最终使用方案二，内置 react, react-dom 的类型定义，暂不做二次依赖的包解析。相关伪代码如下：</p>
-<pre><code class="js">window.monaco.languages.typescript.javascriptDefaults.addExtraLib(
-    &#39;content of react/index.d.ts&#39;,
-    &#39;music:/node_modules/@types/react/index.d.ts&#39;
-);
-</code></pre>
+<pre><code class="hljs js"><span class="hljs-variable language_">window</span>.<span class="hljs-property">monaco</span>.<span class="hljs-property">languages</span>.<span class="hljs-property">typescript</span>.<span class="hljs-property">javascriptDefaults</span>.<span class="hljs-title function_">addExtraLib</span>(
+    <span class="hljs-string">&#x27;content of react/index.d.ts&#x27;</span>,
+    <span class="hljs-string">&#x27;music:/node_modules/@types/react/index.d.ts&#x27;</span>
+);</code></pre>
+
 <p>同时，通过 <a target="_blank" rel="noopener" href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.typescript.LanguageServiceDefaults.html#addExtraLib">addExtraLib</a> 增加的 .d.ts 的定义，本身也会自动创建一个 model，借助前文所描述的 openCodeEditor 的覆盖方案，可以顺带实现 cmd + click 打开 index.d.ts 的需求，体验更佳。</p>
 <h2 id="主题替换"><a href="#主题替换" class="headerlink" title="主题替换"></a>主题替换</h2><p>此处由于 monaco-editor 同 vscode 使用的解析器不同，导致无法直接使用 vscode 自带的主题，当然也有办法，具体可以参考<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040746839">手把手教你实现在 Monaco Editor 中使用 VSCode 主题</a>文章，可以直接使用 vscode 主题，我采取的也是这篇文章的方案，本身已经很详细了，我就不在这里做重复劳动了。</p>
 <h2 id="预览沙箱"><a href="#预览沙箱" class="headerlink" title="预览沙箱"></a>预览沙箱</h2><p>这一部分由于公司内有<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/264990261">基于 codesandbox 的沙箱方案</a>，故实际在公司内部落地时，本文所述的 WebIDE 仅仅作为一个代码编辑与展示的方案，实际预览时走的是基于 codesandbox 的沙箱渲染方案。</p>
@@ -494,7 +507,6 @@ editor.getAction(&#39;editor.action.formatDocument&#39;).run()
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2022/05/10/%E5%A4%AA%E5%8D%B7%E4%BA%86%EF%BC%8C%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E5%8F%88%E8%A7%81%E6%99%BA%E5%8A%9B%E9%A2%98/">太卷了，前端面试又见智力题.</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -514,19 +526,15 @@ editor.getAction(&#39;editor.action.formatDocument&#39;).run()
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774342"></script>
+    <script src="/js/index.js?v=1783498241079"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774342"></script>
+    <script src="/js/general.js?v=1783498241079"></script>
     
-    <script src="/js/post.js?v=1783490774342"></script>
+    <script src="/js/post.js?v=1783498241079"></script>
     
-    <script src="/js/tag.js?v=1783490774342"></script>
+    <script src="/js/tag.js?v=1783498241079"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

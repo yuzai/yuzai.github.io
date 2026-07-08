@@ -6,15 +6,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>如何在团队内快速落地WebIDE - 芋仔的个人博客</title>
+    <meta name="description" content="在云音乐团队内部的WebIDE终于落地了。目前功能上覆盖前端正常的业务开发已无问题，期间也踩了不少坑，故写此篇文章，给想要在团队落地WebIDE做一份参考。当然，一些很细节的问题的处理，一篇文章是不好涵盖的，本文更多的是设计的方案及落地的方向的参考。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何在团队内快速落地WebIDE">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2021/09/16/%E5%A6%82%E4%BD%95%E5%9C%A8%E5%9B%A2%E9%98%9F%E5%86%85%E5%BF%AB%E9%80%9F%E8%90%BD%E5%9C%B0WebIDE/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="在云音乐团队内部的WebIDE终于落地了。目前功能上覆盖前端正常的业务开发已无问题，期间也踩了不少坑，故写此篇文章，给想要在团队落地WebIDE做一份参考。当然，一些很细节的问题的处理，一篇文章是不好涵盖的，本文更多的是设计的方案及落地的方向的参考。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1guiht5jz3zj61up0u0wjn02.jpg">
+<meta property="article:published_time" content="2021-09-16T07:16:00.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008i3skNly1guiht5jz3zj61up0u0wjn02.jpg">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241080">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241080">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +78,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2021-09-16</time><span class="post-eyebrow-sep">·</span>约 7342 字<span class="post-eyebrow-sep">·</span>读完约 18 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2021-09-16</time><span class="post-eyebrow-sep">·</span>约 7344 字<span class="post-eyebrow-sep">·</span>读完约 18 分钟</p>
           <h1 class="post-title">如何在团队内快速落地WebIDE</h1>
         </header>
         <section class="post-content">
@@ -134,50 +149,50 @@
 </ol>
 <h3 id="落地方案"><a href="#落地方案" class="headerlink" title="落地方案"></a>落地方案</h3><h4 id="theia容器构建"><a href="#theia容器构建" class="headerlink" title="theia容器构建"></a>theia容器构建</h4><p>theia本身已有容器<a target="_blank" rel="noopener" href="https://github.com/theia-ide/theia-apps#theia-docker">启动方案</a>，已经提供了dockerfile文件，可以直接使用该docker进行部署，笔者团队使用的是基于<a target="_blank" rel="noopener" href="https://github.com/theia-ide/theia-apps/tree/master/theia-docker">theia-docker</a>进行的修改。</p>
 <p>官方dockerfile如下，笔者直接在上面增加了自己的注释：</p>
-<pre><code class="dockerfile"># 选择容器底层node依赖
-ARG NODE_VERSION=12.18.3
-FROM node:$&#123;NODE_VERSION&#125;-alpine
-# 增加theia install时需要的必要系统依赖
-RUN apk add --no-cache make pkgconfig gcc g++ python libx11-dev libxkbfile-dev libsecret-dev
-ARG version=latest
-WORKDIR /home/theia
-ADD $version.package.json ./package.json
-# 这个GITHUB_TOKEN，需要在容器构建时指定(由于部分npm包安装需要从github拉取，使用github_token才可以顺利安装)
-ARG GITHUB_TOKEN
-# 安装，同时清理掉全局缓存
-RUN yarn --pure-lockfile &amp;&amp; \
-    NODE_OPTIONS=&quot;--max_old_space_size=4096&quot; yarn theia build &amp;&amp; \
-    yarn theia download:plugins &amp;&amp; \
-    yarn --production &amp;&amp; \
-    yarn autoclean --init &amp;&amp; \
-    echo *.ts &gt;&gt; .yarnclean &amp;&amp; \
-    echo *.ts.map &gt;&gt; .yarnclean &amp;&amp; \
-    echo *.spec.* &gt;&gt; .yarnclean &amp;&amp; \
-    yarn autoclean --force &amp;&amp; \
-    yarn cache clean
+<pre><code class="hljs dockerfile"><span class="hljs-comment"># 选择容器底层node依赖</span>
+<span class="hljs-keyword">ARG</span> NODE_VERSION=<span class="hljs-number">12.18</span>.<span class="hljs-number">3</span>
+<span class="hljs-keyword">FROM</span> node:$&#123;NODE_VERSION&#125;-alpine
+<span class="hljs-comment"># 增加theia install时需要的必要系统依赖</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> apk add --no-cache make pkgconfig gcc g++ python libx11-dev libxkbfile-dev libsecret-dev</span>
+<span class="hljs-keyword">ARG</span> version=latest
+<span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /home/theia</span>
+<span class="hljs-keyword">ADD</span><span class="language-bash"> <span class="hljs-variable">$version</span>.package.json ./package.json</span>
+<span class="hljs-comment"># 这个GITHUB_TOKEN，需要在容器构建时指定(由于部分npm包安装需要从github拉取，使用github_token才可以顺利安装)</span>
+<span class="hljs-keyword">ARG</span> GITHUB_TOKEN
+<span class="hljs-comment"># 安装，同时清理掉全局缓存</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> yarn --pure-lockfile &amp;&amp; \</span>
+<span class="language-bash">    NODE_OPTIONS=<span class="hljs-string">&quot;--max_old_space_size=4096&quot;</span> yarn theia build &amp;&amp; \</span>
+<span class="language-bash">    yarn theia download:plugins &amp;&amp; \</span>
+<span class="language-bash">    yarn --production &amp;&amp; \</span>
+<span class="language-bash">    yarn autoclean --init &amp;&amp; \</span>
+<span class="language-bash">    <span class="hljs-built_in">echo</span> *.ts &gt;&gt; .yarnclean &amp;&amp; \</span>
+<span class="language-bash">    <span class="hljs-built_in">echo</span> *.ts.map &gt;&gt; .yarnclean &amp;&amp; \</span>
+<span class="language-bash">    <span class="hljs-built_in">echo</span> *.spec.* &gt;&gt; .yarnclean &amp;&amp; \</span>
+<span class="language-bash">    yarn autoclean --force &amp;&amp; \</span>
+<span class="language-bash">    yarn cache clean</span>
 
-# 重新选择底层系统依赖，目的是保留容器系统极简，去掉了theia安装过程中需要的系统依赖，从而减小镜像提及
-FROM node:$&#123;NODE_VERSION&#125;-alpine
-# See : https://github.com/theia-ide/theia-apps/issues/34
-RUN addgroup theia &amp;&amp; \
-    adduser -G theia -s /bin/sh -D theia;
-RUN chmod g+rw /home &amp;&amp; \
-    mkdir -p /home/project &amp;&amp; \
-    chown -R theia:theia /home/theia &amp;&amp; \
-    chown -R theia:theia /home/project;
-# 增加git bash等基础系统依赖
-RUN apk add --no-cache git openssh bash libsecret
-ENV HOME /home/theia
-WORKDIR /home/theia
-COPY --from=0 --chown=theia:theia /home/theia /home/theia
-EXPOSE 3000
-ENV SHELL=/bin/bash \
-    THEIA_DEFAULT_PLUGINS=local-dir:/home/theia/plugins
-ENV USE_LOCAL_GIT true
-USER theia
-# run theia服务，默认运行在3000端口
-ENTRYPOINT [ &quot;node&quot;, &quot;/home/theia/src-gen/backend/main.js&quot;, &quot;/home/project&quot;, &quot;--hostname=0.0.0.0&quot; ]
-</code></pre>
+<span class="hljs-comment"># 重新选择底层系统依赖，目的是保留容器系统极简，去掉了theia安装过程中需要的系统依赖，从而减小镜像提及</span>
+<span class="hljs-keyword">FROM</span> node:$&#123;NODE_VERSION&#125;-alpine
+<span class="hljs-comment"># See : https://github.com/theia-ide/theia-apps/issues/34</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> addgroup theia &amp;&amp; \</span>
+<span class="language-bash">    adduser -G theia -s /bin/sh -D theia;</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">chmod</span> g+rw /home &amp;&amp; \</span>
+<span class="language-bash">    <span class="hljs-built_in">mkdir</span> -p /home/project &amp;&amp; \</span>
+<span class="language-bash">    <span class="hljs-built_in">chown</span> -R theia:theia /home/theia &amp;&amp; \</span>
+<span class="language-bash">    <span class="hljs-built_in">chown</span> -R theia:theia /home/project;</span>
+<span class="hljs-comment"># 增加git bash等基础系统依赖</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> apk add --no-cache git openssh bash libsecret</span>
+<span class="hljs-keyword">ENV</span> HOME /home/theia
+<span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /home/theia</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> --from=0 --<span class="hljs-built_in">chown</span>=theia:theia /home/theia /home/theia</span>
+<span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">3000</span>
+<span class="hljs-keyword">ENV</span> <span class="hljs-keyword">SHELL</span><span class="language-bash">=/bin/bash \</span>
+<span class="language-bash">    THEIA_DEFAULT_PLUGINS=local-dir:/home/theia/plugins</span>
+<span class="hljs-keyword">ENV</span> USE_LOCAL_GIT true
+<span class="hljs-keyword">USER</span> theia
+<span class="hljs-comment"># run theia服务，默认运行在3000端口</span>
+<span class="hljs-keyword">ENTRYPOINT</span><span class="language-bash"> [ <span class="hljs-string">&quot;node&quot;</span>, <span class="hljs-string">&quot;/home/theia/src-gen/backend/main.js&quot;</span>, <span class="hljs-string">&quot;/home/project&quot;</span>, <span class="hljs-string">&quot;--hostname=0.0.0.0&quot;</span> ]</span></code></pre>
+
 <p>整体来讲，这是一个比较标准的前端工程运行文件，对docker没有基础的搜一搜看懂也不难。</p>
 <p>不过，其中几个实际踩的坑需要注意一下：</p>
 <ol>
@@ -199,21 +214,21 @@ ENTRYPOINT [ &quot;node&quot;, &quot;/home/theia/src-gen/backend/main.js&quot;, 
 <li>命令行问题，默认使用的是linux的bash，是没有git、高亮等支持，体验非常差，所以可以把oh-my-zsh集成进去</li>
 </ol>
 <p>为了解决上述问题，笔者在原有的dockerfile中增加了如下命令</p>
-<pre><code class="dockerfile"># 增加系统依赖，以便npm安装可以顺利进行
-RUN apk add --no-cache make pkgconfig gcc g++ python curl
+<pre><code class="hljs dockerfile"><span class="hljs-comment"># 增加系统依赖，以便npm安装可以顺利进行</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> apk add --no-cache make pkgconfig gcc g++ python curl</span>
 
-# 安装zsh，美化命令行
-RUN apk add --no-cache git openssh bash zsh libsecret-dev
+<span class="hljs-comment"># 安装zsh，美化命令行</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> apk add --no-cache git openssh bash zsh libsecret-dev</span>
 
-# 增加root身份，以便用户可以自行增加全局系统依赖
-RUN chmod 4755 /bin/busybox
-RUN echo &#39;root:danger&#39; | chpasswd
+<span class="hljs-comment"># 增加root身份，以便用户可以自行增加全局系统依赖</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">chmod</span> 4755 /bin/busybox</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;root:danger&#x27;</span> | chpasswd</span>
 
-# 修改最终的启动命令
-ENTRYPOINT [&quot;/bin/sh&quot;, &quot;/home/cloud-theia/start.sh&quot;]
+<span class="hljs-comment"># 修改最终的启动命令</span>
+<span class="hljs-keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="hljs-string">&quot;/bin/sh&quot;</span>, <span class="hljs-string">&quot;/home/cloud-theia/start.sh&quot;</span>]</span>
 
-# 在start.sh中，执行git,npm全局配置的脚本，并且启动theia自身的服务
-</code></pre>
+<span class="hljs-comment"># 在start.sh中，执行git,npm全局配置的脚本，并且启动theia自身的服务</span></code></pre>
+
 <p>至此，容器的功能基本完善。可以直接本地构建一个跑起来看看。</p>
 <h4 id="IDE管理页面搭建"><a href="#IDE管理页面搭建" class="headerlink" title="IDE管理页面搭建"></a>IDE管理页面搭建</h4><p>这一部分是比较常规的前端页面，此处大家应该耳熟能详，使用一些中后台模版搭建即可。</p>
 <p>主要具备的功能有：</p>
@@ -247,7 +262,7 @@ ENTRYPOINT [&quot;/bin/sh&quot;, &quot;/home/cloud-theia/start.sh&quot;]
 </ol>
 <p>这一部分都还没有涉及到theia的jsonrpc，后端扩展能力。但是自行车版足以。</p>
 <p>上个图吧，其实在扩展能力上，只是用到了一些皮毛：</p>
-<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1guiht5jz3zj61up0u0wjn02.jpg" alt="image-20210916151858921" referrerpolicy="no-referrer"></p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1guiht5jz3zj61up0u0wjn02.jpg" alt="image-20210916151858921" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>笔者在实际使用过程中，还有以下几个环境变量的改动：</p>
 <ol>
 <li>VSX_REGISTRY_URL，这是插件市场的插件源改动，默认是指向openvsx，要实现私有插件，直接改变其到自己的私有市场并实现相关接口即可</li>
@@ -271,7 +286,6 @@ ENTRYPOINT [&quot;/bin/sh&quot;, &quot;/home/cloud-theia/start.sh&quot;]
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2021/10/27/100%E8%A1%8C%E4%BB%A3%E7%A0%81%E7%9B%98%E4%B8%80%E4%B8%AAreact%E6%95%B0%E6%8D%AE%E6%B5%81%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">100行代码盘一个react数据流管理工具</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -291,19 +305,15 @@ ENTRYPOINT [&quot;/bin/sh&quot;, &quot;/home/cloud-theia/start.sh&quot;]
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774342"></script>
+    <script src="/js/index.js?v=1783498241080"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774342"></script>
+    <script src="/js/general.js?v=1783498241080"></script>
     
-    <script src="/js/post.js?v=1783490774342"></script>
+    <script src="/js/post.js?v=1783498241080"></script>
     
-    <script src="/js/tag.js?v=1783490774342"></script>
+    <script src="/js/tag.js?v=1783498241080"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

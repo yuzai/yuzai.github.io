@@ -6,15 +6,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>原生javascript封装ajax - 芋仔的个人博客</title>
+    <meta name="description" content="最近重新看《javascript高级程序设计》，突然看到了ajax，想起来之前学习的各种坑，又想着结合最近学习的模块化编程、面向对象式编程，所以用原生的js采用面向对象的设计思路对ajax进行了一个封装，同时，想起之前学习ajax的最大困难：没有服务器端代码，不好测试，所以这次用原生node写了一个简单的服务器，用于处理ajax的测试。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="原生javascript封装ajax">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2017/01/24/%E5%8E%9F%E7%94%9Fjs%E5%B0%81%E8%A3%85ajax/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="最近重新看《javascript高级程序设计》，突然看到了ajax，想起来之前学习的各种坑，又想着结合最近学习的模块化编程、面向对象式编程，所以用原生的js采用面向对象的设计思路对ajax进行了一个封装，同时，想起之前学习ajax的最大困难：没有服务器端代码，不好测试，所以这次用原生node写了一个简单的服务器，用于处理ajax的测试。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-01-24T14:12:26.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774343">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774343">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241081">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241081">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +77,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-01-24</time><span class="post-eyebrow-sep">·</span>约 3387 字<span class="post-eyebrow-sep">·</span>读完约 8 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-01-24</time><span class="post-eyebrow-sep">·</span>约 3425 字<span class="post-eyebrow-sep">·</span>读完约 9 分钟</p>
           <h1 class="post-title">原生javascript封装ajax</h1>
         </header>
         <section class="post-content">
@@ -84,71 +98,70 @@
 <li>收到回信，进行相应的dom操作，实现页面的局部刷新。</li>
 </ol>
 <p>可以看到，其实一个ajax的请求，是很简单简洁的，只要开发者提供，method（get还是post）,data(要传递的数据，ajax本身是用来通信的嘛)，url(通信的对象)，callback(收到回信后的处理)就可以完成一次通信，别的地方是重复性的劳动，不必每次都繁琐的写一遍。所以我建了一个类，提供send方法，实现信息的发送（ajax重复性的工作），上述四个数据存储在每个实例中，只要实例调用send方法，就会进行一次ajax通信。大概的代码思路是这样：</p>
-<pre><code class="js">function Ajax(obj)&#123;
-  //根据obj对method,data,url等进行初始化
+<pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Ajax</span>(<span class="hljs-params">obj</span>)&#123;
+  <span class="hljs-comment">//根据obj对method,data,url等进行初始化</span>
 &#125;;
-Ajax.prototype.send = function()&#123;
-  var xhr = new XMLHttpRequest();//新建ajax请求，不兼容IE7以下
-  xhr.onreadystatechange = function()&#123;//注册回调函数
-    if(xhr.readyState === 4)
-      callback(xhr.responseText);
+<span class="hljs-title class_">Ajax</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">send</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+  <span class="hljs-keyword">var</span> xhr = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XMLHttpRequest</span>();<span class="hljs-comment">//新建ajax请求，不兼容IE7以下</span>
+  xhr.<span class="hljs-property">onreadystatechange</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<span class="hljs-comment">//注册回调函数</span>
+    <span class="hljs-keyword">if</span>(xhr.<span class="hljs-property">readyState</span> === <span class="hljs-number">4</span>)
+      <span class="hljs-title function_">callback</span>(xhr.<span class="hljs-property">responseText</span>);
   &#125;
-  if(method === &#39;get&#39;)&#123;//如果是get方法，需要把data中的数据转化作为url传递给服务器
-    xhr.open(method,url,true);
-    xhr.send(null);
-  &#125;else if(method === &#39;post&#39;)&#123;//如果是post，需要在头中添加content-type说明
-      xhr.open(method,url,true);
-      xhr.setRequestHeader(&#39;Content-Type&#39;,&#39;application/x-www-form-urlencoded&#39;);
-      xhr.send(JSON.stringify(data));//发送的数据需要转化成JSON格式
-  &#125;else &#123;
-    console.log(&#39;不识别的方法:&#39;+method);
-    return fasle;
+  <span class="hljs-keyword">if</span>(method === <span class="hljs-string">&#x27;get&#x27;</span>)&#123;<span class="hljs-comment">//如果是get方法，需要把data中的数据转化作为url传递给服务器</span>
+    xhr.<span class="hljs-title function_">open</span>(method,url,<span class="hljs-literal">true</span>);
+    xhr.<span class="hljs-title function_">send</span>(<span class="hljs-literal">null</span>);
+  &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(method === <span class="hljs-string">&#x27;post&#x27;</span>)&#123;<span class="hljs-comment">//如果是post，需要在头中添加content-type说明</span>
+      xhr.<span class="hljs-title function_">open</span>(method,url,<span class="hljs-literal">true</span>);
+      xhr.<span class="hljs-title function_">setRequestHeader</span>(<span class="hljs-string">&#x27;Content-Type&#x27;</span>,<span class="hljs-string">&#x27;application/x-www-form-urlencoded&#x27;</span>);
+      xhr.<span class="hljs-title function_">send</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(data));<span class="hljs-comment">//发送的数据需要转化成JSON格式</span>
+  &#125;<span class="hljs-keyword">else</span> &#123;
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;不识别的方法:&#x27;</span>+method);
+    <span class="hljs-keyword">return</span> fasle;
   &#125;
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>源码点击<a target="_blank" rel="noopener" href="https://github.com/yuzai/ajax-/blob/master/ajax2.js">这里</a><br>有了这个类，要实现一条ajax请求，只需执行下面代码即可:</p>
-<pre><code class="js">var ajax = new Ajax(&#123;
-  method:&#39;get&#39;,//设置ajax方法
-  url:&#39;http://localhost:3000&#39;,//设置通讯地址
-  callback:function(res)&#123;//设置回调函数
-     alert(res)
+<pre><code class="hljs js"><span class="hljs-keyword">var</span> ajax = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Ajax</span>(&#123;
+  <span class="hljs-attr">method</span>:<span class="hljs-string">&#x27;get&#x27;</span>,<span class="hljs-comment">//设置ajax方法</span>
+  <span class="hljs-attr">url</span>:<span class="hljs-string">&#x27;http://localhost:3000&#x27;</span>,<span class="hljs-comment">//设置通讯地址</span>
+  <span class="hljs-attr">callback</span>:<span class="hljs-keyword">function</span>(<span class="hljs-params">res</span>)&#123;<span class="hljs-comment">//设置回调函数</span>
+     <span class="hljs-title function_">alert</span>(res)
   &#125;,
-  data: data//需要传递的数据
+  <span class="hljs-attr">data</span>: data<span class="hljs-comment">//需要传递的数据</span>
 &#125;)
-ajax.send();
-</code></pre>
+ajax.<span class="hljs-title function_">send</span>();</code></pre>
+
 <p>详细的关于这个类的使用方法，可以参考<a target="_blank" rel="noopener" href="https://github.com/yuzai/ajax-">这里</a><br>有了ajax，要测试，怎么办？当然可以找网上一些提供接口的网站进行ajax通信，比如聚合数据，有一些Key需要自己申请，相比之下，自己写一个服务器端的代码来处理请求，反而显得更简单一点。</p>
 <h3 id="服务器端处理ajax请求"><a href="#服务器端处理ajax请求" class="headerlink" title="服务器端处理ajax请求"></a>服务器端处理ajax请求</h3><p>node.js出来之后，javascript又能打前端，又能干后端，也把我拉进了坑里。在这里，主要是为了进行测试，所以越简单越好（我服务器端的代码水平还不够）。这里我主要参考了菜鸟教程中关于处理客户端请求的代码：原理及介绍点<a target="_blank" rel="noopener" href="http://www.runoob.com/nodejs/node-js-get-post.html">这里</a></p>
-<pre><code class="js">var http = require(&#39;http&#39;);
-var url = require(&#39;url&#39;);
-var util = require(&#39;util&#39;);
+<pre><code class="hljs js"><span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;http&#x27;</span>);
+<span class="hljs-keyword">var</span> url = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;url&#x27;</span>);
+<span class="hljs-keyword">var</span> util = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;util&#x27;</span>);
 
-http.createServer(function(req,res)&#123;
-  console.log(req.method);
-  if(req.method===&#39;GET&#39;)&#123;//处理get请求
-      res.writeHead(200,&#123;&#39;content-Type&#39;:&#39;text/plain&#39;,&quot;Access-Control-Allow-Origin&quot;:&quot;*&quot;&#125;);
-      res.end(util.inspect(url.parse(req.url, true)));//处理get请求，并将结果传递给客户端
+http.<span class="hljs-title function_">createServer</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">req,res</span>)&#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(req.<span class="hljs-property">method</span>);
+  <span class="hljs-keyword">if</span>(req.<span class="hljs-property">method</span>===<span class="hljs-string">&#x27;GET&#x27;</span>)&#123;<span class="hljs-comment">//处理get请求</span>
+      res.<span class="hljs-title function_">writeHead</span>(<span class="hljs-number">200</span>,&#123;<span class="hljs-string">&#x27;content-Type&#x27;</span>:<span class="hljs-string">&#x27;text/plain&#x27;</span>,<span class="hljs-string">&quot;Access-Control-Allow-Origin&quot;</span>:<span class="hljs-string">&quot;*&quot;</span>&#125;);
+      res.<span class="hljs-title function_">end</span>(util.<span class="hljs-title function_">inspect</span>(url.<span class="hljs-title function_">parse</span>(req.<span class="hljs-property">url</span>, <span class="hljs-literal">true</span>)));<span class="hljs-comment">//处理get请求，并将结果传递给客户端</span>
   &#125;
-  else&#123;//处理post请求
-      // 定义了一个post变量，用于暂存请求体的信息
-        var post = &#39;&#39;;
+  <span class="hljs-keyword">else</span>&#123;<span class="hljs-comment">//处理post请求</span>
+      <span class="hljs-comment">// 定义了一个post变量，用于暂存请求体的信息</span>
+        <span class="hljs-keyword">var</span> post = <span class="hljs-string">&#x27;&#x27;</span>;
 
-        // 通过req的data事件监听函数，每当接受到请求体的数据，就累加到post变量中
-        req.on(&#39;data&#39;, function(chunk)&#123;
+        <span class="hljs-comment">// 通过req的data事件监听函数，每当接受到请求体的数据，就累加到post变量中</span>
+        req.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">chunk</span>)&#123;
             post += chunk;
         &#125;);
 
-        // 在end事件触发后然后向客户端返回。
-        req.on(&#39;end&#39;, function()&#123;
-            post = JSON.parse(post);
-            console.log(post);
-            res.writeHead(200, &#123;&#39;Content-Type&#39;: &#39;text/html&#39;,&quot;Access-Control-Allow-Origin&quot;:&quot;*&quot;&#125;);
-            res.end(util.inspect(post));
+        <span class="hljs-comment">// 在end事件触发后然后向客户端返回。</span>
+        req.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;end&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+            post = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(post);
+            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(post);
+            res.<span class="hljs-title function_">writeHead</span>(<span class="hljs-number">200</span>, &#123;<span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;text/html&#x27;</span>,<span class="hljs-string">&quot;Access-Control-Allow-Origin&quot;</span>:<span class="hljs-string">&quot;*&quot;</span>&#125;);
+            res.<span class="hljs-title function_">end</span>(util.<span class="hljs-title function_">inspect</span>(post));
         &#125;);
     &#125;
-&#125;).listen(3000);
-console.log(&#39;server is listening on &quot;3000&quot;&#39;);
-</code></pre>
+&#125;).<span class="hljs-title function_">listen</span>(<span class="hljs-number">3000</span>);
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;server is listening on &quot;3000&quot;&#x27;</span>);</code></pre>
 <p>get请求的处理比较简单，因为get方法将信息都加在url中，服务器端对url进行解析就可以得到该请求的内容，我这里的处理是将其原封不动的返回给客户端。<br>post的请求相对麻烦，需要注册两个时间，on,end。一个是处理数据块，因为Post请求一般数据比较多，分多次传输，我们要的其实只是end之后的数据，在这里我也是直接将其信息几乎原封不动的返回。</p>
 <h3 id="联合测试"><a href="#联合测试" class="headerlink" title="联合测试"></a>联合测试</h3><p>可以直接clone<a target="_blank" rel="noopener" href="https://github.com/yuzai/ajax-">这里</a><br>里面的example下面有两个文件，一个是客户端的代码，一个是服务端的代码，服务端代码需要node server.js即可实现监听，浏览器端直接打开index.html即可。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>第一次发这种文章，也是发现写一篇文章不容易，在写的过程中也是有不少收获，我也深知，我还小，知识还有很多的漏洞，如果有误，严厉指出即可，谢谢！</p>
@@ -162,7 +175,6 @@ console.log(&#39;server is listening on &quot;3000&quot;&#39;);
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2017/01/26/javascript%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%92%8C%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/">javascript垃圾收集和内存泄漏</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -182,19 +194,15 @@ console.log(&#39;server is listening on &quot;3000&quot;&#39;);
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774343"></script>
+    <script src="/js/index.js?v=1783498241081"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774343"></script>
+    <script src="/js/general.js?v=1783498241081"></script>
     
-    <script src="/js/post.js?v=1783490774343"></script>
+    <script src="/js/post.js?v=1783498241081"></script>
     
-    <script src="/js/tag.js?v=1783490774343"></script>
+    <script src="/js/tag.js?v=1783498241081"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

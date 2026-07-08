@@ -6,15 +6,34 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>深入聊聊Qwen3的混合推理：全球唯三，开源唯一 - 芋仔的个人博客</title>
+    <meta name="description" content="上一篇文章：深入聊聊 Qwen3：我们外行除了高呼沸腾了，还应该知道什么? ，深入分析了 Qwen3 的跑分评测是否有水分，如下图：  结论是 Qwen3 在跑分上，确实是做到了各个指标都基本达到了开源第一，直逼闭源模型的程度。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入聊聊Qwen3的混合推理：全球唯三，开源唯一">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2025/06/10/%E6%B7%B1%E5%85%A5%E8%81%8A%E8%81%8AQwen3%E7%9A%84%E6%B7%B7%E5%90%88%E6%8E%A8%E7%90%86%EF%BC%9A%E5%85%A8%E7%90%83%E5%94%AF%E4%B8%89%EF%BC%8C%E5%BC%80%E6%BA%90%E5%94%AF%E4%B8%80/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="上一篇文章：深入聊聊 Qwen3：我们外行除了高呼沸腾了，还应该知道什么? ，深入分析了 Qwen3 的跑分评测是否有水分，如下图：  结论是 Qwen3 在跑分上，确实是做到了各个指标都基本达到了开源第一，直逼闭源模型的程度。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/martin_bo/images/raw/master/image/202505081412402.png">
+<meta property="og:image" content="https://gitee.com/martin_bo/images/raw/master/image/202505122002776.png">
+<meta property="og:image" content="https://gitee.com/martin_bo/images/raw/master/image/202505122015166.png">
+<meta property="og:image" content="https://gitee.com/martin_bo/images/raw/master/image/202505122011660.png">
+<meta property="og:image" content="https://gitee.com/martin_bo/images/raw/master/image/202505132257677.png">
+<meta property="article:published_time" content="2025-06-10T07:14:00.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:32:43.000Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/martin_bo/images/raw/master/image/202505081412402.png">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774341">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774341">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241076">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241076">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -69,7 +88,7 @@
         <section class="post-content">
             <p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/CZE3NebDV2Y1CkNh7UN5wg">上一篇文章：深入聊聊 Qwen3：我们外行除了高呼沸腾了，还应该知道什么?
 </a>，深入分析了 Qwen3 的跑分评测是否有水分，如下图：</p>
-<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505081412402.png" referrerpolicy="no-referrer"></p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505081412402.png" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>结论是 Qwen3 在跑分上，确实是做到了各个指标都基本达到了开源第一，直逼闭源模型的程度。</p>
 <span id="more"></span>
 
@@ -88,9 +107,9 @@
 <p>当时这个深度思考，可谓是火遍大江南北。</p>
 <p>不过追根溯源，第一个推理模型是 openai 于 2024 年 9.12 发布的 [o1-preview][<a target="_blank" rel="noopener" href="https://openai.com/index/introducing-openai-o1-preview/]">https://openai.com/index/introducing-openai-o1-preview/]</a> 版。</p>
 <p>深度思考的引入，解决了很多复杂的，需要反复推演的问题，比如 AIME (一堆比较复杂的数学题)，现在排名靠前的全是推理模型。</p>
-<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505122002776.png" referrerpolicy="no-referrer"></p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505122002776.png" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>ps: 这里其实有几个比较有趣的数据，排名 11 和 排名 16 的 deepseek-v3-0324 和 deepseek-v3，可以看出来经过调教的普通模型，在数学能力上也能大幅提升。而排名 13 的 claude-3.7-sonnet(thinking) 的数据，也说明了，未经调教的推理模型，也不见得在数学能力上能够大幅提升，但是比不思考效果确实要好。</p>
-<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505122015166.png" referrerpolicy="no-referrer"></p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505122015166.png" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>当然，在实际的各类大模型的聊天 app 中，基本都是支持开启思考和非思考的。</p>
 <p>只不过相比于 Qwen3 这样的混合模型，背后是两个模型的切换。</p>
 <p>比如 deepseek-r1 和 deepseek-v3，开启深度思考，就是 r1，关闭深度思考，就是 v3。</p>
@@ -100,44 +119,44 @@
 <p>2025.4.29 日，<a target="_blank" rel="noopener" href="https://qwenlm.github.io/blog/qwen3/">Qwen3 系列发布</a>，是第三个支持混合推理的模型，<strong>第一个支持混合推理的开源模型</strong>。</p>
 <h2 id="训练过程"><a href="#训练过程" class="headerlink" title="训练过程"></a>训练过程</h2><p>原本闭源模型的情况下，很难看出来(但是可以猜)，混合推理模型是如何训练出来的。</p>
 <p>但是 Qwen3 开源后，直接把训练过程放出来了：</p>
-<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505122011660.png" referrerpolicy="no-referrer"></p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505122011660.png" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>主要是后训练阶段做的工作，先是进行推理的学习，也就是图中的 stage1 和 stage2，长思维链，就是推理模式的训练核心。</p>
 <p>然后再在此基础之上进行非推理模式的学习和融合，也就是 stage3。</p>
 <p>最终进行通用的强化学习，Qwen3 对于指令遵循，函数调用，风格遵循的能力也就是这个阶段进行的提升。</p>
 <p>当然，这么说可能不太好理解，这里说一说更通俗的理解方式，所谓后训练，其实本质上也是灌一堆写好的对话给大模型。</p>
 <p>比如，stage1 和 stage2 的训练数据可能长这个样子：</p>
-<pre><code class="python">messages = [
+<pre><code class="hljs python">messages = [
     &#123;
-        &quot;role&quot;: &quot;system&quot;,
-        &quot;content&quot;: &quot;你是一名乐于助人的助手。&quot;
+        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>,
+        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;你是一名乐于助人的助手。&quot;</span>
     &#125;,
     &#123;
-        &quot;role&quot;: &quot;user&quot;,
-        &quot;content&quot;: &quot;1+1 等于几&quot;
+        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>,
+        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;1+1 等于几&quot;</span>
     &#125;,
     &#123;
-        &quot;role&quot;: &quot;assistant&quot;,
-        &quot;content&quot;: &quot;&lt;think&gt;用户问我 1+1 等于几，这是一个xxxx&lt;/think&gt;正常情况下等于2&quot;
+        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>,
+        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;&lt;think&gt;用户问我 1+1 等于几，这是一个xxxx&lt;/think&gt;正常情况下等于2&quot;</span>
     &#125;
-]
-</code></pre>
+]</code></pre>
+
 <p>相比于普通模型的后训练，多了 <strong>think</strong> 这样的标签(实际可能有所差别，毕竟训练数据并不会放出来，此处只是示例)。</p>
 <p>而需要融合非推理模式时，也就是 stage3 时，可以灌入这样的对话：</p>
-<pre><code class="python">messages = [
+<pre><code class="hljs python">messages = [
     &#123;
-        &quot;role&quot;: &quot;system&quot;,
-        &quot;content&quot;: &quot;你是一名乐于助人的助手。&quot;
+        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>,
+        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;你是一名乐于助人的助手。&quot;</span>
     &#125;,
     &#123;
-        &quot;role&quot;: &quot;user&quot;,
-        &quot;content&quot;: &quot;1+1 等于几&quot;
+        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>,
+        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;1+1 等于几&quot;</span>
     &#125;,
     &#123;
-        &quot;role&quot;: &quot;assistant&quot;,
-        &quot;content&quot;: &quot;&lt;think&gt;&lt;/think&gt;正常情况下等于2&quot;
+        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>,
+        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;&lt;think&gt;&lt;/think&gt;正常情况下等于2&quot;</span>
     &#125;
-]
-</code></pre>
+]</code></pre>
+
 <p>也就是直接给一个空的 <strong>think</strong> 标签。</p>
 <p>这样，模型就也能学习到不需要思考时的回答。</p>
 <p>如此一来，当外界不需要推理模式时，只需要在 token 化的时候，主动补充上一个空的 <strong>think</strong> 标签。</p>
@@ -176,7 +195,7 @@
 <p>想想我们学习一门编程语言的时候，其实也是，不断的输入指定格式。</p>
 <p>然后才慢慢理解了这个编程语言。</p>
 <p>最后，Qwen3 还针对性的对函数调用、mcp，agent 的能力做了加强，可以点个关注，等后续更新。</p>
-<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505132257677.png" referrerpolicy="no-referrer"></p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/202505132257677.png" loading="lazy" referrerpolicy="no-referrer"></p>
 
         </section>
         <nav class="post-neighbors">
@@ -187,7 +206,6 @@
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2026/02/14/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E6%9C%80%E8%BF%91%E5%B8%AE%E4%BA%86%E6%88%91%E5%A4%A7%E5%BF%99%E7%9A%84css%E5%B1%9E%E6%80%A7/">分享一个最近帮我大忙的 CSS 属性：aspect-ratio</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -207,19 +225,15 @@
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774341"></script>
+    <script src="/js/index.js?v=1783498241076"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774341"></script>
+    <script src="/js/general.js?v=1783498241076"></script>
     
-    <script src="/js/post.js?v=1783490774341"></script>
+    <script src="/js/post.js?v=1783498241076"></script>
     
-    <script src="/js/tag.js?v=1783490774341"></script>
+    <script src="/js/tag.js?v=1783498241076"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

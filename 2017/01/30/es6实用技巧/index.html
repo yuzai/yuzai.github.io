@@ -6,15 +6,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>es6实用技巧 - 芋仔的个人博客</title>
+    <meta name="description" content="一些实际使用中经常会碰到的es6的语法,慢慢更新.(2017.01.30更新)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="es6实用技巧">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2017/01/30/es6%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="一些实际使用中经常会碰到的es6的语法,慢慢更新.(2017.01.30更新)">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-01-30T15:04:43.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="es6">
+<meta name="twitter:card" content="summary">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774343">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774343">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241081">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241081">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +77,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-01-30</time><span class="post-eyebrow-sep">·</span>约 359 字<span class="post-eyebrow-sep">·</span>读完约 1 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-01-30</time><span class="post-eyebrow-sep">·</span>约 363 字<span class="post-eyebrow-sep">·</span>读完约 1 分钟</p>
           <h1 class="post-title">es6实用技巧</h1>
         </header>
         <section class="post-content">
@@ -71,21 +85,20 @@
 <span id="more"></span>
 
 <h3 id="object属性名缩写"><a href="#object属性名缩写" class="headerlink" title="object属性名缩写"></a>object属性名缩写</h3><p>当在定义object的时候，如果对属性值采用变量赋值的方法，当变量名和属性名相同时，可以只写一次。</p>
-<pre><code class="js">const name = &#39;xiaobo&#39;
-const person=&#123;
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> name = <span class="hljs-string">&#x27;xiaobo&#x27;</span>
+<span class="hljs-keyword">const</span> person=&#123;
   name,
-  age:16
+  <span class="hljs-attr">age</span>:<span class="hljs-number">16</span>
 &#125;;
-console.log(person.name);//xiaobo
-</code></pre>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(person.<span class="hljs-property">name</span>);<span class="hljs-comment">//xiaobo</span></code></pre>
+
 <h3 id="判断一个变量是否是数组"><a href="#判断一个变量是否是数组" class="headerlink" title="判断一个变量是否是数组"></a>判断一个变量是否是数组</h3><p>这个方法属于对Array类型的一个扩展</p>
-<pre><code class="js">  var obj =&#123;
-    name:&#39;xiaobo&#39;,
-    age:24
-  &#125;
-  console.log(Array.isArray(obj));//false
-  console.log(Array.isArray([1,2,3,[1,2,3]]);//true
-</code></pre>
+<pre><code class="hljs js"><span class="hljs-keyword">var</span> obj =&#123;
+  <span class="hljs-attr">name</span>:<span class="hljs-string">&#x27;xiaobo&#x27;</span>,
+  <span class="hljs-attr">age</span>:<span class="hljs-number">24</span>
+&#125;
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>(obj));<span class="hljs-comment">//false</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]]);<span class="hljs-comment">//true</span></code></pre>
 
         </section>
         <nav class="post-neighbors">
@@ -96,7 +109,6 @@ console.log(person.name);//xiaobo
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2017/01/31/%E8%B7%A8%E5%9F%9F%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9Ajsonp%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0/">跨域的解决方案（一）：jsonp及其实现</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -116,19 +128,15 @@ console.log(person.name);//xiaobo
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774343"></script>
+    <script src="/js/index.js?v=1783498241081"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774343"></script>
+    <script src="/js/general.js?v=1783498241081"></script>
     
-    <script src="/js/post.js?v=1783490774343"></script>
+    <script src="/js/post.js?v=1783498241081"></script>
     
-    <script src="/js/tag.js?v=1783490774343"></script>
+    <script src="/js/tag.js?v=1783498241081"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

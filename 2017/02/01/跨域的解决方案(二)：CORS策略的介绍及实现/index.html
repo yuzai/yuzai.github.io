@@ -6,15 +6,34 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>跨域的解决方案(二)：CORS策略的介绍及实现 - 芋仔的个人博客</title>
+    <meta name="description" content="最近遇到了跨域问题，有很多种解决方案，本文主要对其中的CORS进行演示，本文使用node编写服务器端代码进行验证。在解决该问题的时候，顺带对cookie的操作进行了一定的说明。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跨域的解决方案(二)：CORS策略的介绍及实现">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2017/02/01/%E8%B7%A8%E5%9F%9F%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88(%E4%BA%8C)%EF%BC%9ACORS%E7%AD%96%E7%95%A5%E7%9A%84%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="最近遇到了跨域问题，有很多种解决方案，本文主要对其中的CORS进行演示，本文使用node编写服务器端代码进行验证。在解决该问题的时候，顺带对cookie的操作进行了一定的说明。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3967512-24b8c9ce36f26832.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3967512-b8edfc0342019c99.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3967512-cf03d57ba0e3cc6e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2017-02-01T10:32:26.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="javascript">
+<meta property="article:tag" content="跨域">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3967512-24b8c9ce36f26832.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774343">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774343">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241081">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241081">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +82,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-02-01</time><span class="post-eyebrow-sep">·</span>约 2700 字<span class="post-eyebrow-sep">·</span>读完约 7 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-02-01</time><span class="post-eyebrow-sep">·</span>约 2714 字<span class="post-eyebrow-sep">·</span>读完约 7 分钟</p>
           <h1 class="post-title">跨域的解决方案(二)：CORS策略的介绍及实现</h1>
         </header>
         <section class="post-content">
@@ -73,26 +92,26 @@
 <h3 id="CORS简介"><a href="#CORS简介" class="headerlink" title="CORS简介"></a>CORS简介</h3><p>CORS是一个W3C标准，全称是”跨域资源共享”（Cross-origin resource sharing）。<br>它允许浏览器向跨源服务器，发出ajax请求，从而克服了AJAX只能<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/3704f51d1a6b">同源</a>使用的限制。<br>CORS依赖于服务器端的设定，只要在服务器端进行了设置，就可以实现相应的资源访问。</p>
 <h3 id="CORS简单服务器端实现"><a href="#CORS简单服务器端实现" class="headerlink" title="CORS简单服务器端实现"></a>CORS简单服务器端实现</h3><p>之前写过一篇文章<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/4e1d2ee63da7">原生javascript封装ajax</a>，在该文章中，用面向对象的方法简单封装了一个ajax通信类，同时建立了一个本地的服务器来进行验证，（本文的代码就基于上述代码,仓库在<a target="_blank" rel="noopener" href="https://github.com/yuzai/ajax-">这里</a>,服务器，客户端的代码都在里面，也有一些测试的说明。），事实上，在我进行验证的时候就遇到了跨域的问题，因为本地运行的页面和本地运行的服务器之间，不符合同源的策略，是不能进行ajax通信的，我当时采用的解决方案就是通过CORS方法在服务器端添加了Access-Control-Allow-字段实现了跨域通信。下面总结一下我在实际中的解决过程。</p>
 <h4 id="问题的出现"><a href="#问题的出现" class="headerlink" title="问题的出现"></a>问题的出现</h4><p>本地的页面，直接打开html文件，而用node建立了一个localhost的服务器，在html中使用直接使用ajax向服务器端发送请求，服务器端没有做CORS处理，此时浏览器会如下报错：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/3967512-24b8c9ce36f26832.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="problem.png" referrerpolicy="no-referrer"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3967512-24b8c9ce36f26832.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="problem.png" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>大致的意思就是服务器端没有发现Access-Control-Allow-Origin字段，而本地的html的origin默认是null(如果是在服务器上运行，举个例子，运行在<code>http://blog.xiaoboma.com/ajax-/</code>，则origin是<code>http://blog.xiaoboma.com</code>,只包含协议和域名，不包含后面的url路由等路径)，因为不匹配，所以不允许进行通信，ajax请求失败。值得注意的是，此时的通信失败不能通过xhr.status判断，需要通过xhr.onerror事件进行相应的处理。</p>
 <h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>知道了问题，只需要在服务器端的header中增加Access-Control-Allow-Origin即可解决该问题，关键代码如下：</p>
-<pre><code class="js">res.writeHead(200,&#123;&#39;content-Type&#39;:&#39;text/plain&#39;,&quot;Access-Control-Allow-Origin&quot;:&quot;*&quot;&#125;);
-</code></pre>
+<pre><code class="hljs js">res.<span class="hljs-title function_">writeHead</span>(<span class="hljs-number">200</span>,&#123;<span class="hljs-string">&#x27;content-Type&#x27;</span>:<span class="hljs-string">&#x27;text/plain&#x27;</span>,<span class="hljs-string">&quot;Access-Control-Allow-Origin&quot;</span>:<span class="hljs-string">&quot;*&quot;</span>&#125;);</code></pre>
+
 <p>此时，ajax请求就可以正常发送，观察调试工具（我使用的chrome）中的network一项，就可以看到发送的数据以及收到的返回信息。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/3967512-b8edfc0342019c99.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="ajax.png" referrerpolicy="no-referrer"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3967512-b8edfc0342019c99.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="ajax.png" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>这张图片主中的responseHeader和origin只要匹配，就可以进行ajax请求。*表示任何origin都可以进行访问，事实上，在这里如果在服务器端将其设置成Access-Control-Allow-Origin”:null也是可以进行ajax通信的。</p>
 <h4 id="CORS小结"><a href="#CORS小结" class="headerlink" title="CORS小结"></a>CORS小结</h4><p>可以看出来，CORS的实现主要是服务器端的设定，origin也是浏览器自动添加，人为是不能修改的，所以只要在服务器端设置了Access-Control-Allow-Origin字段，就可以实现相应网页的跨域资源访问，客户端的ajax通信代码不需要做任何的改动。</p>
 <h3 id="cookie的设定与发送"><a href="#cookie的设定与发送" class="headerlink" title="cookie的设定与发送"></a>cookie的设定与发送</h3><p>在设置Access-Control-Allow-Origin的时候不可避免的碰到了’Access-Control-Allow-Credentials’字段，按捺不住好奇，就搜索了这个字段，该字段只能设置为true,当设置了true之后，允许客户端通过ajax发送cookie，否则不接受客户端发送的cookie,客户端需要设置<code>xhr.withCredentials = true;</code><br>在服务端的res.writeHead添加如下字段：</p>
-<pre><code class="js">var time = new Date();
-      var time = time.getTime() + 24*60*60*1000;//按ms计算，一天
-      var time2 = new Date(time);
-      var timeObj = time2.toGMTString();
-      res.writeHead(200,&#123;&#39;content-Type&#39;:&#39;text/plain&#39;,&quot;Access-Control-Allow-Origin&quot;:null,
-          &#39;Set-Cookie&#39;:&#39;myCookie=&quot;type=ninja&quot;,language=&quot;javascript&quot;;Expires = &#39;+timeObj,&#39;Access-Control-Allow-Credentials&#39;:true&#125;);
-      res.end(util.inspect(url.parse(req.url, true)));//处理get请求，并将结果传递给客户端
-</code></pre>
+<pre><code class="hljs js"><span class="hljs-keyword">var</span> time = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>();
+      <span class="hljs-keyword">var</span> time = time.<span class="hljs-title function_">getTime</span>() + <span class="hljs-number">24</span>*<span class="hljs-number">60</span>*<span class="hljs-number">60</span>*<span class="hljs-number">1000</span>;<span class="hljs-comment">//按ms计算，一天</span>
+      <span class="hljs-keyword">var</span> time2 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(time);
+      <span class="hljs-keyword">var</span> timeObj = time2.<span class="hljs-title function_">toGMTString</span>();
+      res.<span class="hljs-title function_">writeHead</span>(<span class="hljs-number">200</span>,&#123;<span class="hljs-string">&#x27;content-Type&#x27;</span>:<span class="hljs-string">&#x27;text/plain&#x27;</span>,<span class="hljs-string">&quot;Access-Control-Allow-Origin&quot;</span>:<span class="hljs-literal">null</span>,
+      	<span class="hljs-string">&#x27;Set-Cookie&#x27;</span>:<span class="hljs-string">&#x27;myCookie=&quot;type=ninja&quot;,language=&quot;javascript&quot;;Expires = &#x27;</span>+timeObj,<span class="hljs-string">&#x27;Access-Control-Allow-Credentials&#x27;</span>:<span class="hljs-literal">true</span>&#125;);
+      res.<span class="hljs-title function_">end</span>(util.<span class="hljs-title function_">inspect</span>(url.<span class="hljs-title function_">parse</span>(req.<span class="hljs-property">url</span>, <span class="hljs-literal">true</span>)));<span class="hljs-comment">//处理get请求，并将结果传递给客户端</span></code></pre>
+
 <p>通过Access-Control-Allow-Credentials：true允许客户端发送cookie至服务器端，通过Set-Cookie设置cookie内容和过期时间（如果不设置过期时间，默认页面关闭）。这种状态下，Access-Control-Allow-Origin不能为’*‘，否则会报错，毕竟，不能让每个网站都直接向服务器发送cookie,必须是经过指定的域名才能，这里因为是本地，直接设置为null。此时，在index.html中发送post请求，可以看到cookie信息。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/3967512-cf03d57ba0e3cc6e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="cookie.png" referrerpolicy="no-referrer"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3967512-cf03d57ba0e3cc6e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="cookie.png" loading="lazy" referrerpolicy="no-referrer"></p>
 <h4 id="cookie设置小结"><a href="#cookie设置小结" class="headerlink" title="cookie设置小结"></a>cookie设置小结</h4><p>要想通过客户端发送cookie给服务器端，必须有服务器端支持。</p>
 <ol>
 <li>Access-Control-Allow-Credentials必须为true且只能为true</li>
@@ -114,7 +133,6 @@
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2017/02/17/%E5%87%BD%E6%95%B0%E6%9F%AF%E9%87%8C%E5%8C%96%E5%B0%8F%E7%BB%93/">函数柯里化小结</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -134,19 +152,15 @@
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774343"></script>
+    <script src="/js/index.js?v=1783498241081"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774343"></script>
+    <script src="/js/general.js?v=1783498241081"></script>
     
-    <script src="/js/post.js?v=1783490774343"></script>
+    <script src="/js/post.js?v=1783498241081"></script>
     
-    <script src="/js/tag.js?v=1783490774343"></script>
+    <script src="/js/tag.js?v=1783498241081"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

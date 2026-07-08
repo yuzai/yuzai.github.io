@@ -6,15 +6,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>es64 - 芋仔的个人博客</title>
+    <meta name="description" content="es6的学习笔记(四)：iterators and iterable">
+<meta property="og:type" content="article">
+<meta property="og:title" content="es64">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2016/11/23/es64/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="es6的学习笔记(四)：iterators and iterable">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-11-23T07:46:43.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="javascript">
+<meta property="article:tag" content="es6">
+<meta name="twitter:card" content="summary">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774343">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774343">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241081">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241081">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +78,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2016-11-23</time><span class="post-eyebrow-sep">·</span>约 2218 字<span class="post-eyebrow-sep">·</span>读完约 6 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2016-11-23</time><span class="post-eyebrow-sep">·</span>约 2224 字<span class="post-eyebrow-sep">·</span>读完约 6 分钟</p>
           <h1 class="post-title">es64</h1>
         </header>
         <section class="post-content">
@@ -74,27 +89,27 @@
 <p>iterator本质上是一种协议，用于定义适用于所有对象的迭代</p>
 </blockquote>
 <h3 id="迭代规则"><a href="#迭代规则" class="headerlink" title="迭代规则"></a>迭代规则</h3><p>所有的对象，都可以使用迭代协议，只要为它添加一个属性名为[Symbol.iterator]，属性值为遵循协议的一个函数就可以使用迭代协议。</p>
-<pre><code class="js">var s=&#123;
-  name:[1,2,3,4,5],
-  value:0,
-  [Symbol.iterator]:function()&#123;   //绑定一个方法，该方法返回一个具有next方法的对象。
-    return &#123;
-      next:()=&gt;&#123;
-        if(this.value==this.name.length)&#123;
-          this.value = 0;          //此处需要将控制迭代的数值清零，不然只能迭代一次，亲测
-          return &#123;value:undefined,done:true&#125;;
+<pre><code class="hljs js"><span class="hljs-keyword">var</span> s=&#123;
+  <span class="hljs-attr">name</span>:[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>],
+  <span class="hljs-attr">value</span>:<span class="hljs-number">0</span>,
+  [<span class="hljs-title class_">Symbol</span>.<span class="hljs-property">iterator</span>]:<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;   <span class="hljs-comment">//绑定一个方法，该方法返回一个具有next方法的对象。</span>
+    <span class="hljs-keyword">return</span> &#123;
+      <span class="hljs-attr">next</span>:<span class="hljs-function">()=&gt;</span>&#123;
+        <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span>==<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>.<span class="hljs-property">length</span>)&#123;
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span> = <span class="hljs-number">0</span>;          <span class="hljs-comment">//此处需要将控制迭代的数值清零，不然只能迭代一次，亲测</span>
+          <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">value</span>:<span class="hljs-literal">undefined</span>,<span class="hljs-attr">done</span>:<span class="hljs-literal">true</span>&#125;;
         &#125;
-        else &#123;
-          return &#123;value:this.name[this.value++],done:false&#125;;
+        <span class="hljs-keyword">else</span> &#123;
+          <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">value</span>:<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span>++],<span class="hljs-attr">done</span>:<span class="hljs-literal">false</span>&#125;;
         &#125;
       &#125;
     &#125;
   &#125;
 &#125;
-for(let value of s)&#123;
-  console.log(value);//输出1,2,3,4,5
-&#125;
-</code></pre>
+<span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> value <span class="hljs-keyword">of</span> s)&#123;
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(value);<span class="hljs-comment">//输出1,2,3,4,5</span>
+&#125;</code></pre>
+
 <p>当为对象s绑定了属性名为[Symbol.iterator]，且属性值符合一定的要求，就可以使用for of来进行迭代。在该方法中，应该符合以下几个规则：</p>
 <ol>
 <li>返回值是next函数</li>
@@ -104,49 +119,48 @@ for(let value of s)&#123;
 </ol>
 <h3 id="自带迭代属性的对象"><a href="#自带迭代属性的对象" class="headerlink" title="自带迭代属性的对象"></a>自带迭代属性的对象</h3><p>上述的方法使得普通的对象也可以进行迭代，不过，还有一些预定义的对象也具有迭代性。比如：Array,String,DOM中的NodeList，arguments都是默认可以迭代的，也就是可以直接使用for of结构。</p>
 <h3 id="将可迭代的对象还原为数组"><a href="#将可迭代的对象还原为数组" class="headerlink" title="将可迭代的对象还原为数组"></a>将可迭代的对象还原为数组</h3><p>有两种方法，一种是spread操作符。一种是Array.form函数。Array.from除了可以把可迭代对象转换成数组，也可以把类数组对象转换成数组。类数组对象就是属性名为0,1,2,3,4并且具有length属性的对象</p>
-<pre><code class="js">var s=&#123;
-  name:[1,2,3,4,5],
-  value:0,
-  [Symbol.iterator]:function()&#123;   //绑定一个方法，该方法返回一个具有next方法的对象。
-    return &#123;
-      next:()=&gt;&#123;
-        if(this.value==this.name.length)&#123;
-          this.value = 0;
-          return &#123;value:undefined,done:true&#125;;
+<pre><code class="hljs js"><span class="hljs-keyword">var</span> s=&#123;
+  <span class="hljs-attr">name</span>:[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>],
+  <span class="hljs-attr">value</span>:<span class="hljs-number">0</span>,
+  [<span class="hljs-title class_">Symbol</span>.<span class="hljs-property">iterator</span>]:<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;   <span class="hljs-comment">//绑定一个方法，该方法返回一个具有next方法的对象。</span>
+    <span class="hljs-keyword">return</span> &#123;
+      <span class="hljs-attr">next</span>:<span class="hljs-function">()=&gt;</span>&#123;
+        <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span>==<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>.<span class="hljs-property">length</span>)&#123;
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span> = <span class="hljs-number">0</span>;
+          <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">value</span>:<span class="hljs-literal">undefined</span>,<span class="hljs-attr">done</span>:<span class="hljs-literal">true</span>&#125;;
         &#125;
-        else &#123;
-          return &#123;value:this.name[this.value++],done:false&#125;;
+        <span class="hljs-keyword">else</span> &#123;
+          <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">value</span>:<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span>++],<span class="hljs-attr">done</span>:<span class="hljs-literal">false</span>&#125;;
         &#125;
       &#125;
     &#125;
   &#125;
 &#125;
-console.log(...s);//此处直接使用...操作符，输出1 2 3 4 5，此处是没有,的，因为并没有转换成数组，相当于连续输出了
-console.log(Array.from(s));//此处输出1,2,3,4,5
-var q = [...s];//使用...操作符将s转换成数组
-console.log(q);//输出1,2,3,4,5
-for(let i in q)
-  console.log(i)//输出0-4
-console.log(Array.from(&#123;0:&#39;a&#39;,1:&#39;b&#39;,2:&#39;c&#39;,length:3&#125;));//此处输出a,b,c
-</code></pre>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(...s);<span class="hljs-comment">//此处直接使用...操作符，输出1 2 3 4 5，此处是没有,的，因为并没有转换成数组，相当于连续输出了</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(s));<span class="hljs-comment">//此处输出1,2,3,4,5</span>
+<span class="hljs-keyword">var</span> q = [...s];<span class="hljs-comment">//使用...操作符将s转换成数组</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(q);<span class="hljs-comment">//输出1,2,3,4,5</span>
+<span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i <span class="hljs-keyword">in</span> q)
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(i)<span class="hljs-comment">//输出0-4</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(&#123;<span class="hljs-number">0</span>:<span class="hljs-string">&#x27;a&#x27;</span>,<span class="hljs-number">1</span>:<span class="hljs-string">&#x27;b&#x27;</span>,<span class="hljs-number">2</span>:<span class="hljs-string">&#x27;c&#x27;</span>,<span class="hljs-attr">length</span>:<span class="hljs-number">3</span>&#125;));<span class="hljs-comment">//此处输出a,b,c</span></code></pre>
+
 <h3 id="无限序列"><a href="#无限序列" class="headerlink" title="无限序列"></a>无限序列</h3><p>如果在next函数中，done变量始终是false，那么这个序列永远不会结束，同样的，如果对这个序列进行Array.from()或者[…]操作以及for of都会使程序崩溃。</p>
-<pre><code class="js">const x = &#123;
-  [Symbol.iterator]:()=&gt;&#123;
-    return &#123;
-      next:()=&gt;&#123;return &#123;value:Math.random(),done:false&#125;&#125;
+<pre><code class="hljs js"><span class="hljs-keyword">const</span> x = &#123;
+  [<span class="hljs-title class_">Symbol</span>.<span class="hljs-property">iterator</span>]:<span class="hljs-function">()=&gt;</span>&#123;
+    <span class="hljs-keyword">return</span> &#123;
+      <span class="hljs-attr">next</span>:<span class="hljs-function">()=&gt;</span>&#123;<span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">value</span>:<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>(),<span class="hljs-attr">done</span>:<span class="hljs-literal">false</span>&#125;&#125;
     &#125;
   &#125;
 &#125;
-console.log(x[Symbol.iterator]().next().value)//不断执行，一直会产生一个新的随机数
-for(let s of x)
-  console.log(s)//后面的for循环一旦执行，浏览器的控制台就卡住，只能关闭重启
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(x[<span class="hljs-title class_">Symbol</span>.<span class="hljs-property">iterator</span>]().<span class="hljs-title function_">next</span>().<span class="hljs-property">value</span>)<span class="hljs-comment">//不断执行，一直会产生一个新的随机数</span>
+<span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> s <span class="hljs-keyword">of</span> x)
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(s)<span class="hljs-comment">//后面的for循环一旦执行，浏览器的控制台就卡住，只能关闭重启</span>
 
-const [one, another] = random  //可以使用这样的结构来访问有限的无限序列中的元素
-console.log(one)
-// &lt;‐ 0.23235511826351285
-console.log(another)
-// &lt;‐ 0.28749457537196577
-</code></pre>
+<span class="hljs-keyword">const</span> [one, another] = random  <span class="hljs-comment">//可以使用这样的结构来访问有限的无限序列中的元素</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(one)
+<span class="hljs-comment">// &lt;‐ 0.23235511826351285</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(another)
+<span class="hljs-comment">// &lt;‐ 0.28749457537196577</span></code></pre>
 
         </section>
         <nav class="post-neighbors">
@@ -157,7 +171,6 @@ console.log(another)
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2016/11/23/arror/">arrow的疑问</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -177,19 +190,15 @@ console.log(another)
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774343"></script>
+    <script src="/js/index.js?v=1783498241081"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774343"></script>
+    <script src="/js/general.js?v=1783498241081"></script>
     
-    <script src="/js/post.js?v=1783490774343"></script>
+    <script src="/js/post.js?v=1783498241081"></script>
     
-    <script src="/js/tag.js?v=1783490774343"></script>
+    <script src="/js/tag.js?v=1783498241081"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

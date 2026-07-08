@@ -6,15 +6,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>js忍者秘籍笔记：3-5 - 芋仔的个人博客</title>
+    <meta name="description" content="最近在看一些博客的时候，内容经常是来自javascript忍者秘籍，最近虽然一直在面试实习，但是不能把注意力一直放在应付面试上，提升自己的能力也很重要，所以一直抽空看看忍者秘籍。总体来说，这本书，初学者就不用看了，有一定基础之后来看，感悟会比较多。我在这一遍阅读3-5章的过程中，其实并没有很难，有些概念，之前就懂了，这次的阅读，其实更多程度上是对js一个系统的梳理过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="js忍者秘籍笔记：3-5">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2017/03/16/js%E5%BF%8D%E8%80%85%E7%A7%98%E7%B1%8D%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="最近在看一些博客的时候，内容经常是来自javascript忍者秘籍，最近虽然一直在面试实习，但是不能把注意力一直放在应付面试上，提升自己的能力也很重要，所以一直抽空看看忍者秘籍。总体来说，这本书，初学者就不用看了，有一定基础之后来看，感悟会比较多。我在这一遍阅读3-5章的过程中，其实并没有很难，有些概念，之前就懂了，这次的阅读，其实更多程度上是对js一个系统的梳理过程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-03-16T03:42:30.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774343">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774343">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241080">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241080">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -78,13 +92,11 @@
 <li>调用事件的处理程序（也成为监听器，listener）<br>  <em>而浏览器不同，代码不需要负责事件的轮询和事件派发，而是浏览器帮忙处理，而我们的职责是为浏览器发生的各种事件建立处理的程序handler，这些事件的调用被放置在一个事件队列，然后浏览器调用这些handler</em></li>
 </ol>
 </li>
-<li>函数声明和函数表达式的异同之一：勘误，已经改变。函数表达式也是有name的,但是匿名函数的name是空<pre><code class="js">function test()&#123;&#125;;
-var test2 = function()&#123;&#125;;
-console.log(test2.name);//test2
-console.log(test.name);//test
-(function()&#123;console.log(arguments.callee.name)&#125;)();//&quot;&quot;
-</code></pre>
-</li>
+<li>函数声明和函数表达式的异同之一：勘误，已经改变。函数表达式也是有name的,但是匿名函数的name是空  <pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">test</span>(<span class="hljs-params"></span>)&#123;&#125;;
+<span class="hljs-keyword">var</span> test2 = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;&#125;;
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(test2.<span class="hljs-property">name</span>);<span class="hljs-comment">//test2</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(test.<span class="hljs-property">name</span>);<span class="hljs-comment">//test</span>
+(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">arguments</span>.<span class="hljs-property">callee</span>.<span class="hljs-property">name</span>)&#125;)();<span class="hljs-comment">//&quot;&quot;</span></code></pre></li>
 <li>函数作用域：<ol>
 <li>变量声明的作用域开始于声明的地方，结束于所在函数的结尾，与代码的嵌套无关</li>
 <li>函数声明的作用域是指声明该函数的整个函数范围，与代码嵌套无关，</li>
@@ -126,15 +138,13 @@ console.log(test.name);//test
 <li>发生在幕后，开发人员不需要进行相关的特殊操作。<br> 缺点：</li>
 <li>必然牺牲掉内存</li>
 <li>有些纯粹主义者可能认为一个函数做一件事就可以了，这样容易造成混乱</li>
-<li>很难测试一个算法的性能<br> <em>缓存记忆dom元素</em><br> 通过元素的标签查询dom元素是很常见的操作，但是性能并不是特别好，可以利用缓存来保存已经匹配到的元素，<strong>性能提升很大</strong>。</li>
+<li>很难测试一个算法的性能<br> <em>缓存记忆dom元素</em><br> 通过元素的标签查询dom元素是很常见的操作，但是性能并不是特别好，可以利用缓存来保存已经匹配到的元素，<strong>性能提升很大</strong>。 <pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">getElements</span>(<span class="hljs-params">name</span>)&#123;
+  <span class="hljs-keyword">if</span>(!getElements.<span class="hljs-property">cache</span>) getElements.<span class="hljs-property">cache</span> = &#123;&#125;;
+  <span class="hljs-keyword">return</span> getElements.<span class="hljs-property">cache</span>[name] =
+     getElements.<span class="hljs-property">cache</span>[name] ||
+     <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByTagName</span>(name);
+&#125;</code></pre></li>
 </ol>
-<pre><code class="js">function getElements(name)&#123;
-  if(!getElements.cache) getElements.cache = &#123;&#125;;
-  return getElements.cache[name] =
-     getElements.cache[name] ||
-     document.getElementsByTagName(name);
-&#125;
-</code></pre>
 <p> 这两个实例可以看出，作为函数的属性来对一些信息进行存储，可以提高性能，同时又不会对别的代码或者全局环境造成干扰，是一个很好的特性。</p>
 </li>
 <li><p>伪造数组方法，并没有看懂有什么好处。以后再读<br> 首先，数组也是对象，是可以添加属性的。</p>
@@ -170,23 +180,21 @@ console.log(test.name);//test
 <li>循环绑定：利用立即执行函数创建一个闭包从而达到循环绑定想要的效果</li>
 <li>类库包装：</li>
 </ol>
-<pre><code class="js">(function()&#123;
-  var jQuery = window.jQuery = function()&#123;
-    //
+ <pre><code class="hljs js">(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+  <span class="hljs-keyword">var</span> jQuery = <span class="hljs-variable language_">window</span>.<span class="hljs-property">jQuery</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+    <span class="hljs-comment">//</span>
   &#125;
-  //
+  <span class="hljs-comment">//</span>
 &#125;)
 
-//方式2
-var jQuery = function()&#123;
-  function jQuery()&#123;
-    //init
+<span class="hljs-comment">//方式2</span>
+<span class="hljs-keyword">var</span> jQuery = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+  <span class="hljs-keyword">function</span> <span class="hljs-title function_">jQuery</span>(<span class="hljs-params"></span>)&#123;
+    <span class="hljs-comment">//init</span>
   &#125;
-  //yewu code
-  return jQuery;
-&#125;
-</code></pre>
-</li>
+  <span class="hljs-comment">//yewu code</span>
+  <span class="hljs-keyword">return</span> jQuery;
+&#125;</code></pre></li>
 </ol>
 
         </section>
@@ -198,7 +206,6 @@ var jQuery = function()&#123;
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2017/03/18/%E7%BB%A7%E6%89%BF%E7%9A%843%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/">继承的三种实现方式</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -218,19 +225,15 @@ var jQuery = function()&#123;
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774343"></script>
+    <script src="/js/index.js?v=1783498241080"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774343"></script>
+    <script src="/js/general.js?v=1783498241080"></script>
     
-    <script src="/js/post.js?v=1783490774343"></script>
+    <script src="/js/post.js?v=1783498241080"></script>
     
-    <script src="/js/tag.js?v=1783490774343"></script>
+    <script src="/js/tag.js?v=1783498241080"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <link rel="Shortcut Icon" href="/favicon.ico">
+  <title>页面不存在 - 芋仔的个人博客</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: #3b4d62;
+    }
+    .box { text-align: center; padding: 24px; }
+    .code {
+      font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+      font-size: 72px;
+      font-weight: bold;
+      color: #1f2e40;
+      letter-spacing: 4px;
+    }
+    .line {
+      width: 48px;
+      height: 4px;
+      margin: 18px auto;
+      border-radius: 2px;
+      background: #1f5fa8;
+    }
+    .msg { font-size: 16px; line-height: 1.8; color: #526781; }
+    .actions { margin-top: 28px; }
+    .actions a {
+      display: inline-block;
+      margin: 0 6px;
+      padding: 8px 20px;
+      font-size: 14px;
+      text-decoration: none;
+      border-radius: 4px;
+      color: #2a405e;
+      background: #fff;
+      border: 1px solid #dde6f2;
+      box-shadow: 0 2px 10px rgba(31,46,64,0.08);
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    .actions a:hover { color: #1f5fa8; border-color: #c3d4e8; }
+    .actions a.primary { color: #fff; background: #428bca; border-color: #357ebd; }
+    .actions a.primary:hover { color: #fff; background: #357ebd; }
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .box { animation: fade-up 0.5s ease both; }
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="code">404</div>
+    <div class="line"></div>
+    <p class="msg">这个页面不存在，可能已被移动或删除。</p>
+    <div class="actions">
+      <a class="primary" href="/">回到首页</a>
+      <a href="/archives/">看看归档</a>
+    </div>
+  </div>
+</body>
+</html>

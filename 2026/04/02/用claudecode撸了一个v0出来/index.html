@@ -6,15 +6,32 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>一天时间，用 Claude Code 蹬了一个 v0 出来（附源码） - 芋仔的个人博客</title>
+    <meta name="description" content="最近，出于业务需要，参考 v0 的实现，蹬了一个类似 v0 的平台出来。 先看效果：   整体采用 Next.js 做前后端服务，E2B 提供沙箱，Claude Agent SDK 完成代码生成，沙箱提供预览和代码推送部署能力。 ps: 本文不会包含任何的代码(本身也都是 AI 生成的)，只会介绍相关方案的选型、核心的架构和实现原理。同时关于部署的环节，各个公司都有自己的部署流水线，并不具备参考价">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一天时间，用 Claude Code 蹬了一个 v0 出来（附源码）">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2026/04/02/%E7%94%A8claudecode%E6%92%B8%E4%BA%86%E4%B8%80%E4%B8%AAv0%E5%87%BA%E6%9D%A5/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="最近，出于业务需要，参考 v0 的实现，蹬了一个类似 v0 的平台出来。 先看效果：   整体采用 Next.js 做前后端服务，E2B 提供沙箱，Claude Agent SDK 完成代码生成，沙箱提供预览和代码推送部署能力。 ps: 本文不会包含任何的代码(本身也都是 AI 生成的)，只会介绍相关方案的选型、核心的架构和实现原理。同时关于部署的环节，各个公司都有自己的部署流水线，并不具备参考价">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/martin_bo/images/raw/master/image/poc1.gif">
+<meta property="og:image" content="https://gitee.com/martin_bo/images/raw/master/image/poc2.gif">
+<meta property="og:image" content="https://gitee.com/martin_bo/images/raw/master/image/20260402111329246.png">
+<meta property="article:published_time" content="2026-04-02T07:14:00.000Z">
+<meta property="article:modified_time" content="2026-04-05T01:56:47.000Z">
+<meta property="article:author" content="马晓博">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/martin_bo/images/raw/master/image/poc1.gif">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774341">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774341">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241076">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241076">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -69,8 +86,8 @@
         <section class="post-content">
             <p>最近，出于业务需要，参考 v0 的实现，蹬了一个类似 v0 的平台出来。</p>
 <p>先看效果：</p>
-<p><img src="https://gitee.com/martin_bo/images/raw/master/image/poc1.gif" referrerpolicy="no-referrer"></p>
-<p><img src="https://gitee.com/martin_bo/images/raw/master/image/poc2.gif" referrerpolicy="no-referrer"></p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/poc1.gif" loading="lazy" referrerpolicy="no-referrer"></p>
+<p><img src="https://gitee.com/martin_bo/images/raw/master/image/poc2.gif" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>整体采用 Next.js 做前后端服务，E2B 提供沙箱，Claude Agent SDK 完成代码生成，沙箱提供预览和代码推送部署能力。</p>
 <p>ps: 本文不会包含任何的代码(本身也都是 AI 生成的)，只会介绍相关方案的选型、核心的架构和实现原理。同时关于部署的环节，各个公司都有自己的部署流水线，并不具备参考价值，会弱化这个环节的介绍。</p>
 <h2 id="方案对比和设计"><a href="#方案对比和设计" class="headerlink" title="方案对比和设计"></a>方案对比和设计</h2><p>AI 生成前端代码，一般有这么几种方式：一份 html，一份代码块，以及直接生成项目。</p>
@@ -179,7 +196,7 @@
 <td>v0、本文实现</td>
 </tr>
 </tbody></table>
-<h2 id="架构设计"><a href="#架构设计" class="headerlink" title="架构设计"></a>架构设计</h2><p><img src="https://gitee.com/martin_bo/images/raw/master/image/20260402111329246.png" referrerpolicy="no-referrer"></p>
+<h2 id="架构设计"><a href="#架构设计" class="headerlink" title="架构设计"></a>架构设计</h2><p><img src="https://gitee.com/martin_bo/images/raw/master/image/20260402111329246.png" loading="lazy" referrerpolicy="no-referrer"></p>
 <p>整体的架构图如上，分为三块：</p>
 <ol>
 <li><p><strong>Next.js 前端</strong>：聊天输入框、消息流展示、代码文件树、实时预览 iframe，以及打断&#x2F;重试等交互控制。</p>
@@ -222,7 +239,6 @@
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2026/04/09/%E5%89%8D%E7%AB%AF%E5%B9%B6%E5%8F%91%E6%B2%BB%E7%90%86%EF%BC%9A%E4%BB%8E%20Token%20%E5%88%B7%E6%96%B0%E8%81%8A%E8%B5%B7%EF%BC%8C%E4%B8%80%E4%B8%AA%20Promise%20%E5%B0%B1%E5%A4%9F%E4%BA%86/">前端并发治理：从 Token 刷新聊起，一个 Promise 就够了</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -242,19 +258,15 @@
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774341"></script>
+    <script src="/js/index.js?v=1783498241076"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774341"></script>
+    <script src="/js/general.js?v=1783498241076"></script>
     
-    <script src="/js/post.js?v=1783490774341"></script>
+    <script src="/js/post.js?v=1783498241076"></script>
     
-    <script src="/js/tag.js?v=1783490774341"></script>
+    <script src="/js/tag.js?v=1783498241076"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>

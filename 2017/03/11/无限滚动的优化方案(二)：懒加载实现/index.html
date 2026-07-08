@@ -6,15 +6,31 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
-    <title>芋仔的个人博客</title>
+    
+    <title>无限滚动的优化方案(二)：懒加载实现 - 芋仔的个人博客</title>
+    <meta name="description" content="之前对预加载的实现方案做了介绍，这一篇文章主要是我对图片的懒加载的实现的一个总结。主要包括：  视区检测 图片懒加载及延迟显示">
+<meta property="og:type" content="article">
+<meta property="og:title" content="无限滚动的优化方案(二)：懒加载实现">
+<meta property="og:url" content="https://blog.maxiaobo.com.cn/2017/03/11/%E6%97%A0%E9%99%90%E6%BB%9A%E5%8A%A8%E7%9A%84%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88(%E4%BA%8C)%EF%BC%9A%E6%87%92%E5%8A%A0%E8%BD%BD%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="芋仔的个人博客">
+<meta property="og:description" content="之前对预加载的实现方案做了介绍，这一篇文章主要是我对图片的懒加载的实现的一个总结。主要包括：  视区检测 图片懒加载及延迟显示">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3967512-be21f70733f0963a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2017-03-11T12:42:30.000Z">
+<meta property="article:modified_time" content="2026-02-14T02:29:36.000Z">
+<meta property="article:author" content="马晓博">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3967512-be21f70733f0963a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
     
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774343">
-    <link rel="stylesheet" href="/css/style.css?v=1783490774343">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783498241080">
+    <link rel="stylesheet" href="/css/style.css?v=1783498241080">
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
+</head>
 <body class=" post-page">
     <div class="main">
         <header id = 'daohang'>
@@ -63,7 +79,7 @@
       <div class="post-reading-shell">
         <header class="post-header">
           
-          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-03-11</time><span class="post-eyebrow-sep">·</span>约 3052 字<span class="post-eyebrow-sep">·</span>读完约 8 分钟</p>
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-03-11</time><span class="post-eyebrow-sep">·</span>约 3058 字<span class="post-eyebrow-sep">·</span>读完约 8 分钟</p>
           <h1 class="post-title">无限滚动的优化方案(二)：懒加载实现</h1>
         </header>
         <section class="post-content">
@@ -73,101 +89,101 @@
 <li>图片懒加载及延迟显示<span id="more"></span></li>
 </ol>
 <h3 id="实例简介"><a href="#实例简介" class="headerlink" title="实例简介"></a>实例简介</h3><p>之前一直对单页应用有兴趣，所以自己写了一个前端路由，相关的文章见<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/5a5813648d87">这里</a>，这个单页应用采取hash的方式实现路由。最终的实例页面见<a target="_blank" rel="noopener" href="http://blog.xiaoboma.com/dazhequan2/">这里</a>。仓库在<a target="_blank" rel="noopener" href="https://github.com/yuzai/dazhequan2">这里</a>是一个经典的单页应用。要做优化的就是主页的信息滚动。这些信息通过ajax从服务器端获取，这里为了方便，服务器端会一直返回数据，哪怕是重复的。页面如下：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/3967512-be21f70733f0963a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png" referrerpolicy="no-referrer"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3967512-be21f70733f0963a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png" loading="lazy" referrerpolicy="no-referrer"></p>
 <h3 id="懒加载"><a href="#懒加载" class="headerlink" title="懒加载"></a>懒加载</h3><p>可以看到，页面中，每一条消息都有一个图片，这个时候，如果在dom刚刚建立好，就对所有的图片进行加载，此时，占用过多的下载通道（我的是每次显示10条消息，接近页面底部时会预加载），会导致后面的信息加载速度变慢，用户体验不好。而图片懒加载是指：<strong>图片进入用户视野才会进行加载，而不是在dom树一构建好就进行加载。</strong> 道理很简单，但是我在实现的过程中还是碰到了一些问题，下面就是我的实现方案。</p>
-<h3 id="懒加载实现方案"><a href="#懒加载实现方案" class="headerlink" title="懒加载实现方案"></a>懒加载实现方案</h3><h4 id="总体变量以及函数定义"><a href="#总体变量以及函数定义" class="headerlink" title="总体变量以及函数定义"></a>总体变量以及函数定义</h4><pre><code class="js">//记录图片的序号
-let num = 0;
-//记录是否正在获取数据，保证请求只做一次
-let state = true;
-//记录图片数据，index,src,height三个关键元素
-var img_data =[];
-//记录表单的距离页面顶端的距离
-var list_height = 0;
+<h3 id="懒加载实现方案"><a href="#懒加载实现方案" class="headerlink" title="懒加载实现方案"></a>懒加载实现方案</h3><h4 id="总体变量以及函数定义"><a href="#总体变量以及函数定义" class="headerlink" title="总体变量以及函数定义"></a>总体变量以及函数定义</h4><pre><code class="hljs js"><span class="hljs-comment">//记录图片的序号</span>
+<span class="hljs-keyword">let</span> num = <span class="hljs-number">0</span>;
+<span class="hljs-comment">//记录是否正在获取数据，保证请求只做一次</span>
+<span class="hljs-keyword">let</span> state = <span class="hljs-literal">true</span>;
+<span class="hljs-comment">//记录图片数据，index,src,height三个关键元素</span>
+<span class="hljs-keyword">var</span> img_data =[];
+<span class="hljs-comment">//记录表单的距离页面顶端的距离</span>
+<span class="hljs-keyword">var</span> list_height = <span class="hljs-number">0</span>;
 
-function getH(obj) &#123;
-   //获得对象距离页面顶端的距离
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">getH</span>(<span class="hljs-params">obj</span>) &#123;
+   <span class="hljs-comment">//获得对象距离页面顶端的距离</span>
 &#125;
-function lazy_load()&#123;
-  //图片懒加载的实现函数
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">lazy_load</span>(<span class="hljs-params"></span>)&#123;
+  <span class="hljs-comment">//图片懒加载的实现函数</span>
 &#125;
-function getInfo()&#123;
-   //从服务器端获取商家发布的新信息
-   //并向图片数据中存放图片信息 
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">getInfo</span>(<span class="hljs-params"></span>)&#123;
+   <span class="hljs-comment">//从服务器端获取商家发布的新信息</span>
+   <span class="hljs-comment">//并向图片数据中存放图片信息 </span>
 &#125;
-function main()&#123;
-  //主函数
-  //实现初始化
-  //滚动事件的绑定等
-&#125;
-</code></pre>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span>(<span class="hljs-params"></span>)&#123;
+  <span class="hljs-comment">//主函数</span>
+  <span class="hljs-comment">//实现初始化</span>
+  <span class="hljs-comment">//滚动事件的绑定等</span>
+&#125;</code></pre>
+
 <h4 id="获取元素相对页面顶部的高度"><a href="#获取元素相对页面顶部的高度" class="headerlink" title="获取元素相对页面顶部的高度"></a>获取元素相对页面顶部的高度</h4><p>这个函数其实不难，主要涉及到目标元素下面几个属性：</p>
 <ol>
 <li>node.offsetTop：相对其父元素的位置</li>
 <li>node.offsetParent： 元素的父元素<br>所以，要获取元素相对页面顶部的高度，其实只需要进行递归或者迭代就能实现，这里采用迭代实现：</li>
 </ol>
-<pre><code class="js">function getH(obj) &#123;
-    var h = 0;
-    while (obj) &#123;
-        h += obj.offsetTop;
-        obj = obj.offsetParent;
+<pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">getH</span>(<span class="hljs-params">obj</span>) &#123;
+    <span class="hljs-keyword">var</span> h = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (obj) &#123;
+        h += obj.<span class="hljs-property">offsetTop</span>;
+        obj = obj.<span class="hljs-property">offsetParent</span>;
     &#125;
-    return h;
-&#125;
-</code></pre>
+    <span class="hljs-keyword">return</span> h;
+&#125;</code></pre>
+
 <h4 id="数据的缓存"><a href="#数据的缓存" class="headerlink" title="数据的缓存"></a>数据的缓存</h4><p>程序中，通过Ajax从服务器获取数据，每次最多获取10条，在dom中，img标签最开始并不指定src，src存储在ajax获取到的信息中，我将其存入：img_data中，与它一同存入的，还有该图片的高度height，第几条信息index。<br>这里的height，可以采用上面的迭代得到，但是每次迭代对资源损耗比较大，事实上也是没有必要的，因为每条信息是固定的高度，所以根据其是第几条信息，再获取一个list相对页面顶部的高度，就能得到图片相对页面顶部的高度。我这里每个图片(100px)算上间隙（40px）就是140px，只需要获取整个列表相对顶部的高度，就能得到每个图片相对页面顶部的距离。<br>程序中大概像这样子：</p>
-<pre><code class="js">img_data.push(&#123;
-        index:(num),
-        height:list_height+(140)*(num),
-        src:data.src,
-        loaded:false //定期清理，加载之后的图片信息进行清除，降低内存使用 
-      &#125;)
-</code></pre>
+<pre><code class="hljs js">img_data.<span class="hljs-title function_">push</span>(&#123;
+        <span class="hljs-attr">index</span>:(num),
+        <span class="hljs-attr">height</span>:list_height+(<span class="hljs-number">140</span>)*(num),
+        <span class="hljs-attr">src</span>:data.<span class="hljs-property">src</span>,
+        <span class="hljs-attr">loaded</span>:<span class="hljs-literal">false</span> <span class="hljs-comment">//定期清理，加载之后的图片信息进行清除，降低内存使用 </span>
+      &#125;)</code></pre>
+
 <h4 id="视区的检测"><a href="#视区的检测" class="headerlink" title="视区的检测"></a>视区的检测</h4><p>图片是否落在用户视区，需要用到以下高度：</p>
 <ol>
 <li>height1:document.body.scrollTop:浏览器滚动的高度</li>
 <li>height2:document.body.clientHeight:可视区域的高度</li>
 <li>height3:node.height：也就是之前获取到的元素相对页面顶部的高度（并不是相对可视区域的顶部）<br>当<code>height3&gt;heihgt1且height3&lt;height2+height1</code>的时候，可以认为这个元素是出现在用户视区的，从而将img_data的src赋值给这个块的img标签，当图片加载好之后，opacity配合transition实现动态的浮现（据说，人感觉这样加载的速度更快）。这一块大致的代码如下：</li>
 </ol>
-<pre><code class="js">function lazy_load()&#123;
-var height1 = document.body.scrollTop+document.body.clientHeight;
-  img_data.forEach(function(item)&#123;
-    if(!item.loaded &amp;&amp; item.height&gt;document.body.scrollTop-100 &amp;&amp; item.height &lt; height1)&#123;
-      var img = document.querySelector(&quot;img[img-index=&#39;&quot;+item.index+&quot;&#39;]&quot;);
-//选择该图片
-      if(img)&#123;
-        img.src = item.src;
-        item.loaded = true; //下面对img_data进行filter的函数，减少内存消耗
-        img.onload = function()&#123;
-          img.style.opacity = 1;//配合transition可以实现一个渐入的效果
+<pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">lazy_load</span>(<span class="hljs-params"></span>)&#123;
+<span class="hljs-keyword">var</span> height1 = <span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>.<span class="hljs-property">scrollTop</span>+<span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>.<span class="hljs-property">clientHeight</span>;
+  img_data.<span class="hljs-title function_">forEach</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">item</span>)&#123;
+    <span class="hljs-keyword">if</span>(!item.<span class="hljs-property">loaded</span> &amp;&amp; item.<span class="hljs-property">height</span>&gt;<span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>.<span class="hljs-property">scrollTop</span>-<span class="hljs-number">100</span> &amp;&amp; item.<span class="hljs-property">height</span> &lt; height1)&#123;
+      <span class="hljs-keyword">var</span> img = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;img[img-index=&#x27;&quot;</span>+item.<span class="hljs-property">index</span>+<span class="hljs-string">&quot;&#x27;]&quot;</span>);
+<span class="hljs-comment">//选择该图片</span>
+      <span class="hljs-keyword">if</span>(img)&#123;
+        img.<span class="hljs-property">src</span> = item.<span class="hljs-property">src</span>;
+        item.<span class="hljs-property">loaded</span> = <span class="hljs-literal">true</span>; <span class="hljs-comment">//下面对img_data进行filter的函数，减少内存消耗</span>
+        img.<span class="hljs-property">onload</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+          img.<span class="hljs-property">style</span>.<span class="hljs-property">opacity</span> = <span class="hljs-number">1</span>;<span class="hljs-comment">//配合transition可以实现一个渐入的效果</span>
         &#125;
-        img.onerror = function()&#123;
-          img.style.opacity = 1;
-          img.src = &#39;/failed.jpg&#39;;//加载失败，
+        img.<span class="hljs-property">onerror</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+          img.<span class="hljs-property">style</span>.<span class="hljs-property">opacity</span> = <span class="hljs-number">1</span>;
+          img.<span class="hljs-property">src</span> = <span class="hljs-string">&#x27;/failed.jpg&#x27;</span>;<span class="hljs-comment">//加载失败，</span>
         &#125;
       &#125;
     &#125;
-  img_data = img_data.filter(function(item)&#123;
-    return !item.loaded;
+  img_data = img_data.<span class="hljs-title function_">filter</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">item</span>)&#123;
+    <span class="hljs-keyword">return</span> !item.<span class="hljs-property">loaded</span>;
   &#125;)
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <h4 id="滚动函数的绑定"><a href="#滚动函数的绑定" class="headerlink" title="滚动函数的绑定"></a>滚动函数的绑定</h4><p>直接将上述函数和window.onscroll进行绑定是不太理想的，因为滚动函数的触发频率很高，而视区的检测如果每次滚动都进行检测，那么，一方面造成性能上的损失，一方面，似乎所有的图片都能被检测到出现在了视区，从而导致所有的图片都会被加载，并没有起到懒加载的作用。所以在这里，我使用了函数消抖，原理也不难，网上的实现很多，这里给出我的实现：</p>
-<pre><code class="js">method.debounce = function(func,delay)&#123;
-  var timer;
-  return function()&#123;
-    var args = arguments;
-    var context = this;
-    clearTimeout(timer);
-    timer = setTimeout(function()&#123;
-      func.apply(this,args);
+<pre><code class="hljs js">method.<span class="hljs-property">debounce</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">func,delay</span>)&#123;
+  <span class="hljs-keyword">var</span> timer;
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+    <span class="hljs-keyword">var</span> args = <span class="hljs-variable language_">arguments</span>;
+    <span class="hljs-keyword">var</span> context = <span class="hljs-variable language_">this</span>;
+    <span class="hljs-built_in">clearTimeout</span>(timer);
+    timer = <span class="hljs-built_in">setTimeout</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;
+      func.<span class="hljs-title function_">apply</span>(<span class="hljs-variable language_">this</span>,args);
     &#125;,delay);
   &#125;
-&#125;
-</code></pre>
+&#125;</code></pre>
+
 <p>和上述lazy_load结合，进行绑定，代码如下：</p>
-<pre><code class="js">var lazy_event = method.debounce(lazy_load,500);//此处500ms可以适当缩小
-method.addevent(window,&#39;scroll&#39;,lazy_event);
-</code></pre>
+<pre><code class="hljs js"><span class="hljs-keyword">var</span> lazy_event = method.<span class="hljs-title function_">debounce</span>(lazy_load,<span class="hljs-number">500</span>);<span class="hljs-comment">//此处500ms可以适当缩小</span>
+method.<span class="hljs-title function_">addevent</span>(<span class="hljs-variable language_">window</span>,<span class="hljs-string">&#x27;scroll&#x27;</span>,lazy_event);</code></pre>
+
 <p>和消抖函数结合之后，用户的滚动不会触发lazy_load，只有当用户停止滚动才会执行lazy_load，从而达到图片懒加载的效果。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这次无限滚动，我实现了两种方案：预加载与图片懒加载，配合消抖和节流以及缓存，能够很好的提升页面性能。希望面试的时候能用上吧。</p>
 
@@ -180,7 +196,6 @@ method.addevent(window,&#39;scroll&#39;,lazy_event);
             <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2017/03/16/js%E5%BF%8D%E8%80%85%E7%A7%98%E7%B1%8D%E7%AC%94%E8%AE%B0/">js忍者秘籍笔记：3-5</a></p>
           
         </nav>
-        
       </div>
     </article>
 
@@ -200,19 +215,15 @@ method.addevent(window,&#39;scroll&#39;,lazy_event);
 
 
     </div>
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783490774343"></script>
+    <script src="/js/index.js?v=1783498241080"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783490774343"></script>
+    <script src="/js/general.js?v=1783498241080"></script>
     
-    <script src="/js/post.js?v=1783490774343"></script>
+    <script src="/js/post.js?v=1783498241080"></script>
     
-    <script src="/js/tag.js?v=1783490774343"></script>
+    <script src="/js/tag.js?v=1783498241080"></script>
     
-    <script>
-        hljs.highlightAll();
-    </script>
 </body>
 </html>
