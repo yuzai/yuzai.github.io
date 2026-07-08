@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783481404233">
-    <link rel="stylesheet" href="/css/style.css?v=1783481404233">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
 
 <meta name="generator" content="Hexo 6.3.0"></head>
 <body class=" post-page">
@@ -28,7 +28,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,7 +49,7 @@
 </header>
 
 <div class="inner-page-shell">
-    <article>
+    <article class="post-reading">
       
       
       <div id="post-toc-widget">
@@ -60,13 +60,12 @@
         </div>
       </div>
       
-      <div class="container inner-content-container">
-      <div class="row inner-content-row">
-        <div class="col-xs-12 category_col">
-          <div class="well post-shell">
-        <h2 class="post-title">
-            <span>React 将组件作为参数进行传递的三种方法</span>
-        </h2>
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2022-07-17</time><span class="post-eyebrow-sep">·</span>约 9388 字<span class="post-eyebrow-sep">·</span>读完约 23 分钟</p>
+          <h1 class="post-title">React 将组件作为参数进行传递的三种方法</h1>
+        </header>
         <section class="post-content">
             <p>在日常的开发中，开发通用组件的机会其实并不多，尤其是在各种组件库已经遍地都是的情况下。而作为一个通用组件库的使用者，经常会看到把 React 组件作为参数传递下去的场景，每当这个时候，其实或多或少都会有一些疑问，比如：有些组件传递下去的是组件名，而有些组件传递下去的是一个箭头函数返回一个组件，而有些直接传递一个 jsx 创建好的元素，这些传递方案的适用场景如何，有什么不同，是否会导致组件的 memo 失效，是否会引发组件的不必要渲染?</p>
 <p>本文是笔者在阅读了 <a target="_blank" rel="noopener" href="https://ant.design/components/overview-cn/">antd</a>、<a target="_blank" rel="noopener" href="https://mui.com/material-ui/react-button/#buttons-with-icons-and-label">mui</a>, <a target="_blank" rel="noopener" href="https://react-select.com/components">react-select</a> 的 api 之后，结合自己日常业务中使用的组件 api 格式，对传递一个组件作为 React 组件参数的方式的思考和总结，如果有写的不到位的，欢迎补充和指点。</p>
@@ -384,27 +383,22 @@ function DownloadOutlined(&#123; size = 12, count = 0 &#125;) &#123;
 <p>最后的最后，觉得有帮助的，还请不要吝啬你的赞哈，也欢迎交流。毕竟笔者绝大部分的时间都在写业务。</p>
 
         </section>
-        <hr class="post-divider">
-        <div class="post-neighbors">
+        <nav class="post-neighbors">
           
-            <p class="post-neighbor-item">上一篇：<a href="/2022/05/27/React%20Hooks%20%E5%BF%83%E6%99%BA%E8%B4%9F%E6%8B%85%EF%BC%9A%E6%B6%88%E4%B8%AA%E6%8A%96%E9%83%BD%E6%B6%88%E4%B8%8D%E5%88%A9%E7%B4%A2%E4%BA%86/">React Hooks 心智负担：消个抖都消不利索了</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/2022/05/27/React%20Hooks%20%E5%BF%83%E6%99%BA%E8%B4%9F%E6%8B%85%EF%BC%9A%E6%B6%88%E4%B8%AA%E6%8A%96%E9%83%BD%E6%B6%88%E4%B8%8D%E5%88%A9%E7%B4%A2%E4%BA%86/">React Hooks 心智负担：消个抖都消不利索了</a></p>
           
           
-            <p class="post-neighbor-item">下一篇：<a href="/2022/07/31/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AintersectionObserver%20%E5%AE%9E%E6%88%98%E7%BB%8F%E9%AA%8C/">可视化埋点（二）：intersectionObserver 实战经验</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2022/07/31/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AintersectionObserver%20%E5%AE%9E%E6%88%98%E7%BB%8F%E9%AA%8C/">可视化埋点（二）：intersectionObserver 实战经验</a></p>
           
-        </div>
+        </nav>
         
-          </div>
-       </div>
-      </div>
-
       </div>
     </article>
 
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -418,15 +412,15 @@ function DownloadOutlined(&#123; size = 12, count = 0 &#125;) &#123;
 
     </div>
     <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783481404233"></script>
+    <script src="/js/index.js?v=1783490774342"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783481404233"></script>
+    <script src="/js/general.js?v=1783490774342"></script>
     
-    <script src="/js/post.js?v=1783481404233"></script>
+    <script src="/js/post.js?v=1783490774342"></script>
     
-    <script src="/js/tag.js?v=1783481404233"></script>
+    <script src="/js/tag.js?v=1783490774342"></script>
     
     <script>
         hljs.highlightAll();

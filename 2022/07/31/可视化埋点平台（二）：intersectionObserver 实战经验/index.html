@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783481404233">
-    <link rel="stylesheet" href="/css/style.css?v=1783481404233">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
 
 <meta name="generator" content="Hexo 6.3.0"></head>
 <body class=" post-page">
@@ -28,7 +28,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,16 +49,15 @@
 </header>
 
 <div class="inner-page-shell">
-    <article>
+    <article class="post-reading">
       
       
-      <div class="container inner-content-container">
-      <div class="row inner-content-row">
-        <div class="col-xs-12 category_col">
-          <div class="well post-shell">
-        <h2 class="post-title">
-            <span>可视化埋点（二）：intersectionObserver 实战经验</span>
-        </h2>
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2022-07-31</time><span class="post-eyebrow-sep">·</span>约 3434 字<span class="post-eyebrow-sep">·</span>读完约 9 分钟</p>
+          <h1 class="post-title">可视化埋点（二）：intersectionObserver 实战经验</h1>
+        </header>
         <section class="post-content">
             <p>最近一直在开发可视化埋点系统，其中元素的曝光埋点，就是借助了 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API">intersectionObserver</a> 这个原生 api。也是网上推荐度比较高的方案，同时 2022 年，该 api <a target="_blank" rel="noopener" href="https://caniuse.com/?search=intersection">兼容性</a>也已经很高，同时也有 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/intersection-observer">polyfill</a>，基本上使用无虞。</p>
 <p>intersectionObserver 本身 api 非常简单，但是在实际使用的过程中，由于可视化埋点的一些特殊性以及对埋点准确性的要求，还是遇到了一些 dom 变更后的边缘场景，本文便是对这些边缘场景的一个记录及实现背后的一些考虑。</p>
@@ -186,27 +185,22 @@ class track &#123;
 <p>同时，当笔者彻底理清思路后，发现这优化其实不值一提，只是笔者最初在设计可视化埋点方案时，由于对这些 api 的不熟悉，导致的一些迷迷糊糊的摸爬滚打经验，还望懂的同学别笑。</p>
 
         </section>
-        <hr class="post-divider">
-        <div class="post-neighbors">
+        <nav class="post-neighbors">
           
-            <p class="post-neighbor-item">上一篇：<a href="/2022/07/17/React%E5%B0%86%E7%BB%84%E4%BB%B6%E4%BD%9C%E4%B8%BA%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95/">React 将组件作为参数进行传递的三种方法</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/2022/07/17/React%E5%B0%86%E7%BB%84%E4%BB%B6%E4%BD%9C%E4%B8%BA%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95/">React 将组件作为参数进行传递的三种方法</a></p>
           
           
-            <p class="post-neighbor-item">下一篇：<a href="/2022/09/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BB%8E0%E5%88%B01%E6%90%AD%E5%BB%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0/">可视化埋点（一）：从0到1搭建可视化埋点平台</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2022/09/03/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BB%8E0%E5%88%B01%E6%90%AD%E5%BB%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0/">可视化埋点（一）：从0到1搭建可视化埋点平台</a></p>
           
-        </div>
+        </nav>
         
-          </div>
-       </div>
-      </div>
-
       </div>
     </article>
 
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -220,15 +214,15 @@ class track &#123;
 
     </div>
     <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783481404233"></script>
+    <script src="/js/index.js?v=1783490774342"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783481404233"></script>
+    <script src="/js/general.js?v=1783490774342"></script>
     
-    <script src="/js/post.js?v=1783481404233"></script>
+    <script src="/js/post.js?v=1783490774342"></script>
     
-    <script src="/js/tag.js?v=1783481404233"></script>
+    <script src="/js/tag.js?v=1783490774342"></script>
     
     <script>
         hljs.highlightAll();

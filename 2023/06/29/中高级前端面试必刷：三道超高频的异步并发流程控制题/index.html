@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783481404232">
-    <link rel="stylesheet" href="/css/style.css?v=1783481404232">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
 
 <meta name="generator" content="Hexo 6.3.0"></head>
 <body class=" post-page">
@@ -28,7 +28,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,7 +49,7 @@
 </header>
 
 <div class="inner-page-shell">
-    <article>
+    <article class="post-reading">
       
       
       <div id="post-toc-widget">
@@ -60,13 +60,12 @@
         </div>
       </div>
       
-      <div class="container inner-content-container">
-      <div class="row inner-content-row">
-        <div class="col-xs-12 category_col">
-          <div class="well post-shell">
-        <h2 class="post-title">
-            <span>中高级前端面试必刷：三道超高频的异步并发流程控制题</span>
-        </h2>
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2023-06-29</time><span class="post-eyebrow-sep">·</span>约 5576 字<span class="post-eyebrow-sep">·</span>读完约 14 分钟</p>
+          <h1 class="post-title">中高级前端面试必刷：三道超高频的异步并发流程控制题</h1>
+        </header>
         <section class="post-content">
             <p>这篇文章主要记录下最近面试中，出现超高频次的异步流程控制题。这类型题目，没做过的很容易掉坑里，而做不出来，基本上面试就拜拜了。</p>
 <p>本文主要分为三道题目(都是新鲜的题目哦)，前两题都是控制并发数量的题目，相对高频，第三道是控制并发执行的顺序题，相对低频但是很有实用价值。好了，直接上题。</p>
@@ -340,27 +339,22 @@ asyncQueue.exec(&#39;init&#39;, () =&gt; &#123;
 <p>最后的最后，还是希望网上能少一些散播焦虑的文章，实打实的过好自己的生活。(特指：前端已死，前端死透了，前端还没死，前端到底死没死等一系列的文章，建议转行去做营销总监，给你日薪千万呀)。</p>
 
         </section>
-        <hr class="post-divider">
-        <div class="post-neighbors">
+        <nav class="post-neighbors">
           
-            <p class="post-neighbor-item">上一篇：<a href="/2023/06/06/%E9%9D%A2%E8%AF%95%E5%AE%98%EF%BC%9A%E7%94%A8%E8%BF%87%20redux%20%E6%98%AF%E5%90%A7%EF%BC%9F%E8%A6%81%E4%B8%8D%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%EF%BC%9F/">面试官：用过 redux 是吧？要不手写一个？</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/2023/06/06/%E9%9D%A2%E8%AF%95%E5%AE%98%EF%BC%9A%E7%94%A8%E8%BF%87%20redux%20%E6%98%AF%E5%90%A7%EF%BC%9F%E8%A6%81%E4%B8%8D%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%EF%BC%9F/">面试官：用过 redux 是吧？要不手写一个？</a></p>
           
           
-            <p class="post-neighbor-item">下一篇：<a href="/2024/01/27/2023%20%E8%A2%AB%E8%A3%81%E4%B8%A4%E6%AC%A1%EF%BC%8C%E4%B8%80%E4%BD%8D%2030%E5%B2%81%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/">2023 被裁两次，一位 30岁程序员的年终总结</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2024/01/27/2023%20%E8%A2%AB%E8%A3%81%E4%B8%A4%E6%AC%A1%EF%BC%8C%E4%B8%80%E4%BD%8D%2030%E5%B2%81%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/">2023 被裁两次，一位 30岁程序员的年终总结</a></p>
           
-        </div>
+        </nav>
         
-          </div>
-       </div>
-      </div>
-
       </div>
     </article>
 
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -374,15 +368,15 @@ asyncQueue.exec(&#39;init&#39;, () =&gt; &#123;
 
     </div>
     <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783481404232"></script>
+    <script src="/js/index.js?v=1783490774342"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783481404232"></script>
+    <script src="/js/general.js?v=1783490774342"></script>
     
-    <script src="/js/post.js?v=1783481404232"></script>
+    <script src="/js/post.js?v=1783490774342"></script>
     
-    <script src="/js/tag.js?v=1783481404232"></script>
+    <script src="/js/tag.js?v=1783490774342"></script>
     
     <script>
         hljs.highlightAll();

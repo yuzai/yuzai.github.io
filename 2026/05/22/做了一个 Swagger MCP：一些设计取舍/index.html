@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783481404231">
-    <link rel="stylesheet" href="/css/style.css?v=1783481404231">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774341">
+    <link rel="stylesheet" href="/css/style.css?v=1783490774341">
 
 <meta name="generator" content="Hexo 6.3.0"></head>
 <body class=" post-page">
@@ -28,7 +28,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,7 +49,7 @@
 </header>
 
 <div class="inner-page-shell">
-    <article>
+    <article class="post-reading">
       
       
       <div id="post-toc-widget">
@@ -60,13 +60,12 @@
         </div>
       </div>
       
-      <div class="container inner-content-container">
-      <div class="row inner-content-row">
-        <div class="col-xs-12 category_col">
-          <div class="well post-shell">
-        <h2 class="post-title">
-            <span>做了一个 Swagger MCP：一些设计取舍</span>
-        </h2>
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2026-05-22</time><span class="post-eyebrow-sep">·</span>约 3374 字<span class="post-eyebrow-sep">·</span>读完约 8 分钟</p>
+          <h1 class="post-title">做了一个 Swagger MCP：一些设计取舍</h1>
+        </header>
         <section class="post-content">
             <p>我们想试一件事：<strong>能不能让 AI 直接通过 Swagger 调用后端接口，按需做数据分析</strong>。</p>
 <p>理论上是通的——Swagger 里有完整的接口定义，AI 看得懂；拉数据、交叉计算、给出结论这种事 AI 也不缺能力；两边接起来，产品&#x2F;运营想看某个数据、临时排查一次异常、想跨几个接口交叉算一下，直接跟 AI 对话就行，不用提需求等开发拉数。能跑通的话，「临时性数据问题」这种长尾就有机会从开发的工作量里剥离出去。</p>
@@ -151,27 +150,22 @@ call_api(&#123; service, name, ... &#125;) 实际调用
 <p>至于”AI 直接调后端做数据分析”这个原始命题成不成立，要看后面真的跑场景才知道。但即便最后不走这条路，这一路上对鉴权、搜索、token 经济的取舍是攒下来了的——探索本身就有这个价值。</p>
 
         </section>
-        <hr class="post-divider">
-        <div class="post-neighbors">
+        <nav class="post-neighbors">
           
-            <p class="post-neighbor-item">上一篇：<a href="/2026/04/17/%E6%88%91%E7%9A%84%E5%A4%A7%E8%84%91%E4%B8%8D%E4%B8%8B%E7%8F%AD%EF%BC%9A%E4%B8%80%E4%B8%AA%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%B8%88%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8F%8D%E5%88%8D%E8%87%AA%E6%95%91%E6%8C%87%E5%8D%97/">我的大脑不下班：一个前端工程师的工作反刍自救指南</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/2026/04/17/%E6%88%91%E7%9A%84%E5%A4%A7%E8%84%91%E4%B8%8D%E4%B8%8B%E7%8F%AD%EF%BC%9A%E4%B8%80%E4%B8%AA%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%B8%88%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8F%8D%E5%88%8D%E8%87%AA%E6%95%91%E6%8C%87%E5%8D%97/">我的大脑不下班：一个前端工程师的工作反刍自救指南</a></p>
           
           
-            <p class="post-neighbor-item is-empty">下一篇：<span>没有了</span></p>
+            <p class="post-neighbor-item is-empty"><span class="post-neighbor-label">下一篇</span><span>没有了</span></p>
           
-        </div>
+        </nav>
         
-          </div>
-       </div>
-      </div>
-
       </div>
     </article>
 
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -185,15 +179,15 @@ call_api(&#123; service, name, ... &#125;) 实际调用
 
     </div>
     <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783481404231"></script>
+    <script src="/js/index.js?v=1783490774341"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783481404231"></script>
+    <script src="/js/general.js?v=1783490774341"></script>
     
-    <script src="/js/post.js?v=1783481404231"></script>
+    <script src="/js/post.js?v=1783490774341"></script>
     
-    <script src="/js/tag.js?v=1783481404231"></script>
+    <script src="/js/tag.js?v=1783490774341"></script>
     
     <script>
         hljs.highlightAll();

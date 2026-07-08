@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783481404233">
-    <link rel="stylesheet" href="/css/style.css?v=1783481404233">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
 
 <meta name="generator" content="Hexo 6.3.0"></head>
 <body class=" post-page">
@@ -28,7 +28,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,7 +49,7 @@
 </header>
 
 <div class="inner-page-shell">
-    <article>
+    <article class="post-reading">
       
       
       <div id="post-toc-widget">
@@ -60,13 +60,12 @@
         </div>
       </div>
       
-      <div class="container inner-content-container">
-      <div class="row inner-content-row">
-        <div class="col-xs-12 category_col">
-          <div class="well post-shell">
-        <h2 class="post-title">
-            <span>原生js封装一个下拉加载的小组件</span>
-        </h2>
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-04-06</time><span class="post-eyebrow-sep">·</span>约 3050 字<span class="post-eyebrow-sep">·</span>读完约 8 分钟</p>
+          <h1 class="post-title">原生js封装一个下拉加载的小组件</h1>
+        </header>
         <section class="post-content">
             <p>之前在面试的时候，有些公司直接问我写过什么组件，而当时的我的回答是：<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/4e1d2ee63da7">封装ajax</a>，封装事件处理（兼容性），<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/5a5813648d87">前端路由</a>，这些方法组件，而并没有一个比如下拉加载，轮播，加载中，拖拽这样的配合css以及js的这种组件。当时最后的结果就是现场思考：一个轮播组件，该有哪些方法，应该暴露什么方法，暴露什么属性。所以最近静下心来，也刚好在自己做的一个前后端分离的<a target="_blank" rel="noopener" href="http://blog.xiaoboma.com/dazhequan2/">小项目</a>中用到了下拉加载，就顺带把这个给抽离出来。记录一下写组件的过程，希望能够加深自己的感悟。</p>
 <span id="more"></span>
@@ -139,27 +138,22 @@ export default pullReload;
 <h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>组件的考虑，其实还是在暴露的方法、属性，以及私有的方法，属性上的取舍，根据具体的情况进行取舍，才能上组件更加通用，可靠度更高。个人认为：不希望实例访问，当然是放在外部进行私有更合适，而希望每一个实例都拥有，放在属性上更合适，而公用的需要暴露的方法，适合放在原型上。<br>下一步的计划希望能将这个小小的组件放到npm上，之前也一直没有试过，用来体验一把npm install还是很好玩的。</p>
 
         </section>
-        <hr class="post-divider">
-        <div class="post-neighbors">
+        <nav class="post-neighbors">
           
-            <p class="post-neighbor-item">上一篇：<a href="/2017/03/29/%E4%B8%89%E6%9C%88%E5%89%8D%E7%AB%AF%E6%9A%91%E6%9C%9F%E5%AE%9E%E4%B9%A0%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/">三月前端暑期实习面试总结</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/2017/03/29/%E4%B8%89%E6%9C%88%E5%89%8D%E7%AB%AF%E6%9A%91%E6%9C%9F%E5%AE%9E%E4%B9%A0%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/">三月前端暑期实习面试总结</a></p>
           
           
-            <p class="post-neighbor-item">下一篇：<a href="/2017/10/13/%E7%A7%8B%E6%8B%9B%E6%80%BB%E7%BB%93/">秋招记录</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2017/10/13/%E7%A7%8B%E6%8B%9B%E6%80%BB%E7%BB%93/">秋招记录</a></p>
           
-        </div>
+        </nav>
         
-          </div>
-       </div>
-      </div>
-
       </div>
     </article>
 
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -173,15 +167,15 @@ export default pullReload;
 
     </div>
     <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783481404233"></script>
+    <script src="/js/index.js?v=1783490774342"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783481404233"></script>
+    <script src="/js/general.js?v=1783490774342"></script>
     
-    <script src="/js/post.js?v=1783481404233"></script>
+    <script src="/js/post.js?v=1783490774342"></script>
     
-    <script src="/js/tag.js?v=1783481404233"></script>
+    <script src="/js/tag.js?v=1783490774342"></script>
     
     <script>
         hljs.highlightAll();

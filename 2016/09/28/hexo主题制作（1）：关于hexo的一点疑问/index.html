@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783481404233">
-    <link rel="stylesheet" href="/css/style.css?v=1783481404233">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774343">
+    <link rel="stylesheet" href="/css/style.css?v=1783490774343">
 
 <meta name="generator" content="Hexo 6.3.0"></head>
 <body class=" post-page">
@@ -28,7 +28,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,7 +49,7 @@
 </header>
 
 <div class="inner-page-shell">
-    <article>
+    <article class="post-reading">
       
       
       <div id="post-toc-widget">
@@ -60,13 +60,12 @@
         </div>
       </div>
       
-      <div class="container inner-content-container">
-      <div class="row inner-content-row">
-        <div class="col-xs-12 category_col">
-          <div class="well post-shell">
-        <h2 class="post-title">
-            <span>hexo主题制作（1）：关于hexo的一点疑问</span>
-        </h2>
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2016-09-28</time><span class="post-eyebrow-sep">·</span>约 748 字<span class="post-eyebrow-sep">·</span>读完约 2 分钟</p>
+          <h1 class="post-title">hexo主题制作（1）：关于hexo的一点疑问</h1>
+        </header>
         <section class="post-content">
             <p>hexo变量的作用域<br>问题：page变量在archive.ejs和post.ejs中的含义不同，不好在post页面访问整个博客的所有文章列表</p>
 <span id="more"></span>
@@ -75,27 +74,22 @@
 <h3 id="暂时的解决方案"><a href="#暂时的解决方案" class="headerlink" title="暂时的解决方案"></a>暂时的解决方案</h3><p>hexo提供的辅助函数（helpers）可以解决这个问题<br><code>&lt;%- list_archives([options]) %&gt;</code><br>  可以显示当前的列表，具体的参数设置可以查看手册<br>  <code>&lt;%- list_posts([options]) %&gt;</code>可以显示所有的文章，具体有个格式，索然可以通过更改options获得自己想要的格式，不过获取这个格式之后，可以自己添加js,css来实现想要的渲染效果。</p>
 
         </section>
-        <hr class="post-divider">
-        <div class="post-neighbors">
+        <nav class="post-neighbors">
           
-            <p class="post-neighbor-item is-empty">上一篇：<span>没有了</span></p>
+            <p class="post-neighbor-item is-empty"><span class="post-neighbor-label">上一篇</span><span>没有了</span></p>
           
           
-            <p class="post-neighbor-item">下一篇：<a href="/2016/09/28/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C%EF%BC%882%EF%BC%89%EF%BC%9A%E8%BF%9B%E5%B1%95/">hexo主题制作（2）：进展</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2016/09/28/hexo%E4%B8%BB%E9%A2%98%E5%88%B6%E4%BD%9C%EF%BC%882%EF%BC%89%EF%BC%9A%E8%BF%9B%E5%B1%95/">hexo主题制作（2）：进展</a></p>
           
-        </div>
+        </nav>
         
-          </div>
-       </div>
-      </div>
-
       </div>
     </article>
 
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -109,15 +103,15 @@
 
     </div>
     <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783481404233"></script>
+    <script src="/js/index.js?v=1783490774343"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783481404233"></script>
+    <script src="/js/general.js?v=1783490774343"></script>
     
-    <script src="/js/post.js?v=1783481404233"></script>
+    <script src="/js/post.js?v=1783490774343"></script>
     
-    <script src="/js/tag.js?v=1783481404233"></script>
+    <script src="/js/tag.js?v=1783490774343"></script>
     
     <script>
         hljs.highlightAll();

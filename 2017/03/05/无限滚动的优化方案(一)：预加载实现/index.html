@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783481404233">
-    <link rel="stylesheet" href="/css/style.css?v=1783481404233">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774343">
+    <link rel="stylesheet" href="/css/style.css?v=1783490774343">
 
 <meta name="generator" content="Hexo 6.3.0"></head>
 <body class=" post-page">
@@ -28,7 +28,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,7 +49,7 @@
 </header>
 
 <div class="inner-page-shell">
-    <article>
+    <article class="post-reading">
       
       
       <div id="post-toc-widget">
@@ -60,13 +60,12 @@
         </div>
       </div>
       
-      <div class="container inner-content-container">
-      <div class="row inner-content-row">
-        <div class="col-xs-12 category_col">
-          <div class="well post-shell">
-        <h2 class="post-title">
-            <span>无限滚动的优化方案(一)：预加载实现</span>
-        </h2>
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-03-05</time><span class="post-eyebrow-sep">·</span>约 2545 字<span class="post-eyebrow-sep">·</span>读完约 6 分钟</p>
+          <h1 class="post-title">无限滚动的优化方案(一)：预加载实现</h1>
+        </header>
         <section class="post-content">
             <p>最近看了很多关于无限滚动的文章，也在面试中被问到了，优化方案很多，本次针对其中一条优化方案做了一个实际的优化：预加载。</p>
 <span id="more"></span>
@@ -142,27 +141,22 @@ function getInfo()&#123;
 <h2 id="展望"><a href="#展望" class="headerlink" title="展望"></a>展望</h2><p>我认为，现实中还有可能出现一种极端情况：就是用户不断的下滑，在查找之前的一条历史消息，此时，因为我的预加载的阻拦，其实在一定程度上限制了用户的滑动（每次只能同时进行一个ajax请求），这里应该有优化的空间，可以通过检测是否出现在可视区域来进行加载。<br>另外一个可以优化的点在于图片，如果我的作品里面不是框，而是图片，预加载的效果就不太好，需要图片的懒加载，也就是用户可视范围内才进行图片的加载。还有待后续进行改进</p>
 
         </section>
-        <hr class="post-divider">
-        <div class="post-neighbors">
+        <nav class="post-neighbors">
           
-            <p class="post-neighbor-item">上一篇：<a href="/2017/02/22/%E5%87%BD%E6%95%B0%E4%BD%9C%E7%94%A8%E5%9F%9F%E4%BB%A5%E5%8F%8A%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B0%8F%E7%BB%93/">函数作用域及执行上下文小结</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/2017/02/22/%E5%87%BD%E6%95%B0%E4%BD%9C%E7%94%A8%E5%9F%9F%E4%BB%A5%E5%8F%8A%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B0%8F%E7%BB%93/">函数作用域及执行上下文小结</a></p>
           
           
-            <p class="post-neighbor-item">下一篇：<a href="/2017/03/10/Js%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E5%AE%9E%E7%8E%B0%E5%8F%8A%E7%A8%B3%E5%AE%9A%E6%80%A7%E5%88%86%E6%9E%90/">js快速排序实现及稳定性分析</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2017/03/10/Js%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E5%AE%9E%E7%8E%B0%E5%8F%8A%E7%A8%B3%E5%AE%9A%E6%80%A7%E5%88%86%E6%9E%90/">js快速排序实现及稳定性分析</a></p>
           
-        </div>
+        </nav>
         
-          </div>
-       </div>
-      </div>
-
       </div>
     </article>
 
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -176,15 +170,15 @@ function getInfo()&#123;
 
     </div>
     <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783481404233"></script>
+    <script src="/js/index.js?v=1783490774343"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783481404233"></script>
+    <script src="/js/general.js?v=1783490774343"></script>
     
-    <script src="/js/post.js?v=1783481404233"></script>
+    <script src="/js/post.js?v=1783490774343"></script>
     
-    <script src="/js/tag.js?v=1783481404233"></script>
+    <script src="/js/tag.js?v=1783490774343"></script>
     
     <script>
         hljs.highlightAll();

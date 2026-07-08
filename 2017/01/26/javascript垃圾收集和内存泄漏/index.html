@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783481404233">
-    <link rel="stylesheet" href="/css/style.css?v=1783481404233">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774343">
+    <link rel="stylesheet" href="/css/style.css?v=1783490774343">
 
 <meta name="generator" content="Hexo 6.3.0"></head>
 <body class=" post-page">
@@ -28,7 +28,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,7 +49,7 @@
 </header>
 
 <div class="inner-page-shell">
-    <article>
+    <article class="post-reading">
       
       
       <div id="post-toc-widget">
@@ -60,13 +60,12 @@
         </div>
       </div>
       
-      <div class="container inner-content-container">
-      <div class="row inner-content-row">
-        <div class="col-xs-12 category_col">
-          <div class="well post-shell">
-        <h2 class="post-title">
-            <span>javascript垃圾收集和内存泄漏</span>
-        </h2>
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2017-01-26</time><span class="post-eyebrow-sep">·</span>约 3681 字<span class="post-eyebrow-sep">·</span>读完约 9 分钟</p>
+          <h1 class="post-title">javascript垃圾收集和内存泄漏</h1>
+        </header>
         <section class="post-content">
             <p>这几天在写代码的时候一直想到一个问题，内存的问题，这个问题解决不了，始终不能安安心心写代码（我这里又又又定义了一个变量，闭包能访问到它，但是我在闭包函数中并没有访问他，闭包一直存在，不占内存吗？之前也一直有一个问题，不解决也是寝食难安，见<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/46a752b117fb">事件处理函数中this的指向以及函数上下文的继承</a>），以前写c,c++的时候，似乎每次全局作用域有数组我不用了，我就手动给它删除了（局部变量出了作用域就自行销毁），而写javascript的时候意识到，虽然避免使用了全局变量，可是因为闭包的存在难道不会导致内存的泄漏（只要闭包函数存在，就始终拥有对外部函数的作用域的访问权限）？</p>
 <span id="more"></span>
@@ -154,27 +153,22 @@ xhr.send(null)
 </ol>
 
         </section>
-        <hr class="post-divider">
-        <div class="post-neighbors">
+        <nav class="post-neighbors">
           
-            <p class="post-neighbor-item">上一篇：<a href="/2017/01/24/%E5%8E%9F%E7%94%9Fjs%E5%B0%81%E8%A3%85ajax/">原生javascript封装ajax</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/2017/01/24/%E5%8E%9F%E7%94%9Fjs%E5%B0%81%E8%A3%85ajax/">原生javascript封装ajax</a></p>
           
           
-            <p class="post-neighbor-item">下一篇：<a href="/2017/01/30/es6%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7/">es6实用技巧</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2017/01/30/es6%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7/">es6实用技巧</a></p>
           
-        </div>
+        </nav>
         
-          </div>
-       </div>
-      </div>
-
       </div>
     </article>
 
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -188,15 +182,15 @@ xhr.send(null)
 
     </div>
     <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783481404233"></script>
+    <script src="/js/index.js?v=1783490774343"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783481404233"></script>
+    <script src="/js/general.js?v=1783490774343"></script>
     
-    <script src="/js/post.js?v=1783481404233"></script>
+    <script src="/js/post.js?v=1783490774343"></script>
     
-    <script src="/js/tag.js?v=1783481404233"></script>
+    <script src="/js/tag.js?v=1783490774343"></script>
     
     <script>
         hljs.highlightAll();

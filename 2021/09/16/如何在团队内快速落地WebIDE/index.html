@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783481404233">
-    <link rel="stylesheet" href="/css/style.css?v=1783481404233">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
 
 <meta name="generator" content="Hexo 6.3.0"></head>
 <body class=" post-page">
@@ -28,7 +28,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,7 +49,7 @@
 </header>
 
 <div class="inner-page-shell">
-    <article>
+    <article class="post-reading">
       
       
       <div id="post-toc-widget">
@@ -60,13 +60,12 @@
         </div>
       </div>
       
-      <div class="container inner-content-container">
-      <div class="row inner-content-row">
-        <div class="col-xs-12 category_col">
-          <div class="well post-shell">
-        <h2 class="post-title">
-            <span>如何在团队内快速落地WebIDE</span>
-        </h2>
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2021-09-16</time><span class="post-eyebrow-sep">·</span>约 7342 字<span class="post-eyebrow-sep">·</span>读完约 18 分钟</p>
+          <h1 class="post-title">如何在团队内快速落地WebIDE</h1>
+        </header>
         <section class="post-content">
             <p>在云音乐团队内部的WebIDE终于落地了。目前功能上覆盖前端正常的业务开发已无问题，期间也踩了不少坑，故写此篇文章，给想要在团队落地WebIDE做一份参考。当然，一些很细节的问题的处理，一篇文章是不好涵盖的，本文更多的是设计的方案及落地的方向的参考。</p>
 <span id="more"></span>
@@ -264,27 +263,22 @@ ENTRYPOINT [&quot;/bin/sh&quot;, &quot;/home/cloud-theia/start.sh&quot;]
 <p>最后，笔者在建立了完备的webide之后，自己的业务都已经在webide上进行开发，但是团队的大部分成员还是持保守态度。后续会继续提升开发体验，让越来越多的成员接纳这个套了老技术的新IDE。</p>
 
         </section>
-        <hr class="post-divider">
-        <div class="post-neighbors">
+        <nav class="post-neighbors">
           
-            <p class="post-neighbor-item">上一篇：<a href="/2021/08/16/chrome%2094%E9%A2%84%E8%AE%A1cookie%E7%AD%96%E7%95%A5%E5%86%8D%E5%8A%A0%E7%A0%81%EF%BC%8C%E6%80%8E%E4%B9%88%E6%94%BE%E5%BF%83%E5%A4%A7%E8%83%86%E7%9A%84%E5%8D%87%E7%BA%A7%EF%BC%9F%20/">chrome 94预计cookie策略再加码，怎么放心大胆的升级？</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/2021/08/16/chrome%2094%E9%A2%84%E8%AE%A1cookie%E7%AD%96%E7%95%A5%E5%86%8D%E5%8A%A0%E7%A0%81%EF%BC%8C%E6%80%8E%E4%B9%88%E6%94%BE%E5%BF%83%E5%A4%A7%E8%83%86%E7%9A%84%E5%8D%87%E7%BA%A7%EF%BC%9F%20/">chrome 94预计cookie策略再加码，怎么放心大胆的升级？</a></p>
           
           
-            <p class="post-neighbor-item">下一篇：<a href="/2021/10/27/100%E8%A1%8C%E4%BB%A3%E7%A0%81%E7%9B%98%E4%B8%80%E4%B8%AAreact%E6%95%B0%E6%8D%AE%E6%B5%81%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">100行代码盘一个react数据流管理工具</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2021/10/27/100%E8%A1%8C%E4%BB%A3%E7%A0%81%E7%9B%98%E4%B8%80%E4%B8%AAreact%E6%95%B0%E6%8D%AE%E6%B5%81%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">100行代码盘一个react数据流管理工具</a></p>
           
-        </div>
+        </nav>
         
-          </div>
-       </div>
-      </div>
-
       </div>
     </article>
 
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -298,15 +292,15 @@ ENTRYPOINT [&quot;/bin/sh&quot;, &quot;/home/cloud-theia/start.sh&quot;]
 
     </div>
     <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783481404233"></script>
+    <script src="/js/index.js?v=1783490774342"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783481404233"></script>
+    <script src="/js/general.js?v=1783490774342"></script>
     
-    <script src="/js/post.js?v=1783481404233"></script>
+    <script src="/js/post.js?v=1783490774342"></script>
     
-    <script src="/js/tag.js?v=1783481404233"></script>
+    <script src="/js/tag.js?v=1783490774342"></script>
     
     <script>
         hljs.highlightAll();

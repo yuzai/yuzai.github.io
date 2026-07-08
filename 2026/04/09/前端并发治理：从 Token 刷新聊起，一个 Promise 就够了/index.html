@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783481404231">
-    <link rel="stylesheet" href="/css/style.css?v=1783481404231">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774341">
+    <link rel="stylesheet" href="/css/style.css?v=1783490774341">
 
 <meta name="generator" content="Hexo 6.3.0"></head>
 <body class=" post-page">
@@ -28,7 +28,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,7 +49,7 @@
 </header>
 
 <div class="inner-page-shell">
-    <article>
+    <article class="post-reading">
       
       
       <div id="post-toc-widget">
@@ -60,13 +60,12 @@
         </div>
       </div>
       
-      <div class="container inner-content-container">
-      <div class="row inner-content-row">
-        <div class="col-xs-12 category_col">
-          <div class="well post-shell">
-        <h2 class="post-title">
-            <span>前端并发治理：从 Token 刷新聊起，一个 Promise 就够了</span>
-        </h2>
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2026-04-09</time><span class="post-eyebrow-sep">·</span>约 7863 字<span class="post-eyebrow-sep">·</span>读完约 20 分钟</p>
+          <h1 class="post-title">前端并发治理：从 Token 刷新聊起，一个 Promise 就够了</h1>
+        </header>
         <section class="post-content">
             <p>前端没有多线程，按理说不该有并发问题。但只要你写过稍微复杂一点的项目，就一定踩过这些坑：用户连点按钮提交了两次订单、搜索框的旧结果覆盖了新结果、五个请求同时 401 触发了五次 Token 刷新……</p>
 <p>这些问题看着各不相同，但背后其实是同一件事——<strong>多个异步流程在抢同一个资源</strong>。而解决它们的核心思路，往往只需要一个 Promise。</p>
@@ -324,27 +323,22 @@ bootstrap();
 <p>下次再遇到”多个地方同时调、但只该执行一次”的需求，别急着加锁、加队列、加标志位。先想想：能不能缓存那个 Promise？</p>
 
         </section>
-        <hr class="post-divider">
-        <div class="post-neighbors">
+        <nav class="post-neighbors">
           
-            <p class="post-neighbor-item">上一篇：<a href="/2026/04/02/%E7%94%A8claudecode%E6%92%B8%E4%BA%86%E4%B8%80%E4%B8%AAv0%E5%87%BA%E6%9D%A5/">一天时间，用 Claude Code 蹬了一个 v0 出来（附源码）</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/2026/04/02/%E7%94%A8claudecode%E6%92%B8%E4%BA%86%E4%B8%80%E4%B8%AAv0%E5%87%BA%E6%9D%A5/">一天时间，用 Claude Code 蹬了一个 v0 出来（附源码）</a></p>
           
           
-            <p class="post-neighbor-item">下一篇：<a href="/2026/04/13/AI%20%E6%89%B9%E9%87%8F%E7%BF%BB%E8%AF%91%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95%EF%BC%9A%E4%B8%89%E7%89%88%E6%BC%94%E8%BF%9B%EF%BC%8C%E4%BB%8E%2030s%20%E8%B6%85%E6%97%B6%E5%88%B0%E7%A8%B3%E5%AE%9A%E7%BF%BB%E5%AE%8C%2030%20%E7%A7%8D%E8%AF%AD%E8%A8%80/">把翻译交给 AI 之后，我重写了三版代码</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2026/04/13/AI%20%E6%89%B9%E9%87%8F%E7%BF%BB%E8%AF%91%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95%EF%BC%9A%E4%B8%89%E7%89%88%E6%BC%94%E8%BF%9B%EF%BC%8C%E4%BB%8E%2030s%20%E8%B6%85%E6%97%B6%E5%88%B0%E7%A8%B3%E5%AE%9A%E7%BF%BB%E5%AE%8C%2030%20%E7%A7%8D%E8%AF%AD%E8%A8%80/">把翻译交给 AI 之后，我重写了三版代码</a></p>
           
-        </div>
+        </nav>
         
-          </div>
-       </div>
-      </div>
-
       </div>
     </article>
 
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -358,15 +352,15 @@ bootstrap();
 
     </div>
     <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783481404231"></script>
+    <script src="/js/index.js?v=1783490774341"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783481404231"></script>
+    <script src="/js/general.js?v=1783490774341"></script>
     
-    <script src="/js/post.js?v=1783481404231"></script>
+    <script src="/js/post.js?v=1783490774341"></script>
     
-    <script src="/js/tag.js?v=1783481404231"></script>
+    <script src="/js/tag.js?v=1783490774341"></script>
     
     <script>
         hljs.highlightAll();

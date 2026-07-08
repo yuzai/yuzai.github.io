@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783481404233">
-    <link rel="stylesheet" href="/css/style.css?v=1783481404233">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774342">
+    <link rel="stylesheet" href="/css/style.css?v=1783490774342">
 
 <meta name="generator" content="Hexo 6.3.0"></head>
 <body class=" post-page">
@@ -28,7 +28,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,7 +49,7 @@
 </header>
 
 <div class="inner-page-shell">
-    <article>
+    <article class="post-reading">
       
       
       <div id="post-toc-widget">
@@ -60,13 +60,12 @@
         </div>
       </div>
       
-      <div class="container inner-content-container">
-      <div class="row inner-content-row">
-        <div class="col-xs-12 category_col">
-          <div class="well post-shell">
-        <h2 class="post-title">
-            <span>如何打造轻量级 WebIDE</span>
-        </h2>
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2022-02-22</time><span class="post-eyebrow-sep">·</span>约 12555 字<span class="post-eyebrow-sep">·</span>读完约 31 分钟</p>
+          <h1 class="post-title">如何打造轻量级 WebIDE</h1>
+        </header>
         <section class="post-content">
             <p>之前在团队中基于 <a target="_blank" rel="noopener" href="https://theia-ide.org/">theia</a>，搭建了一套 CloudIDE（其相关介绍见此<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/411030285">文章</a>），其本质是将 IDE 的前端运行在浏览器 or 本地 electron，而文件系统，多语言服务等，运行在远端容器侧，中间通过 rpc 进行通信从而完成整个 IDE 的云端化。</p>
 <p>而目前团队在低代码平台的建设中，发现还是需要一些简单的 IDE 场景，如果采用容器化的方案，那么每一个 IDE 可能就需要一个容器，不论是启动速度，还是资源的占用，都不太合适。</p>
@@ -487,27 +486,22 @@ editor.getAction(&#39;editor.action.formatDocument&#39;).run()
 </ol>
 
         </section>
-        <hr class="post-divider">
-        <div class="post-neighbors">
+        <nav class="post-neighbors">
           
-            <p class="post-neighbor-item">上一篇：<a href="/2022/02/16/%E6%AF%95%E4%B8%9A3%E5%B9%B4%EF%BC%8C%E6%88%91%E5%9C%A8%E5%A4%A7%E5%8E%82%E6%98%AF%E5%A6%82%E4%BD%95%E5%8F%8D%E5%86%85%E5%8D%B7%E7%9A%84%EF%BC%9F/">毕业3年，我在大厂是如何反内卷的？</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/2022/02/16/%E6%AF%95%E4%B8%9A3%E5%B9%B4%EF%BC%8C%E6%88%91%E5%9C%A8%E5%A4%A7%E5%8E%82%E6%98%AF%E5%A6%82%E4%BD%95%E5%8F%8D%E5%86%85%E5%8D%B7%E7%9A%84%EF%BC%9F/">毕业3年，我在大厂是如何反内卷的？</a></p>
           
           
-            <p class="post-neighbor-item">下一篇：<a href="/2022/05/10/%E5%A4%AA%E5%8D%B7%E4%BA%86%EF%BC%8C%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E5%8F%88%E8%A7%81%E6%99%BA%E5%8A%9B%E9%A2%98/">太卷了，前端面试又见智力题.</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2022/05/10/%E5%A4%AA%E5%8D%B7%E4%BA%86%EF%BC%8C%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E5%8F%88%E8%A7%81%E6%99%BA%E5%8A%9B%E9%A2%98/">太卷了，前端面试又见智力题.</a></p>
           
-        </div>
+        </nav>
         
-          </div>
-       </div>
-      </div>
-
       </div>
     </article>
 
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -521,15 +515,15 @@ editor.getAction(&#39;editor.action.formatDocument&#39;).run()
 
     </div>
     <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783481404233"></script>
+    <script src="/js/index.js?v=1783490774342"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783481404233"></script>
+    <script src="/js/general.js?v=1783490774342"></script>
     
-    <script src="/js/post.js?v=1783481404233"></script>
+    <script src="/js/post.js?v=1783490774342"></script>
     
-    <script src="/js/tag.js?v=1783481404233"></script>
+    <script src="/js/tag.js?v=1783490774342"></script>
     
     <script>
         hljs.highlightAll();

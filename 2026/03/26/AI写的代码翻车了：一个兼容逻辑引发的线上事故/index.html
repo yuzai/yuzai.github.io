@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783481404232">
-    <link rel="stylesheet" href="/css/style.css?v=1783481404232">
+    <link rel="stylesheet" href="/css/fontdiao.css?v=1783490774341">
+    <link rel="stylesheet" href="/css/style.css?v=1783490774341">
 
 <meta name="generator" content="Hexo 6.3.0"></head>
 <body class=" post-page">
@@ -28,7 +28,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" style="cursor: pointer"><i class= 'icon-home' id = 'slide_aboutme' ></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,16 +49,15 @@
 </header>
 
 <div class="inner-page-shell">
-    <article>
+    <article class="post-reading">
       
       
-      <div class="container inner-content-container">
-      <div class="row inner-content-row">
-        <div class="col-xs-12 category_col">
-          <div class="well post-shell">
-        <h2 class="post-title">
-            <span>AI写的代码翻车了：一个兼容逻辑引发的线上事故</span>
-        </h2>
+      <div class="post-reading-shell">
+        <header class="post-header">
+          
+          <p class="post-eyebrow"><time class="post-eyebrow-date">2026-03-26</time><span class="post-eyebrow-sep">·</span>约 939 字<span class="post-eyebrow-sep">·</span>读完约 2 分钟</p>
+          <h1 class="post-title">AI写的代码翻车了：一个兼容逻辑引发的线上事故</h1>
+        </header>
         <section class="post-content">
             <p>最近同事用 AI 写了一段看起来非常合理的代码，上线后直接把线上的多语言翻译全干没了。</p>
 <p>逻辑很简单：每次发版时，先从远端拉取最新的翻译 JSON，和本地的合并，然后一起提交上去。这样就能保证新增的翻译和已有的翻译共存。伪代码大概是这样：</p>
@@ -86,27 +85,22 @@
 <p>review AI 代码时，多问一句：<strong>这个 catch 里的兜底值，在业务上意味着什么？它真的安全吗？</strong> 不是所有的错误都该被吞掉，有时候报错才是正确的行为。</p>
 
         </section>
-        <hr class="post-divider">
-        <div class="post-neighbors">
+        <nav class="post-neighbors">
           
-            <p class="post-neighbor-item">上一篇：<a href="/2026/03/23/%E4%BB%A3%E7%A0%81%E4%B8%8D%E7%94%A8%E8%87%AA%E5%B7%B1%E5%86%99%E4%BA%86%EF%BC%8C%E6%88%91%E9%80%80%E8%AE%A2%E4%BA%86Cursor/">代码不用自己写了，我退订了 Cursor</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">上一篇</span><a href="/2026/03/23/%E4%BB%A3%E7%A0%81%E4%B8%8D%E7%94%A8%E8%87%AA%E5%B7%B1%E5%86%99%E4%BA%86%EF%BC%8C%E6%88%91%E9%80%80%E8%AE%A2%E4%BA%86Cursor/">代码不用自己写了，我退订了 Cursor</a></p>
           
           
-            <p class="post-neighbor-item">下一篇：<a href="/2026/03/27/%E5%89%8D%E7%AB%AF%E5%85%B6%E5%AE%9E%E5%BE%88%E5%A5%BD%E8%BD%AC%E5%85%A8%E6%A0%88%E7%9A%84/">前端其实很好转全栈的</a></p>
+            <p class="post-neighbor-item"><span class="post-neighbor-label">下一篇</span><a href="/2026/03/27/%E5%89%8D%E7%AB%AF%E5%85%B6%E5%AE%9E%E5%BE%88%E5%A5%BD%E8%BD%AC%E5%85%A8%E6%A0%88%E7%9A%84/">前端其实很好转全栈的</a></p>
           
-        </div>
+        </nav>
         
-          </div>
-       </div>
-      </div>
-
       </div>
     </article>
 
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn btn-success" style="color:green"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><i class="icon-angle-up"></i></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -120,15 +114,15 @@
 
     </div>
     <script src="/js/highlight.min.js"></script>
-    <script src="/js/index.js?v=1783481404232"></script>
+    <script src="/js/index.js?v=1783490774341"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     
-    <script src="/js/general.js?v=1783481404232"></script>
+    <script src="/js/general.js?v=1783490774341"></script>
     
-    <script src="/js/post.js?v=1783481404232"></script>
+    <script src="/js/post.js?v=1783490774341"></script>
     
-    <script src="/js/tag.js?v=1783481404232"></script>
+    <script src="/js/tag.js?v=1783490774341"></script>
     
     <script>
         hljs.highlightAll();
