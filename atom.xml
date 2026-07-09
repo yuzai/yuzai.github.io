@@ -10,7 +10,7 @@
   <rights>All rights reserved 2026, 马晓博</rights>
   <subtitle>芋仔的个人技术博客，记录前端开发实践、技术原理思考和日常踩坑总结。</subtitle>
   <title>芋仔的个人博客</title>
-  <updated>2026-07-09T06:55:18.005Z</updated>
+  <updated>2026-07-09T07:00:50.441Z</updated>
   <entry>
     <author>
       <name>马晓博</name>
@@ -27,7 +27,7 @@
 <p>理论上是通的——Swagger 里有完整的接口定义，AI 看得懂；拉数据、交叉计算、给出结论这种事 AI 也不缺能力；两边接起来，产品&]]>
     </summary>
     <title>做了一个 Swagger MCP：一些设计取舍</title>
-    <updated>2026-07-09T06:55:18.005Z</updated>
+    <updated>2026-07-09T07:00:50.441Z</updated>
   </entry>
   <entry>
     <author>
@@ -45,7 +45,7 @@
 <p>你躺在床上，眼睛都没睁开，脑子已经转了]]>
     </summary>
     <title>我的大脑不下班：一个前端工程师的工作反刍自救指南</title>
-    <updated>2026-07-09T06:55:18.007Z</updated>
+    <updated>2026-07-09T07:00:50.442Z</updated>
   </entry>
   <entry>
     <author>
@@ -63,7 +63,7 @@
 <p>听起来]]>
     </summary>
     <title>把翻译交给 AI 之后，我重写了三版代码</title>
-    <updated>2026-07-09T06:55:18.004Z</updated>
+    <updated>2026-07-09T07:00:50.439Z</updated>
   </entry>
   <entry>
     <author>
@@ -81,7 +81,7 @@
 <p>这些问题看着各不相同，但背后其实是同一件事——<strong]]>
     </summary>
     <title>前端并发治理：从 Token 刷新聊起，一个 Promise 就够了</title>
-    <updated>2026-07-09T06:55:18.006Z</updated>
+    <updated>2026-07-09T07:00:50.441Z</updated>
   </entry>
   <entry>
     <author>
@@ -100,7 +100,7 @@
 <p><img src="https://gitee.com/martin_bo/images/raw/master/image/poc1.gif" loading=]]>
     </summary>
     <title>一天时间，用 Claude Code 蹬了一个 v0 出来（附源码）</title>
-    <updated>2026-07-09T06:55:18.008Z</updated>
+    <updated>2026-07-09T07:00:50.443Z</updated>
   </entry>
   <entry>
     <author>
@@ -119,7 +119,7 @@
 <p>听到这条规则后，我震惊了，第一条规则，竟然是提供情绪价]]>
     </summary>
     <title>这个世界不能没有女程序员</title>
-    <updated>2026-07-09T06:55:18.008Z</updated>
+    <updated>2026-07-09T07:00:50.444Z</updated>
   </entry>
   <entry>
     <author>
@@ -136,7 +136,7 @@
       <![CDATA[<p>test1111</p>]]>
     </summary>
     <title>前端其实很好转全栈的</title>
-    <updated>2026-07-09T06:55:18.006Z</updated>
+    <updated>2026-07-09T07:00:50.441Z</updated>
   </entry>
   <entry>
     <author>
@@ -155,7 +155,7 @@
 <pre><c]]>
     </summary>
     <title>AI写的代码翻车了：一个兼容逻辑引发的线上事故</title>
-    <updated>2026-07-09T06:55:18.004Z</updated>
+    <updated>2026-07-09T07:00:50.439Z</updated>
   </entry>
   <entry>
     <author>
@@ -174,7 +174,7 @@
 <p><img src="https://gitee.com/martin_bo/ima]]>
     </summary>
     <title>代码不用自己写了，我退订了 Cursor</title>
-    <updated>2026-07-09T06:55:18.005Z</updated>
+    <updated>2026-07-09T07:00:50.441Z</updated>
   </entry>
   <entry>
     <author>
@@ -193,7 +193,7 @@
 <p>第一个需求是调整一个配置项的字段——原来的字段名叫 <code>buttonType</code>，对应 UI 上展示的是「按钮类型」。</p>]]>
     </summary>
     <title>同事用 AI 做的两个需求，Code Review 都被打回重做了</title>
-    <updated>2026-07-09T06:55:18.006Z</updated>
+    <updated>2026-07-09T07:00:50.442Z</updated>
   </entry>
   <entry>
     <author>
@@ -212,7 +212,7 @@
 <p]]>
     </summary>
     <title>搞不清 Agent、MCP、Workflow？这门 Claude 官方免费课程救了我</title>
-    <updated>2026-07-09T06:55:18.007Z</updated>
+    <updated>2026-07-09T07:00:50.443Z</updated>
   </entry>
   <entry>
     <author>
@@ -232,7 +232,7 @@
 <p>此时，由于不确定是否在其他容器内，所以宽度只能设置为 100%，但是高度就比较难设置。</p>]]>
     </summary>
     <title>分享一个最近帮我大忙的 CSS 属性：aspect-ratio</title>
-    <updated>2026-07-09T06:55:18.006Z</updated>
+    <updated>2026-07-09T07:00:50.441Z</updated>
   </entry>
   <entry>
     <author>
@@ -252,7 +252,7 @@
 <p>结论是 Qwen3 在跑分上，确实是做到了各个指标都基本达到了开源第一，直逼闭源模型的程度。</p>]]>
     </summary>
     <title>深入聊聊Qwen3的混合推理：全球唯三，开源唯一</title>
-    <updated>2026-07-09T06:55:18.008Z</updated>
+    <updated>2026-07-09T07:00:50.443Z</updated>
   </entry>
   <entry>
     <author>
@@ -276,7 +276,7 @@
 <p>试试窥一窥内行的门道，看看 Qwen3 是否真如传闻的那般沸腾?</p>]]>
     </summary>
     <title>深入聊聊Qwen3：我们外行人除了高呼沸腾了，还应该知道什么?</title>
-    <updated>2026-07-09T06:55:18.008Z</updated>
+    <updated>2026-07-09T07:00:50.443Z</updated>
   </entry>
   <entry>
     <author>
@@ -298,7 +298,7 @@
 <p>同样是九几年出生，小欢晚上了两年学，小石一不小心多读了几年书，就来到了所谓的 “大龄”危机。</p>]]>
     </summary>
     <title>还是聊聊吧：&quot;大龄&quot;程序员失业的一年</title>
-    <updated>2026-07-09T06:55:18.008Z</updated>
+    <updated>2026-07-09T07:00:50.444Z</updated>
   </entry>
   <entry>
     <author>
@@ -319,7 +319,7 @@
 <p>加 1，表示对所有人的加成，0 基础，现在也可以充当 1w 月薪的程序员。</p>]]>
     </summary>
     <title>Cursor与程序员，从来都不是你死我活</title>
-    <updated>2026-07-09T06:55:18.004Z</updated>
+    <updated>2026-07-09T07:00:50.439Z</updated>
   </entry>
   <entry>
     <author>
@@ -338,7 +338,7 @@
 <p>在现在的这个信息爆炸，自媒体的话，夸张的嫌疑会高一些。</p>]]>
     </summary>
     <title>在Cursor中用上最新的deepseek0324了！</title>
-    <updated>2026-07-09T06:55:18.007Z</updated>
+    <updated>2026-07-09T07:00:50.442Z</updated>
   </entry>
   <entry>
     <author>
@@ -357,7 +357,7 @@
 <p>刚好也用了一段时间的 Cursor，就再来对两款工具进行一个更深度的对比。</p>]]>
     </summary>
     <title>Cursor VS Trae, 深度对比第二弹</title>
-    <updated>2026-07-09T06:55:18.004Z</updated>
+    <updated>2026-07-09T07:00:50.439Z</updated>
   </entry>
   <entry>
     <author>
@@ -374,7 +374,7 @@
       <![CDATA[<p>单纯从我简单的使用上，让我想到了魔镜：</p>]]>
     </summary>
     <title>用上OpenManus了，这玩意有点像...</title>
-    <updated>2026-07-09T06:55:18.008Z</updated>
+    <updated>2026-07-09T07:00:50.443Z</updated>
   </entry>
   <entry>
     <author>
@@ -391,6 +391,6 @@
       <![CDATA[<p>如果说 IDE 是利剑，那么 AI 可能更多扮演的是剑灵的角色 – 芋仔</p>]]>
     </summary>
     <title>Cursor初体验，2小时上线房来财小程序</title>
-    <updated>2026-07-09T06:55:18.004Z</updated>
+    <updated>2026-07-09T07:00:50.439Z</updated>
   </entry>
 </feed>
