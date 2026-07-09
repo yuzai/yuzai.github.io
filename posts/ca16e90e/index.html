@@ -8,6 +8,7 @@
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
     
     <title>可视化埋点（一）：从0到1搭建可视化埋点平台 - 芋仔的个人博客</title>
+    
     <meta name="description" content="近期一直在团队内开发可视化埋点平台，目前已经落地并成功在多个复杂业务中落地使用，在其中也踩了不少坑。故写此篇文章，给想要在团队内落地可视化埋点平台做一份参考，也是对笔者自己实现过程的一个记录。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="可视化埋点（一）：从0到1搭建可视化埋点平台">
@@ -24,7 +25,7 @@
 <meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1a321a9a17fe4cbf97d053464fafee59~tplv-k3u1fbpfcp-zoom-1.image">
 <meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fa4ff8eb991040a18240e6f6fe429c8e~tplv-k3u1fbpfcp-zoom-1.image">
 <meta property="article:published_time" content="2022-09-03T21:29:00.000Z">
-<meta property="article:modified_time" content="2026-07-08T10:35:50.889Z">
+<meta property="article:modified_time" content="2026-07-09T06:55:18.006Z">
 <meta property="article:author" content="马晓博">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e6e275237cbf43ebb4740bcf0dde1bc0~tplv-k3u1fbpfcp-zoom-1.image">
@@ -37,7 +38,7 @@
       "@type": "BlogPosting",
       "headline": "可视化埋点（一）：从0到1搭建可视化埋点平台",
       "datePublished": "2022-09-03T21:29:00.000Z",
-      "dateModified": "2026-07-08T10:35:50.889Z",
+      "dateModified": "2026-07-09T06:55:18.006Z",
       "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
       "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/ca16e90e/",
       "description": "近期一直在团队内开发可视化埋点平台，目前已经落地并成功在多个复杂业务中落地使用，在其中也踩了不少坑。故写此篇文章，给想要在团队内落地可视化埋点平台做一份参考，也是对笔者自己实现过程的一个记录。",
@@ -46,11 +47,11 @@
     </script>
     
     
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="418d4d66-a259-4e06-9b1b-6fd5a3fbf12d" data-domains="blog.maxiaobo.com.cn"></script>
+    
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963750">
-    <link rel="stylesheet" href="/css/style.css?v=1783506963750">
+    <link rel="stylesheet" href="/css/style.css?v=d1279ce0">
 
 <meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
 </head>
@@ -67,7 +68,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.1l8.9 8.1h-2.6v8.7h-4.6v-6h-3.4v6H5.7v-8.7H3.1L12 3.1z"/></svg> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -80,7 +81,7 @@
       
           <li><a href="/my-works" >My-Work</a></li>
       
-      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+      <li><a href="javascript:;" id="nav-search-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg> 搜索</a></li>
     </ul>
   </div><!-- /.navbar-collapse -->
 </div><!-- /.container-fluid -->
@@ -100,7 +101,7 @@
       
       
       <div id="post-toc-widget">
-        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v2H4zM8 6h12v2H8zM4 11h2v2H4zM8 11h12v2H8zM4 16h2v2H4zM8 16h12v2H8z"/></svg> 目录</button>
         <div class="post-toc-panel" id="post-toc-panel">
           <div class="post-toc-head">本文目录</div>
           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E5%9F%8B%E7%82%B9%E7%9A%84%E5%B8%B8%E8%A7%81%E5%90%88%E4%BD%9C%E6%A8%A1%E5%BC%8F"><span class="toc-text">前端埋点的常见合作模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%E7%9A%84%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D"><span class="toc-text">可视化埋点平台的功能介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-text">可视化埋点平台的架构设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%9C%88%E9%80%89%E8%83%BD%E5%8A%9B%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="toc-text">核心圈选能力的设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%83%E7%B4%A0%E5%94%AF%E4%B8%80%E6%A0%87%E8%AE%B0"><span class="toc-text">元素唯一标记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%83%E7%B4%A0%E5%9C%88%E9%80%89%E5%8A%9F%E8%83%BD"><span class="toc-text">元素圈选功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iframe-%E9%80%9A%E4%BF%A1"><span class="toc-text">iframe 通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%87%E9%9B%86%E4%BE%A7%E5%9F%8B%E7%82%B9%E5%8C%B9%E9%85%8D"><span class="toc-text">采集侧埋点匹配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E5%9F%8B%E7%82%B9%E5%B9%B3%E5%8F%B0%E7%B3%BB%E7%BB%9F%E9%93%BE%E8%B7%AF"><span class="toc-text">可视化埋点平台系统链路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%98%E6%9C%89%E4%BB%80%E4%B9%88%E8%83%BD%E5%81%9A%E7%9A%84"><span class="toc-text">还有什么能做的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
@@ -485,7 +486,7 @@ msgCenter.<span class="hljs-title function_">off</span>(<span class="hljs-string
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -498,16 +499,16 @@ msgCenter.<span class="hljs-title function_">off</span>(<span class="hljs-string
 
 
     </div>
-    <script src="/js/index.js?v=1783506963750"></script>
+    <script src="/js/index.js?v=ac075839"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/search.js?v=1783506963750"></script>
+    <script src="/js/search.js?v=1fa5a954"></script>
     
-    <script src="/js/general.js?v=1783506963750"></script>
+    <script src="/js/general.js?v=0ae4cf23"></script>
     
-    <script src="/js/post.js?v=1783506963750"></script>
+    <script src="/js/post.js?v=c7834c7f"></script>
     
-    <script src="/js/tag.js?v=1783506963750"></script>
+    <script src="/js/tag.js?v=1234ee21"></script>
     
 </body>
 </html>

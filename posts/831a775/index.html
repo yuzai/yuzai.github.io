@@ -8,6 +8,7 @@
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
     
     <title>vscode是如何找到xxx.jsx的：vscode点击无法跳转jsx定义 - 芋仔的个人博客</title>
+    
     <meta name="description" content="问题描述在新接手的项目中，存在vscode点击无法跳转到对应文件的情况，具体如下：相对路径引入的xxx.jsx文件无法自动跳转，但是.js文件可以 针对这个问题，做了一个非常简单的demo来进行演示和问题的复现：github 在该项目的入口文件src&#x2F;test.js中就存在这样的问题  解决方案经过对vscode源码debug，基本了解了大致流程。得到的正确解法如下： 解法1:删除项目目">
 <meta property="og:type" content="article">
 <meta property="og:title" content="vscode是如何找到xxx.jsx的：vscode点击无法跳转jsx定义">
@@ -20,7 +21,7 @@
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24ely1gzlik8js49j207302jq2s.jpg">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24ely1gzlikl08ctj20bw098dgx.jpg">
 <meta property="article:published_time" content="2020-07-13T20:16:00.000Z">
-<meta property="article:modified_time" content="2026-07-08T10:35:50.887Z">
+<meta property="article:modified_time" content="2026-07-09T06:55:18.005Z">
 <meta property="article:author" content="马晓博">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://tva1.sinaimg.cn/large/e6c9d24ely1gzlimstdloj20my0d4q3t.jpg">
@@ -33,7 +34,7 @@
       "@type": "BlogPosting",
       "headline": "vscode是如何找到xxx.jsx的：vscode点击无法跳转jsx定义",
       "datePublished": "2020-07-13T20:16:00.000Z",
-      "dateModified": "2026-07-08T10:35:50.887Z",
+      "dateModified": "2026-07-09T06:55:18.005Z",
       "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
       "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/831a775/",
       "description": "问题描述在新接手的项目中，存在vscode点击无法跳转到对应文件的情况，具体如下：相对路径引入的xxx.jsx文件无法自动跳转，但是.js文件可以 针对这个问题，做了一个非常简单的demo来进行演示和问题的复现：github 在该项目的入口文件src&#x2F;test.js中就存在这样的问题 解决",
@@ -42,11 +43,11 @@
     </script>
     
     
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="418d4d66-a259-4e06-9b1b-6fd5a3fbf12d" data-domains="blog.maxiaobo.com.cn"></script>
+    
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963752">
-    <link rel="stylesheet" href="/css/style.css?v=1783506963752">
+    <link rel="stylesheet" href="/css/style.css?v=d1279ce0">
 
 <meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
 </head>
@@ -63,7 +64,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.1l8.9 8.1h-2.6v8.7h-4.6v-6h-3.4v6H5.7v-8.7H3.1L12 3.1z"/></svg> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -76,7 +77,7 @@
       
           <li><a href="/my-works" >My-Work</a></li>
       
-      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+      <li><a href="javascript:;" id="nav-search-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg> 搜索</a></li>
     </ul>
   </div><!-- /.navbar-collapse -->
 </div><!-- /.container-fluid -->
@@ -96,7 +97,7 @@
       
       
       <div id="post-toc-widget">
-        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v2H4zM8 6h12v2H8zM4 11h2v2H4zM8 11h12v2H8zM4 16h2v2H4zM8 16h12v2H8z"/></svg> 目录</button>
         <div class="post-toc-panel" id="post-toc-panel">
           <div class="post-toc-head">本文目录</div>
           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-text">解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E6%B3%951"><span class="toc-text">解法1:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E6%B3%952"><span class="toc-text">解法2:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B9%E8%BF%9B%E8%A7%A3%E6%B3%952"><span class="toc-text">改进解法2:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86%E6%8E%A2%E7%A9%B6"><span class="toc-text">原理探究</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#vscode%E6%BA%90%E7%A0%81%E6%9C%AC%E5%9C%B0%E5%90%AF%E5%8A%A8"><span class="toc-text">vscode源码本地启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vscode%E7%9B%B8%E5%85%B3%E4%BB%A3%E7%A0%81%E5%AE%9A%E4%BD%8D"><span class="toc-text">vscode相关代码定位</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li></ol>
@@ -182,7 +183,7 @@
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -195,16 +196,16 @@
 
 
     </div>
-    <script src="/js/index.js?v=1783506963752"></script>
+    <script src="/js/index.js?v=ac075839"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/search.js?v=1783506963752"></script>
+    <script src="/js/search.js?v=1fa5a954"></script>
     
-    <script src="/js/general.js?v=1783506963752"></script>
+    <script src="/js/general.js?v=0ae4cf23"></script>
     
-    <script src="/js/post.js?v=1783506963752"></script>
+    <script src="/js/post.js?v=c7834c7f"></script>
     
-    <script src="/js/tag.js?v=1783506963752"></script>
+    <script src="/js/tag.js?v=1234ee21"></script>
     
 </body>
 </html>

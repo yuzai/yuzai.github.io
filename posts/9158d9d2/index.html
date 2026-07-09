@@ -8,6 +8,7 @@
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
     
     <title>tenflow.js--三种方法用js搭建神经网络实现曲线拟合 - 芋仔的个人博客</title>
+    
     <meta name="description" content="引言这一段时间研究生生涯已经走进了尾声，也一直忙于论文没有关注前端方面的工作。偶然的机会，在知乎上看到了一篇文章前端人工智能？TensorFlow.js 学会游戏通关。我的内心是很激动的，终于，也能在前端直接搭神经网络，跑分类了。不过该文章，对于tensorflowjs的介绍太少，直观的游戏ai应用确实很好，但是对于初次接触的人，还是从最基础的框架使用开始更好，于是就有了这篇文章。本文抛开了复杂的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="tenflow.js--三种方法用js搭建神经网络实现曲线拟合">
@@ -17,7 +18,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://pic3.zhimg.com/80/v2-166b41e7c7bd1952fe6284e543ff970e_720w.jpg">
 <meta property="article:published_time" content="2018-05-26T21:32:00.000Z">
-<meta property="article:modified_time" content="2026-07-08T10:35:50.887Z">
+<meta property="article:modified_time" content="2026-07-09T06:55:18.005Z">
 <meta property="article:author" content="马晓博">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://pic3.zhimg.com/80/v2-166b41e7c7bd1952fe6284e543ff970e_720w.jpg">
@@ -30,7 +31,7 @@
       "@type": "BlogPosting",
       "headline": "tenflow.js--三种方法用js搭建神经网络实现曲线拟合",
       "datePublished": "2018-05-26T21:32:00.000Z",
-      "dateModified": "2026-07-08T10:35:50.887Z",
+      "dateModified": "2026-07-09T06:55:18.005Z",
       "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
       "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/9158d9d2/",
       "description": "引言这一段时间研究生生涯已经走进了尾声，也一直忙于论文没有关注前端方面的工作。偶然的机会，在知乎上看到了一篇文章前端人工智能？TensorFlow.js 学会游戏通关。我的内心是很激动的，终于，也能在前端直接搭神经网络，跑分类了。不过该文章，对于tensorflowjs的介绍太少，直观的游戏ai应用",
@@ -39,11 +40,11 @@
     </script>
     
     
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="418d4d66-a259-4e06-9b1b-6fd5a3fbf12d" data-domains="blog.maxiaobo.com.cn"></script>
+    
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963753">
-    <link rel="stylesheet" href="/css/style.css?v=1783506963753">
+    <link rel="stylesheet" href="/css/style.css?v=d1279ce0">
 
 <meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
 </head>
@@ -60,7 +61,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.1l8.9 8.1h-2.6v8.7h-4.6v-6h-3.4v6H5.7v-8.7H3.1L12 3.1z"/></svg> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -73,7 +74,7 @@
       
           <li><a href="/my-works" >My-Work</a></li>
       
-      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+      <li><a href="javascript:;" id="nav-search-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg> 搜索</a></li>
     </ul>
   </div><!-- /.navbar-collapse -->
 </div><!-- /.container-fluid -->
@@ -93,7 +94,7 @@
       
       
       <div id="post-toc-widget">
-        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v2H4zM8 6h12v2H8zM4 11h2v2H4zM8 11h12v2H8zM4 16h2v2H4zM8 16h12v2H8z"/></svg> 目录</button>
         <div class="post-toc-panel" id="post-toc-panel">
           <div class="post-toc-head">本文目录</div>
           <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E9%97%AE%E9%A2%98%E4%BB%8B%E7%BB%8D"><span class="toc-text">目标问题介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%EF%BC%8C%E7%8E%AF%E5%A2%83%E8%AF%B4%E6%98%8E"><span class="toc-text">工具，环境说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B7%E6%9C%AC%E7%82%B9%E6%95%B0%E4%BA%A7%E7%94%9F%E6%96%B9%E6%B3%95"><span class="toc-text">样本点数产生方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0%E6%9B%B2%E7%BA%BF%E6%8B%9F%E5%90%88"><span class="toc-text">线性模型方法实现曲线拟合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%95%E5%B1%82api%E6%9E%84%E5%BB%BA%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E7%8E%B0%E6%9B%B2%E7%BA%BF%E6%8B%9F%E5%90%88"><span class="toc-text">底层api构建神经网络实现曲线拟合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E5%B1%82%E6%AC%A1api%E6%9E%84%E5%BB%BA%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="toc-text">高层次api构建神经网络</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li></ol>
@@ -410,7 +411,7 @@ model.<span class="hljs-title function_">compile</span>(&#123;
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -423,16 +424,16 @@ model.<span class="hljs-title function_">compile</span>(&#123;
 
 
     </div>
-    <script src="/js/index.js?v=1783506963753"></script>
+    <script src="/js/index.js?v=ac075839"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/search.js?v=1783506963753"></script>
+    <script src="/js/search.js?v=1fa5a954"></script>
     
-    <script src="/js/general.js?v=1783506963753"></script>
+    <script src="/js/general.js?v=0ae4cf23"></script>
     
-    <script src="/js/post.js?v=1783506963753"></script>
+    <script src="/js/post.js?v=c7834c7f"></script>
     
-    <script src="/js/tag.js?v=1783506963753"></script>
+    <script src="/js/tag.js?v=1234ee21"></script>
     
 </body>
 </html>

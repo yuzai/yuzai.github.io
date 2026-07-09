@@ -8,6 +8,7 @@
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
     
     <title>前端并发治理：从 Token 刷新聊起，一个 Promise 就够了 - 芋仔的个人博客</title>
+    
     <meta name="description" content="前端没有多线程，按理说不该有并发问题。但只要你写过稍微复杂一点的项目，就一定踩过这些坑：用户连点按钮提交了两次订单、搜索框的旧结果覆盖了新结果、五个请求同时 401 触发了五次 Token 刷新…… 这些问题看着各不相同，但背后其实是同一件事——多个异步流程在抢同一个资源。而解决它们的核心思路，往往只需要一个 Promise。 本文从最常见的 Token 刷新场景出发，一步步拆解前端并发问题的本质">
 <meta property="og:type" content="article">
 <meta property="og:title" content="前端并发治理：从 Token 刷新聊起，一个 Promise 就够了">
@@ -20,7 +21,7 @@
 <meta property="og:image" content="https://gitee.com/martin_bo/images/raw/master/image/20260410095417498.png">
 <meta property="og:image" content="https://gitee.com/martin_bo/images/raw/master/image/20260410095444254.png">
 <meta property="article:published_time" content="2026-04-09T16:32:26.000Z">
-<meta property="article:modified_time" content="2026-07-08T10:35:50.888Z">
+<meta property="article:modified_time" content="2026-07-09T06:55:18.006Z">
 <meta property="article:author" content="马晓博">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://gitee.com/martin_bo/images/raw/master/image/20260410095224070.png">
@@ -33,7 +34,7 @@
       "@type": "BlogPosting",
       "headline": "前端并发治理：从 Token 刷新聊起，一个 Promise 就够了",
       "datePublished": "2026-04-09T16:32:26.000Z",
-      "dateModified": "2026-07-08T10:35:50.888Z",
+      "dateModified": "2026-07-09T06:55:18.006Z",
       "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
       "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/7164ec5/",
       "description": "前端没有多线程，按理说不该有并发问题。但只要你写过稍微复杂一点的项目，就一定踩过这些坑：用户连点按钮提交了两次订单、搜索框的旧结果覆盖了新结果、五个请求同时 401 触发了五次 Token 刷新…… 这些问题看着各不相同，但背后其实是同一件事——多个异步流程在抢同一个资源。而解决它们的核心思路，往往",
@@ -42,11 +43,11 @@
     </script>
     
     
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="418d4d66-a259-4e06-9b1b-6fd5a3fbf12d" data-domains="blog.maxiaobo.com.cn"></script>
+    
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963739">
-    <link rel="stylesheet" href="/css/style.css?v=1783506963739">
+    <link rel="stylesheet" href="/css/style.css?v=d1279ce0">
 
 <meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
 </head>
@@ -63,7 +64,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.1l8.9 8.1h-2.6v8.7h-4.6v-6h-3.4v6H5.7v-8.7H3.1L12 3.1z"/></svg> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -76,7 +77,7 @@
       
           <li><a href="/my-works" >My-Work</a></li>
       
-      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+      <li><a href="javascript:;" id="nav-search-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg> 搜索</a></li>
     </ul>
   </div><!-- /.navbar-collapse -->
 </div><!-- /.container-fluid -->
@@ -96,7 +97,7 @@
       
       
       <div id="post-toc-widget">
-        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v2H4zM8 6h12v2H8zM4 11h2v2H4zM8 11h12v2H8zM4 16h2v2H4zM8 16h12v2H8z"/></svg> 目录</button>
         <div class="post-toc-panel" id="post-toc-panel">
           <div class="post-toc-head">本文目录</div>
           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E9%89%B4%E6%9D%83%E9%82%A3%E4%BA%9B%E4%BA%8B"><span class="toc-text">前端鉴权那些事</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E9%9A%BE%E9%A2%98%EF%BC%9A5-%E4%B8%AA-401-%E5%8F%AA%E8%AF%A5%E5%88%B7%E6%96%B0%E4%B8%80%E6%AC%A1"><span class="toc-text">并发难题：5 个 401 只该刷新一次</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%89%E4%B8%80%E4%B8%8B%EF%BC%8C%E6%A0%87%E5%BF%97%E4%BD%8D%E4%B8%8D%E5%B0%B1%E5%A4%9F%E4%BA%86%E5%90%97%EF%BC%9F"><span class="toc-text">等一下，标志位不就够了吗？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BE%E4%B8%80%E5%8F%8D%E4%B8%89%EF%BC%9A%E5%89%8D%E7%AB%AF%E5%B9%B6%E5%8F%91%E9%97%AE%E9%A2%98%E7%9A%84%E4%B8%A4%E5%A4%A7%E7%B1%BB"><span class="toc-text">举一反三：前端并发问题的两大类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E7%B1%BB%EF%BC%9A%E5%A4%9A%E6%AC%A1%E8%A7%A6%E5%8F%91%EF%BC%8C%E5%8F%AA%E8%AF%A5%E6%89%A7%E8%A1%8C%E4%B8%80%E6%AC%A1"><span class="toc-text">第一类：多次触发，只该执行一次</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%B1%BB%EF%BC%9A%E5%A4%9A%E6%AC%A1%E8%A7%A6%E5%8F%91%EF%BC%8C%E5%8F%AA%E4%BF%9D%E7%95%99%E6%9C%80%E5%90%8E%E4%B8%80%E6%AC%A1"><span class="toc-text">第二类：多次触发，只保留最后一次</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E5%8D%95%E4%BE%8B%EF%BC%9A%E5%BD%93-Promise-Cache-%E9%81%87%E4%B8%8A%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="toc-text">异步单例：当 Promise Cache 遇上设计模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%86%E8%BF%99%E6%A0%B7%E6%9C%89%E4%B8%AA%E4%BB%A3%E4%BB%B7%EF%BC%9Aasync-%E4%BC%A0%E6%9F%93"><span class="toc-text">但这样有个代价：async 传染</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
@@ -398,7 +399,7 @@ sdk.<span class="hljs-title function_">doSomething</span>();</code></pre>
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -411,16 +412,16 @@ sdk.<span class="hljs-title function_">doSomething</span>();</code></pre>
 
 
     </div>
-    <script src="/js/index.js?v=1783506963739"></script>
+    <script src="/js/index.js?v=ac075839"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/search.js?v=1783506963739"></script>
+    <script src="/js/search.js?v=1fa5a954"></script>
     
-    <script src="/js/general.js?v=1783506963739"></script>
+    <script src="/js/general.js?v=0ae4cf23"></script>
     
-    <script src="/js/post.js?v=1783506963739"></script>
+    <script src="/js/post.js?v=c7834c7f"></script>
     
-    <script src="/js/tag.js?v=1783506963739"></script>
+    <script src="/js/tag.js?v=1234ee21"></script>
     
 </body>
 </html>

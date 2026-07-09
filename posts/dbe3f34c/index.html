@@ -8,6 +8,7 @@
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
     
     <title>面试官：用过 redux 是吧？要不手写一个？ - 芋仔的个人博客</title>
+    
     <meta name="description" content="前一段时间一直在面试，因为做过状态管理相关的事情，所以在聊到 redux 时，提到了一行代码实现 redux，所以就有了后续的问题： 能一行代码实现下 redux 吗？能再实现下 redux 的中间件吗？能说说怎么支持异步吗？能让普通函数也享受下中间件吗？ 由于 redux 也确实是比较久远但是经典的库了，事后我趁此机会也算是好好回顾了一下 redux，也发现了其中的一些优秀设计，故有了本篇文章。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="面试官：用过 redux 是吧？要不手写一个？">
@@ -15,10 +16,12 @@
 <meta property="og:site_name" content="芋仔的个人博客">
 <meta property="og:description" content="前一段时间一直在面试，因为做过状态管理相关的事情，所以在聊到 redux 时，提到了一行代码实现 redux，所以就有了后续的问题： 能一行代码实现下 redux 吗？能再实现下 redux 的中间件吗？能说说怎么支持异步吗？能让普通函数也享受下中间件吗？ 由于 redux 也确实是比较久远但是经典的库了，事后我趁此机会也算是好好回顾了一下 redux，也发现了其中的一些优秀设计，故有了本篇文章。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.maxiaobo.com.cn/rs/og-default.png">
 <meta property="article:published_time" content="2023-06-06T18:40:00.000Z">
-<meta property="article:modified_time" content="2026-07-08T10:35:50.892Z">
+<meta property="article:modified_time" content="2026-07-09T06:55:18.009Z">
 <meta property="article:author" content="马晓博">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.maxiaobo.com.cn/rs/og-default.png">
     
     <link rel="canonical" href="https://blog.maxiaobo.com.cn/posts/dbe3f34c/">
     
@@ -28,7 +31,7 @@
       "@type": "BlogPosting",
       "headline": "面试官：用过 redux 是吧？要不手写一个？",
       "datePublished": "2023-06-06T18:40:00.000Z",
-      "dateModified": "2026-07-08T10:35:50.892Z",
+      "dateModified": "2026-07-09T06:55:18.009Z",
       "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
       "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/dbe3f34c/",
       "description": "前一段时间一直在面试，因为做过状态管理相关的事情，所以在聊到 redux 时，提到了一行代码实现 redux，所以就有了后续的问题： 能一行代码实现下 redux 吗？能再实现下 redux 的中间件吗？能说说怎么支持异步吗？能让普通函数也享受下中间件吗？ 由于 redux 也确实是比较久远但是经典",
@@ -37,11 +40,11 @@
     </script>
     
     
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="418d4d66-a259-4e06-9b1b-6fd5a3fbf12d" data-domains="blog.maxiaobo.com.cn"></script>
+    
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963749">
-    <link rel="stylesheet" href="/css/style.css?v=1783506963749">
+    <link rel="stylesheet" href="/css/style.css?v=d1279ce0">
 
 <meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
 </head>
@@ -58,7 +61,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.1l8.9 8.1h-2.6v8.7h-4.6v-6h-3.4v6H5.7v-8.7H3.1L12 3.1z"/></svg> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -71,7 +74,7 @@
       
           <li><a href="/my-works" >My-Work</a></li>
       
-      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+      <li><a href="javascript:;" id="nav-search-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg> 搜索</a></li>
     </ul>
   </div><!-- /.navbar-collapse -->
 </div><!-- /.container-fluid -->
@@ -91,7 +94,7 @@
       
       
       <div id="post-toc-widget">
-        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v2H4zM8 6h12v2H8zM4 11h2v2H4zM8 11h12v2H8zM4 16h2v2H4zM8 16h12v2H8z"/></svg> 目录</button>
         <div class="post-toc-panel" id="post-toc-panel">
           <div class="post-toc-head">本文目录</div>
           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E4%B8%8B-redux"><span class="toc-text">一行代码实现下 redux</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%8D%E5%AE%9E%E7%8E%B0%E4%B8%8B%E4%B8%AD%E9%97%B4%E4%BB%B6%EF%BC%9F"><span class="toc-text">再实现下中间件？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%84%E5%86%99%E6%B3%95%EF%BC%8C%E5%A4%8D%E5%86%99-store-dispatch"><span class="toc-text">常规写法，复写 store.dispatch</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%BB%E9%99%A4%E5%A4%8D%E5%86%99%E7%9A%84%E4%B8%8D%E7%BA%AF"><span class="toc-text">去除复写的不纯</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9C%9F%E6%AD%A3-redux-%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-text">真正 redux 的实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%BD%E5%86%8D%E6%94%AF%E6%8C%81%E4%B8%8B%E5%BC%82%E6%AD%A5%E5%90%97%EF%BC%9F"><span class="toc-text">能再支持下异步吗？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%BD%E8%AE%A9%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E4%B9%9F%E7%94%A8%E4%B8%8A%E4%B8%AD%E9%97%B4%E4%BB%B6%E5%90%97%EF%BC%9F"><span class="toc-text">能让普通函数也用上中间件吗？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9D%9F"><span class="toc-text">结束</span></a></li></ol>
@@ -477,7 +480,7 @@ store.<span class="hljs-title function_">dispatch</span>(asyncAction);</code></p
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -490,16 +493,16 @@ store.<span class="hljs-title function_">dispatch</span>(asyncAction);</code></p
 
 
     </div>
-    <script src="/js/index.js?v=1783506963749"></script>
+    <script src="/js/index.js?v=ac075839"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/search.js?v=1783506963749"></script>
+    <script src="/js/search.js?v=1fa5a954"></script>
     
-    <script src="/js/general.js?v=1783506963749"></script>
+    <script src="/js/general.js?v=0ae4cf23"></script>
     
-    <script src="/js/post.js?v=1783506963749"></script>
+    <script src="/js/post.js?v=c7834c7f"></script>
     
-    <script src="/js/tag.js?v=1783506963749"></script>
+    <script src="/js/tag.js?v=1234ee21"></script>
     
 </body>
 </html>

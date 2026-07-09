@@ -8,6 +8,7 @@
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
     
     <title>100行代码盘一个react数据流管理工具 - 芋仔的个人博客</title>
+    
     <meta name="description" content="前言在我们团队目前的业务中，随着移动端h5页面复杂度增加以及需要长期维护的项目增多，初期选择多页无数据管理的一些弊端就暴露出来。页面内多个轮询，消息监听、各种优化交互的loading态、倒计时，导致一个h5中，往往有几十个核心的状态，组件嵌套的层级也较多。代码往往也是开头十几个useState的定义，而这些state通过组件一层层传递下去，让后来的维护者，可以说是如履薄冰。 而在组内推行数据流管理">
 <meta property="og:type" content="article">
 <meta property="og:title" content="100行代码盘一个react数据流管理工具">
@@ -15,10 +16,12 @@
 <meta property="og:site_name" content="芋仔的个人博客">
 <meta property="og:description" content="前言在我们团队目前的业务中，随着移动端h5页面复杂度增加以及需要长期维护的项目增多，初期选择多页无数据管理的一些弊端就暴露出来。页面内多个轮询，消息监听、各种优化交互的loading态、倒计时，导致一个h5中，往往有几十个核心的状态，组件嵌套的层级也较多。代码往往也是开头十几个useState的定义，而这些state通过组件一层层传递下去，让后来的维护者，可以说是如履薄冰。 而在组内推行数据流管理">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.maxiaobo.com.cn/rs/og-default.png">
 <meta property="article:published_time" content="2021-10-27T18:04:00.000Z">
-<meta property="article:modified_time" content="2026-07-08T10:35:50.885Z">
+<meta property="article:modified_time" content="2026-07-09T06:55:18.004Z">
 <meta property="article:author" content="马晓博">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.maxiaobo.com.cn/rs/og-default.png">
     
     <link rel="canonical" href="https://blog.maxiaobo.com.cn/posts/53b7da3a/">
     
@@ -28,7 +31,7 @@
       "@type": "BlogPosting",
       "headline": "100行代码盘一个react数据流管理工具",
       "datePublished": "2021-10-27T18:04:00.000Z",
-      "dateModified": "2026-07-08T10:35:50.885Z",
+      "dateModified": "2026-07-09T06:55:18.004Z",
       "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
       "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/53b7da3a/",
       "description": "前言在我们团队目前的业务中，随着移动端h5页面复杂度增加以及需要长期维护的项目增多，初期选择多页无数据管理的一些弊端就暴露出来。页面内多个轮询，消息监听、各种优化交互的loading态、倒计时，导致一个h5中，往往有几十个核心的状态，组件嵌套的层级也较多。代码往往也是开头十几个useState的定义",
@@ -37,11 +40,11 @@
     </script>
     
     
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="418d4d66-a259-4e06-9b1b-6fd5a3fbf12d" data-domains="blog.maxiaobo.com.cn"></script>
+    
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963751">
-    <link rel="stylesheet" href="/css/style.css?v=1783506963751">
+    <link rel="stylesheet" href="/css/style.css?v=d1279ce0">
 
 <meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
 </head>
@@ -58,7 +61,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.1l8.9 8.1h-2.6v8.7h-4.6v-6h-3.4v6H5.7v-8.7H3.1L12 3.1z"/></svg> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -71,7 +74,7 @@
       
           <li><a href="/my-works" >My-Work</a></li>
       
-      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+      <li><a href="javascript:;" id="nav-search-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg> 搜索</a></li>
     </ul>
   </div><!-- /.navbar-collapse -->
 </div><!-- /.container-fluid -->
@@ -91,7 +94,7 @@
       
       
       <div id="post-toc-widget">
-        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v2H4zM8 6h12v2H8zM4 11h2v2H4zM8 11h12v2H8zM4 16h2v2H4zM8 16h12v2H8z"/></svg> 目录</button>
         <div class="post-toc-panel" id="post-toc-panel">
           <div class="post-toc-head">本文目录</div>
           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87"><span class="toc-text">目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-text">具体实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#v0-%E6%9E%81%E7%AE%80%E7%89%88"><span class="toc-text">v0-极简版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#v1-%E4%B8%8D%E6%9B%B4%E6%96%B0%E7%89%88"><span class="toc-text">v1-不更新版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#v2-%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%96%B0%E7%89%88"><span class="toc-text">v2-自动更新版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#v3-%E6%94%AF%E6%8C%81%E5%BC%82%E6%AD%A5%E7%89%88"><span class="toc-text">v3-支持异步版</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
@@ -586,7 +589,7 @@
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -599,16 +602,16 @@
 
 
     </div>
-    <script src="/js/index.js?v=1783506963751"></script>
+    <script src="/js/index.js?v=ac075839"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/search.js?v=1783506963751"></script>
+    <script src="/js/search.js?v=1fa5a954"></script>
     
-    <script src="/js/general.js?v=1783506963751"></script>
+    <script src="/js/general.js?v=0ae4cf23"></script>
     
-    <script src="/js/post.js?v=1783506963751"></script>
+    <script src="/js/post.js?v=c7834c7f"></script>
     
-    <script src="/js/tag.js?v=1783506963751"></script>
+    <script src="/js/tag.js?v=1234ee21"></script>
     
 </body>
 </html>

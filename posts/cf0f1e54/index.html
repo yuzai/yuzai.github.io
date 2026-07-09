@@ -8,6 +8,7 @@
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
     
     <title>javascript垃圾收集和内存泄漏 - 芋仔的个人博客</title>
+    
     <meta name="description" content="这几天在写代码的时候一直想到一个问题，内存的问题，这个问题解决不了，始终不能安安心心写代码（我这里又又又定义了一个变量，闭包能访问到它，但是我在闭包函数中并没有访问他，闭包一直存在，不占内存吗？之前也一直有一个问题，不解决也是寝食难安，见事件处理函数中this的指向以及函数上下文的继承），以前写c,c++的时候，似乎每次全局作用域有数组我不用了，我就手动给它删除了（局部变量出了作用域就自行销毁），">
 <meta property="og:type" content="article">
 <meta property="og:title" content="javascript垃圾收集和内存泄漏">
@@ -20,7 +21,7 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3967512-0ab87d2d2741ae72.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3967512-c3a8ffc6da47080c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="article:published_time" content="2017-01-26T22:10:21.000Z">
-<meta property="article:modified_time" content="2026-07-08T10:35:50.887Z">
+<meta property="article:modified_time" content="2026-07-09T06:55:18.005Z">
 <meta property="article:author" content="马晓博">
 <meta property="article:tag" content="javascript">
 <meta name="twitter:card" content="summary">
@@ -34,7 +35,7 @@
       "@type": "BlogPosting",
       "headline": "javascript垃圾收集和内存泄漏",
       "datePublished": "2017-01-26T22:10:21.000Z",
-      "dateModified": "2026-07-08T10:35:50.887Z",
+      "dateModified": "2026-07-09T06:55:18.005Z",
       "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
       "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/cf0f1e54/",
       "description": "这几天在写代码的时候一直想到一个问题，内存的问题，这个问题解决不了，始终不能安安心心写代码（我这里又又又定义了一个变量，闭包能访问到它，但是我在闭包函数中并没有访问他，闭包一直存在，不占内存吗？之前也一直有一个问题，不解决也是寝食难安，见事件处理函数中this的指向以及函数上下文的继承），以前写c,",
@@ -43,11 +44,11 @@
     </script>
     
     
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="418d4d66-a259-4e06-9b1b-6fd5a3fbf12d" data-domains="blog.maxiaobo.com.cn"></script>
+    
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963755">
-    <link rel="stylesheet" href="/css/style.css?v=1783506963755">
+    <link rel="stylesheet" href="/css/style.css?v=d1279ce0">
 
 <meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
 </head>
@@ -64,7 +65,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.1l8.9 8.1h-2.6v8.7h-4.6v-6h-3.4v6H5.7v-8.7H3.1L12 3.1z"/></svg> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -77,7 +78,7 @@
       
           <li><a href="/my-works" >My-Work</a></li>
       
-      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+      <li><a href="javascript:;" id="nav-search-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg> 搜索</a></li>
     </ul>
   </div><!-- /.navbar-collapse -->
 </div><!-- /.container-fluid -->
@@ -97,7 +98,7 @@
       
       
       <div id="post-toc-widget">
-        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v2H4zM8 6h12v2H8zM4 11h2v2H4zM8 11h12v2H8zM4 16h2v2H4zM8 16h12v2H8z"/></svg> 目录</button>
         <div class="post-toc-panel" id="post-toc-panel">
           <div class="post-toc-head">本文目录</div>
           <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#js%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6"><span class="toc-text">js垃圾回收机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#js%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E7%A4%BA%E4%BE%8B"><span class="toc-text">js回收机制示例</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E5%AF%B9%E8%B1%A1%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6"><span class="toc-text">普通对象回收机制</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8%E6%94%B6%E9%9B%86%E6%9C%BA%E5%88%B6"><span class="toc-text">循环引用收集机制</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#js%E5%B8%B8%E8%A7%81%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-text">js常见内存泄漏</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#IE-lt-8-DOM-JS-%E6%B3%84%E6%BC%8F"><span class="toc-text">IE&lt;8 DOM-JS 泄漏</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#IE-lt-9-ajax%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-text">IE&lt;9 ajax内存泄漏</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#setInterval"><span class="toc-text">setInterval</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%97%AD%E5%8C%85"><span class="toc-text">闭包</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li></ol>
@@ -228,7 +229,7 @@ xhr.<span class="hljs-title function_">send</span>(<span class="hljs-literal">nu
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -241,16 +242,16 @@ xhr.<span class="hljs-title function_">send</span>(<span class="hljs-literal">nu
 
 
     </div>
-    <script src="/js/index.js?v=1783506963755"></script>
+    <script src="/js/index.js?v=ac075839"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/search.js?v=1783506963755"></script>
+    <script src="/js/search.js?v=1fa5a954"></script>
     
-    <script src="/js/general.js?v=1783506963755"></script>
+    <script src="/js/general.js?v=0ae4cf23"></script>
     
-    <script src="/js/post.js?v=1783506963755"></script>
+    <script src="/js/post.js?v=c7834c7f"></script>
     
-    <script src="/js/tag.js?v=1783506963755"></script>
+    <script src="/js/tag.js?v=1234ee21"></script>
     
 </body>
 </html>

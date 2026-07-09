@@ -1,6 +1,13 @@
 body {
   padding-top: 70px;
 }
+.svg-icon {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.125em;
+  fill: currentColor;
+}
 .home-page {
   padding-top: 0;
   min-height: 100vh;

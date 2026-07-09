@@ -8,6 +8,7 @@
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
     
     <title>es6笔记 - 芋仔的个人博客</title>
+    
     <meta name="description" content="es6的学习笔记">
 <meta property="og:type" content="article">
 <meta property="og:title" content="es6笔记">
@@ -15,12 +16,14 @@
 <meta property="og:site_name" content="芋仔的个人博客">
 <meta property="og:description" content="es6的学习笔记">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.maxiaobo.com.cn/rs/og-default.png">
 <meta property="article:published_time" content="2016-11-15T21:27:26.000Z">
-<meta property="article:modified_time" content="2026-07-08T10:35:50.886Z">
+<meta property="article:modified_time" content="2026-07-09T06:55:18.004Z">
 <meta property="article:author" content="马晓博">
 <meta property="article:tag" content="javascript">
 <meta property="article:tag" content="es6">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.maxiaobo.com.cn/rs/og-default.png">
     
     <link rel="canonical" href="https://blog.maxiaobo.com.cn/posts/c9315af3/">
     
@@ -30,7 +33,7 @@
       "@type": "BlogPosting",
       "headline": "es6笔记",
       "datePublished": "2016-11-15T21:27:26.000Z",
-      "dateModified": "2026-07-08T10:35:50.886Z",
+      "dateModified": "2026-07-09T06:55:18.004Z",
       "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
       "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/c9315af3/",
       "description": "es6的学习笔记",
@@ -39,11 +42,11 @@
     </script>
     
     
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="418d4d66-a259-4e06-9b1b-6fd5a3fbf12d" data-domains="blog.maxiaobo.com.cn"></script>
+    
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963757">
-    <link rel="stylesheet" href="/css/style.css?v=1783506963757">
+    <link rel="stylesheet" href="/css/style.css?v=d1279ce0">
 
 <meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
 </head>
@@ -60,7 +63,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.1l8.9 8.1h-2.6v8.7h-4.6v-6h-3.4v6H5.7v-8.7H3.1L12 3.1z"/></svg> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -73,7 +76,7 @@
       
           <li><a href="/my-works" >My-Work</a></li>
       
-      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+      <li><a href="javascript:;" id="nav-search-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg> 搜索</a></li>
     </ul>
   </div><!-- /.navbar-collapse -->
 </div><!-- /.container-fluid -->
@@ -93,7 +96,7 @@
       
       
       <div id="post-toc-widget">
-        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v2H4zM8 6h12v2H8zM4 11h2v2H4zM8 11h12v2H8zM4 16h2v2H4zM8 16h12v2H8z"/></svg> 目录</button>
         <div class="post-toc-panel" id="post-toc-panel">
           <div class="post-toc-head">本文目录</div>
           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E5%AF%B9%E8%B1%A1%E5%AD%97%E9%9D%A2%E9%87%8F"><span class="toc-text">3.1 对象字面量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-1-%E5%B1%9E%E6%80%A7%E5%80%BC%E7%BC%A9%E5%86%99"><span class="toc-text">3.1.1 属性值缩写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-2-%E5%8F%AF%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7%E5%90%8D"><span class="toc-text">3.1.2 可计算属性名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-3-%E6%96%B9%E6%B3%95%E5%AE%9A%E4%B9%89"><span class="toc-text">3.1.3 方法定义</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0"><span class="toc-text">3.2 箭头函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-1-%E8%AF%8D%E6%B3%95%E8%8C%83%E5%9B%B4"><span class="toc-text">3.2.1 词法范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-2-%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E7%9A%84%E7%AE%80%E5%86%99"><span class="toc-text">3.2.2 箭头函数的简写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-3-%E4%BC%98%E7%82%B9%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">3.2.3 优点和使用场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-assign-destructuring"><span class="toc-text">3.3 assign destructuring</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-1-%E8%A7%A3%E6%9E%84%E5%AF%B9%E8%B1%A1"><span class="toc-text">3.3.1 解构对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-2-%E8%A7%A3%E6%9E%84%E6%95%B0%E7%BB%84"><span class="toc-text">3.3.2 解构数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-3-%E8%A7%A3%E6%9E%84%E5%87%BD%E6%95%B0"><span class="toc-text">3.3.3 解构函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-4-%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">3.3.4 使用场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-4-rest%E5%8F%82%E6%95%B0%E5%92%8C%E6%89%A9%E6%95%A3%E8%BF%90%E7%AE%97%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">3.4 rest参数和扩散运算操作符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-1-rest-%E5%8F%82%E6%95%B0"><span class="toc-text">3.4.1 rest 参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-2-spread%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">3.4.2 spread操作符</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-5-%E6%A8%A1%E6%9D%BF%E5%AD%97%E9%9D%A2%E9%87%8F"><span class="toc-text">3.5 模板字面量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-1-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8F%92%E5%80%BC"><span class="toc-text">3.5.1 字符串插值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-2-%E5%A4%9A%E8%A1%8C%E6%A8%A1%E6%9D%BF%E5%AD%97%E9%9D%A2%E9%87%8F"><span class="toc-text">3.5.2 多行模板字面量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-3-Tagged-Templates"><span class="toc-text">3.5.3 Tagged Templates</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-6-let-%E5%92%8C-const"><span class="toc-text">3.6 let 和 const</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-1-let%E5%A3%B0%E6%98%8E%E5%92%8C%E5%9D%97%E7%BA%A7%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-text">3.6.1 let声明和块级作用域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-2-%E4%B8%B4%E6%97%B6%E6%AD%BB%E5%8C%BA-TDZ"><span class="toc-text">3.6.2 临时死区 TDZ</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-3-const%E5%A3%B0%E6%98%8E"><span class="toc-text">3.6.3 const声明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-4-let%E5%92%8Cconst%E7%9A%84%E4%BC%98%E7%82%B9"><span class="toc-text">3.6.4 let和const的优点</span></a></li></ol></li></ol>
@@ -421,7 +424,7 @@ humans = <span class="hljs-string">&#x27;evil&#x27;</span>
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -434,16 +437,16 @@ humans = <span class="hljs-string">&#x27;evil&#x27;</span>
 
 
     </div>
-    <script src="/js/index.js?v=1783506963757"></script>
+    <script src="/js/index.js?v=ac075839"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/search.js?v=1783506963757"></script>
+    <script src="/js/search.js?v=1fa5a954"></script>
     
-    <script src="/js/general.js?v=1783506963757"></script>
+    <script src="/js/general.js?v=0ae4cf23"></script>
     
-    <script src="/js/post.js?v=1783506963757"></script>
+    <script src="/js/post.js?v=c7834c7f"></script>
     
-    <script src="/js/tag.js?v=1783506963757"></script>
+    <script src="/js/tag.js?v=1234ee21"></script>
     
 </body>
 </html>

@@ -8,6 +8,7 @@
     <link rel = "Shortcut Icon" href= '/favicon.ico' >
     
     <title>做了一个 Swagger MCP：一些设计取舍 - 芋仔的个人博客</title>
+    
     <meta name="description" content="我们想试一件事：能不能让 AI 直接通过 Swagger 调用后端接口，按需做数据分析。 理论上是通的——Swagger 里有完整的接口定义，AI 看得懂；拉数据、交叉计算、给出结论这种事 AI 也不缺能力；两边接起来，产品&#x2F;运营想看某个数据、临时排查一次异常、想跨几个接口交叉算一下，直接跟 AI 对话就行，不用提需求等开发拉数。能跑通的话，「临时性数据问题」这种长尾就有机会从开发的工作">
 <meta property="og:type" content="article">
 <meta property="og:title" content="做了一个 Swagger MCP：一些设计取舍">
@@ -15,10 +16,12 @@
 <meta property="og:site_name" content="芋仔的个人博客">
 <meta property="og:description" content="我们想试一件事：能不能让 AI 直接通过 Swagger 调用后端接口，按需做数据分析。 理论上是通的——Swagger 里有完整的接口定义，AI 看得懂；拉数据、交叉计算、给出结论这种事 AI 也不缺能力；两边接起来，产品&#x2F;运营想看某个数据、临时排查一次异常、想跨几个接口交叉算一下，直接跟 AI 对话就行，不用提需求等开发拉数。能跑通的话，「临时性数据问题」这种长尾就有机会从开发的工作">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.maxiaobo.com.cn/rs/og-default.png">
 <meta property="article:published_time" content="2026-05-22T14:04:00.000Z">
-<meta property="article:modified_time" content="2026-07-08T10:35:50.888Z">
+<meta property="article:modified_time" content="2026-07-09T06:55:18.005Z">
 <meta property="article:author" content="马晓博">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.maxiaobo.com.cn/rs/og-default.png">
     
     <link rel="canonical" href="https://blog.maxiaobo.com.cn/posts/b510eaf0/">
     
@@ -28,7 +31,7 @@
       "@type": "BlogPosting",
       "headline": "做了一个 Swagger MCP：一些设计取舍",
       "datePublished": "2026-05-22T14:04:00.000Z",
-      "dateModified": "2026-07-08T10:35:50.888Z",
+      "dateModified": "2026-07-09T06:55:18.005Z",
       "author": { "@type": "Person", "name": "马晓博", "url": "https://blog.maxiaobo.com.cn" },
       "mainEntityOfPage": "https://blog.maxiaobo.com.cn/posts/b510eaf0/",
       "description": "我们想试一件事：能不能让 AI 直接通过 Swagger 调用后端接口，按需做数据分析。 理论上是通的——Swagger 里有完整的接口定义，AI 看得懂；拉数据、交叉计算、给出结论这种事 AI 也不缺能力；两边接起来，产品&#x2F;运营想看某个数据、临时排查一次异常、想跨几个接口交叉算一下，直接",
@@ -37,11 +40,11 @@
     </script>
     
     
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="418d4d66-a259-4e06-9b1b-6fd5a3fbf12d" data-domains="blog.maxiaobo.com.cn"></script>
+    
     <link rel="stylesheet" href="/css/atom-one-dark.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/fontdiao.css?v=1783506963735">
-    <link rel="stylesheet" href="/css/style.css?v=1783506963735">
+    <link rel="stylesheet" href="/css/style.css?v=d1279ce0">
 
 <meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="芋仔的个人博客" type="application/atom+xml">
 </head>
@@ -58,7 +61,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="/"><i class= 'icon-home'></i> 芋仔</a>
+    <a class="navbar-brand" href="/"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.1l8.9 8.1h-2.6v8.7h-4.6v-6h-3.4v6H5.7v-8.7H3.1L12 3.1z"/></svg> 芋仔</a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -71,7 +74,7 @@
       
           <li><a href="/my-works" >My-Work</a></li>
       
-      <li><a href="javascript:;" id="nav-search-toggle"><i class="icon-search"></i> 搜索</a></li>
+      <li><a href="javascript:;" id="nav-search-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg> 搜索</a></li>
     </ul>
   </div><!-- /.navbar-collapse -->
 </div><!-- /.container-fluid -->
@@ -91,7 +94,7 @@
       
       
       <div id="post-toc-widget">
-        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><i class="icon-list-ul"></i> 目录</button>
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v2H4zM8 6h12v2H8zM4 11h2v2H4zM8 11h12v2H8zM4 16h2v2H4zM8 16h12v2H8z"/></svg> 目录</button>
         <div class="post-toc-panel" id="post-toc-panel">
           <div class="post-toc-head">本文目录</div>
           <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E9%9B%86%EF%BC%9A%E6%8C%89%E9%9C%80%E6%9F%A5%E8%AF%A2%EF%BC%8C%E4%B8%8D%E5%81%9A%E5%85%A8%E9%87%8F%E6%B3%A8%E5%85%A5"><span class="toc-text">工具集：按需查询，不做全量注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%89%B4%E6%9D%83%EF%BC%9A%E4%BB%8E%E6%89%8B%E5%A1%AB%E5%AF%86%E7%A0%81%E5%88%B0%E5%80%9F%E7%94%A8%E6%88%B7%E7%9A%84%E6%B5%8F%E8%A7%88%E5%99%A8"><span class="toc-text">鉴权：从手填密码到借用户的浏览器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E6%96%87%E6%90%9C%E7%B4%A2%EF%BC%9A2-gram-%E6%BB%91%E7%AA%97-%E5%90%8C%E4%B9%89%E8%AF%8D%E8%BD%AF%E6%89%93%E5%88%86"><span class="toc-text">中文搜索：2-gram 滑窗 + 同义词软打分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%98%E6%B2%A1%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9A%E5%88%86%E5%8F%91"><span class="toc-text">还没解决的问题：分发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%A0%E6%9D%A1%E8%B4%AF%E7%A9%BF%E6%80%A7%E7%9A%84%E5%8E%9F%E5%88%99"><span class="toc-text">几条贯穿性的原则</span></a></li></ol>
@@ -220,7 +223,7 @@ call_api(&#123; service, name, ... &#125;) 实际调用</code></pre>
 </div>
 
 <div style="position:fixed;right:1%;bottom:1%">
-<button id="up" class="btn"><i class="icon-angle-up"></i></button>
+<button id="up" class="btn"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg></button>
 </div>
 
 <footer id="footer" class="myfoot">
@@ -233,16 +236,16 @@ call_api(&#123; service, name, ... &#125;) 实际调用</code></pre>
 
 
     </div>
-    <script src="/js/index.js?v=1783506963735"></script>
+    <script src="/js/index.js?v=ac075839"></script>
     <script src="/js/jquery-1.12.3.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/search.js?v=1783506963735"></script>
+    <script src="/js/search.js?v=1fa5a954"></script>
     
-    <script src="/js/general.js?v=1783506963735"></script>
+    <script src="/js/general.js?v=0ae4cf23"></script>
     
-    <script src="/js/post.js?v=1783506963735"></script>
+    <script src="/js/post.js?v=c7834c7f"></script>
     
-    <script src="/js/tag.js?v=1783506963735"></script>
+    <script src="/js/tag.js?v=1234ee21"></script>
     
 </body>
 </html>
